@@ -1,0 +1,154 @@
+/* Concept 3 · Editorial
+   Storyboards: 23FG-0 (hero) → 23HC-0 / 23IB-0 (statement) → 23NE-0 → 23MB-0 → 23JB-0 (pinned split)
+   Values from _build/design-extraction-c3.md. Board colours are display-p3; sRGB fallbacks first. */
+
+.c3 {
+  --c3-paper: #F9F4EA;
+  --c3-ink: #0F0F0F; --c3-ink: color(display-p3 0.059 0.059 0.059);
+  --c3-ink-2: #1B1814; --c3-ink-2: color(display-p3 0.104 0.095 0.080);
+  --c3-muted: #1B1814AD;
+  --c3-rule: rgba(0, 0, 0, 0.1);
+  --c3-cell-line: rgba(255, 255, 255, 0.05);
+  --c3-amber: linear-gradient(180deg, #DD6F2A 0%, #E4903A 100%);
+  --c3-amber: linear-gradient(in oklab 180deg, oklab(64.4% 0.121 0.130) 0%, oklab(69.6% 0.088 0.141) 100%);
+  --dpx: min(100vw / 1440, 100vh / 900);
+  background: var(--c3-paper);
+  color: var(--c3-ink);
+}
+
+/* ---------- cells: the grid language of the bar (23FG-0) ---------- */
+.cell {
+  position: relative; isolation: isolate; overflow: hidden;
+  display: flex; align-items: center; padding: 8px 16px;
+  font-size: 14px; line-height: 20px;
+}
+.cell > * { position: relative; z-index: 1; }
+.cell > .cell__fill { position: absolute; z-index: 0; inset: 0; pointer-events: none; transform: scaleY(0); transform-origin: 50% 100%; }
+.cell > .logo__glint { position: absolute; }
+.cell--spacer { flex: 1 1 auto; padding: 8px 12px; }
+.cell--center { justify-content: center; }
+
+/* ---------- nav ---------- */
+.nav { position: fixed; inset: 0 0 auto 0; z-index: 50; height: 48px; will-change: transform; }
+.nav__bar { position: relative; display: flex; height: 48px; background: var(--c3-ink); color: #FFFFFF; --glider: rgba(255, 255, 255, 0.07); }
+.nav__bar > .cell { border-right: 1px solid var(--c3-cell-line); }
+.nav__logo { color: #F8F4EC; gap: 6.6px; }
+.nav__logo .logo__mark { width: 23.87px; height: 23.96px; }
+.nav__logo .logo__word { width: 65.52px; height: 22.98px; margin-top: 2px; }
+/* monochrome at rest (Jerry, 2026-10-02); the board's amber gradient rises into it on hover (c3.js) */
+.nav__join { background: #F8F4EC; color: var(--c3-ink); font-weight: 500; justify-content: center; }
+
+/* ---------- hero (23FG-0) ---------- */
+.hero { position: relative; display: flex; flex-direction: column; height: 100vh; min-height: 680px; }
+.hero__media { position: relative; flex: 0 0 auto; height: calc(100% - 255px); overflow: hidden; background: #2A2723; }
+.hero__focus { position: absolute; inset: 0; will-change: transform; }
+.hero__poster, .hero__video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.hero__video { opacity: 0; transition: opacity 900ms var(--ease-out); }
+.hero__video.is-playing { opacity: 1; }
+.hero__row { flex: 1 1 auto; display: flex; padding: 16px; }
+.hero__intro {
+  flex: 1 1 0; max-width: 253px; margin-right: auto;
+  font-family: var(--font-display); font-size: 20px; line-height: 100%; letter-spacing: -0.03em; color: var(--c3-ink);
+}
+.hero__title {
+  width: 50%; display: flex; flex-direction: column; gap: 8px; margin-left: auto;
+  font-size: clamp(56px, calc(72 * var(--dpx)), 92px); line-height: 75%; letter-spacing: -0.05em; color: var(--c3-ink);
+}
+.line { display: block; }
+.hero__bar { position: relative; flex: 0 0 48px; display: flex; align-items: center; gap: 24px; padding: 8px 16px; color: var(--c3-ink); }
+.hero__scroll { flex: 1; font-size: 14px; line-height: 20px; }
+.arrow--down { width: 16px; height: 16px; rotate: 90deg; color: #000; }
+
+/* hairlines, drawn in on reveal (c3.js) */
+.rule { position: absolute; left: 0; right: 0; height: 1px; background: var(--c3-rule); transform-origin: 0 50%; pointer-events: none; }
+.rule--top { top: 0; }
+
+/* ---------- statement (23HC-0 / 23IB-0) ---------- */
+.read__image { height: 358px; padding: 8px; }
+.read__image img { width: 100%; height: 100%; object-fit: cover; }
+.read__row { height: 207px; padding: 16px; }
+.statement { max-width: 927px; font-size: clamp(42px, calc(54 * var(--dpx)), 70px); line-height: 100%; letter-spacing: -0.05em; color: var(--c3-ink); }
+
+/* ---------- pinned split (23NE-0 → 23JB-0) ----------
+   One seam (--seam, px from the stage top) rises from the facilities header (H − 72) to under the clinicians
+   header (72). Each panel shows its side of the seam; each block of copy stays centred in its own panel. */
+.split { position: relative; height: 340vh; }
+.split__stage { --seam: calc(100vh - 72px); position: sticky; top: 0; height: 100vh; display: flex; gap: 8px; overflow: hidden; }
+.split__left { position: relative; flex: 1 1 0; overflow: hidden; }
+.panel { position: absolute; inset: 0; }
+.panel--a { clip-path: inset(0 0 calc(100% - var(--seam)) 0); }
+.panel--b { clip-path: inset(var(--seam) 0 0 0); }
+.panel__content { position: absolute; left: 24px; right: 24px; top: 0; will-change: transform; }
+.panel--b .panel__content { transform: translateY(calc(var(--seam) + 24px)); }
+.seam { position: absolute; left: 0; right: 0; top: 0; height: 1px; transform: translateY(var(--seam)); pointer-events: none; }
+.seam .rule { top: 0; }
+.item__label { font-family: var(--font-display); font-size: var(--text-heading); line-height: 100%; color: var(--c3-muted); }
+.item__title { margin-top: 8px; width: 286px; font-family: var(--font-display); font-weight: 400; font-size: var(--text-display); line-height: 100%; letter-spacing: -0.035em; color: var(--c3-ink-2); }
+.item__body { margin-top: 32px; width: 272px; font-size: var(--text-body); line-height: 125%; color: var(--c3-muted); }
+.split__right { position: relative; flex: 1 1 0; }
+.shot { position: absolute; inset: 8px; overflow: hidden; background: #2A2723; }
+.shot img { position: absolute; inset: 0; width: 100%; height: 100%; max-width: none; object-fit: cover; will-change: transform; }
+/* an 8px gutter rides the seam between the two photographs */
+.shot[data-shot="clinicians"] { clip-path: inset(0 0 calc(100% - var(--seam) + 12px) 0); }
+.shot[data-shot="facilities"] { z-index: 2; clip-path: inset(calc(var(--seam) - 4px) 0 0 0); }
+
+/* ---------- end cap ---------- */
+.end { position: relative; }
+.end__row { position: relative; display: flex; min-height: 320px; padding: 16px; }
+.end__intro { flex: 1 1 0; max-width: 253px; margin-right: auto; font-family: var(--font-display); font-size: 20px; line-height: 100%; letter-spacing: -0.03em; }
+.end__title { width: 50%; display: flex; flex-direction: column; gap: 8px; margin-left: auto; font-size: clamp(56px, calc(72 * var(--dpx)), 92px); line-height: 75%; letter-spacing: -0.05em; }
+.end__ctas { position: relative; display: flex; }
+.end__cell { flex: 1 1 0; height: 64px; justify-content: space-between; font-size: 15px; font-weight: 500; color: var(--c3-ink); }
+.end__cell + .end__cell { border-left: 1px solid var(--c3-rule); }
+.end__cell .arrow { width: 16px; height: 16px; color: #000; }
+.footer { position: relative; display: flex; height: 48px; background: var(--c3-ink); color: #FFFFFF; --glider: rgba(255, 255, 255, 0.07); }
+.footer > .cell { border-right: 1px solid var(--c3-cell-line); }
+.footer__logo { color: #F8F4EC; gap: 6.6px; }
+.footer__logo .logo__mark { width: 23.87px; height: 23.96px; }
+.footer__logo .logo__word { width: 65.52px; height: 22.98px; margin-top: 2px; }
+.footer__legal { color: rgba(255, 255, 255, 0.5); border-right: 0 !important; }
+
+/* ---------- static flow: phones, tablets, reduced motion ---------- */
+@media (max-width: 820px) {
+  .nav__bar > .cell--link { display: none; }
+  .is-static .hero { height: auto; min-height: 0; }
+  .is-static .hero__media { height: 58svh; }
+  .is-static .hero__row { flex-direction: column; gap: 28px; padding: 20px 16px 40px; }
+  .is-static .hero__intro { max-width: 300px; }
+  .is-static .hero__title { width: auto; margin: 0; font-size: clamp(44px, 12vw, 72px); }
+  .is-static .read__image { height: 46svh; }
+  .is-static .read__row { height: auto; padding: 24px 16px 56px; }
+  .is-static .statement { font-size: clamp(36px, 10vw, 54px); }
+  .is-static .split { height: auto; }
+  .is-static .split__stage { position: relative; height: auto; flex-direction: column; overflow: visible; }
+  .is-static .split__left { display: contents; }
+  .is-static .panel { position: relative; inset: auto; clip-path: none; padding: 32px 0 24px; }
+  .is-static .panel__content { position: relative; left: auto; right: auto; transform: none !important; padding: 0 16px; }
+  .is-static .seam { display: none; }
+  .is-static .panel--a { order: 1; }
+  .is-static .split__right { display: contents; }
+  .is-static .shot { position: relative; inset: auto; height: 62svh; margin: 0 8px; clip-path: none; }
+  .is-static .shot img { transform: none !important; }
+  .is-static .shot[data-shot="clinicians"] { order: 2; }
+  .is-static .panel--b { order: 3; }
+  .is-static .shot[data-shot="facilities"] { order: 4; }
+  .is-static .end__row { flex-direction: column; gap: 28px; min-height: 0; padding: 40px 16px 48px; }
+  .is-static .end__title { width: auto; margin: 0; font-size: clamp(44px, 12vw, 72px); }
+  .end__ctas { flex-direction: column; }
+  .end__cell { flex: none; height: 64px; }
+  .end__cell + .end__cell { border-left: 0; border-top: 1px solid var(--c3-rule); }
+  .footer { flex-wrap: wrap; height: auto; }
+  .footer > .cell--link, .footer > .cell--spacer { display: none; }
+}
+/* reduced motion on a desktop: the boards held still, both split panels open */
+@media (min-width: 821px) {
+  .is-static .split { height: auto; }
+  .is-static .split__stage { position: relative; height: auto; }
+  .is-static .split__left { display: flex; flex-direction: column; }
+  .is-static .panel { position: relative; inset: auto; clip-path: none; min-height: 50vh; display: flex; align-items: center; }
+  .is-static .panel__content { position: relative; left: auto; right: auto; transform: none !important; padding: 24px; }
+  .is-static .seam { display: none; }
+  .is-static .split__right { display: flex; flex-direction: column; gap: 8px; padding: 8px; }
+  .is-static .shot { position: relative; inset: auto; height: calc(50vh - 12px); clip-path: none; }
+  .is-static .shot img { transform: none !important; }
+}

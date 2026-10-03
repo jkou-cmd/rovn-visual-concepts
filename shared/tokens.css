@@ -1,0 +1,50 @@
+/* Rōvn prototype tokens
+   Values extracted from the Paper storyboards (see _build/design-extraction-c1.md).
+   Amber added per the 2026-10-02 decision: mark, primary CTA, focus, progress. */
+
+@font-face { font-family: "Erode"; src: url("fonts/Erode-Light.woff2") format("woff2"); font-weight: 300; font-style: normal; font-display: swap; }
+@font-face { font-family: "Erode"; src: url("fonts/Erode-Regular.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: swap; }
+@font-face { font-family: "Erode"; src: url("fonts/Erode-Medium.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: swap; }
+@font-face { font-family: "Erode"; src: url("fonts/Erode-Semibold.woff2") format("woff2"); font-weight: 600; font-style: normal; font-display: swap; }
+
+:root {
+  /* color */
+  --paper: #F8F4EC;
+  --paper-25: #F8F4EC40;
+  --ink: #1B1814;
+  --ink-68: #1B1814AD;
+  --ink-40: #1B181466;
+  --ink-12: #1B18141F;
+  --night: #0F0F0F;
+  --frame: #2A2723;
+  --white-90: #FFFFFFE6;
+  --amber: #EB9431;
+  --amber-hover: #F0A04A;
+
+  /* type */
+  --font-display: "Erode", "Iowan Old Style", Georgia, serif;
+  --font-text: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", system-ui, sans-serif;
+  --text-body: 16px;
+  --text-heading: 24px; --text-display: 32px;
+  --leading-tight: 100%;
+  --tracking-display: -0.035em;
+
+  /* space */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+
+  /* shape */
+  --radius-frame: 14px;
+  --radius-card: 24px;
+  --radius-lg: 16px;
+  --radius-pill: 999px;
+
+  /* motion */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-quick: 240ms;
+  --dur-base: 420ms;
+}

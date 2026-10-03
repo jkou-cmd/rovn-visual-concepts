@@ -1,0 +1,156 @@
+/* Concept 2 · Doors
+   Storyboards: 22KS-0 (headline + two doors) → 22ML-0 (a door opens) → 22GL-0 (the statement among floating photos)
+   Values from _build/design-extraction-c2.md. Board colours are display-p3; sRGB fallbacks first. */
+
+.c2 {
+  --c2-paper: #F8F4EB; --c2-paper: color(display-p3 0.973 0.958 0.922);
+  --c2-ink: #1B1814; --c2-ink: color(display-p3 0.104 0.095 0.080);
+  --c2-stone: #EBE6DC; --c2-stone: color(display-p3 0.919 0.903 0.869);
+  --c2-night: #0F0F0F; --c2-night: color(display-p3 0.059 0.059 0.059);
+  --dpx: min(100vw / 1440, 100vh / 893);
+  background: var(--c2-paper);
+  color: var(--c2-ink);
+}
+
+/* ---------- nav: full bar (22KS-0) → centred pill (22GL-0) ---------- */
+.nav { position: fixed; inset: 0 0 auto 0; z-index: 50; display: flex; justify-content: center; pointer-events: none; }
+.nav__fade { /* the pill state's paper fade behind the nav (22GL-0) */
+  position: absolute; inset: 0 0 auto 0; height: 88px; opacity: 0; pointer-events: none;
+  background: linear-gradient(180deg, var(--c2-paper) 0%, rgba(248, 244, 235, 0) 100%);
+}
+.nav__inner {
+  pointer-events: auto; position: relative;
+  display: flex; align-items: center; justify-content: space-between;
+  width: 100%; padding: 16px; border-radius: 999px; background-color: rgba(255, 255, 255, 0);
+}
+.nav__logo { flex: 1 1 0; gap: 9px; padding-inline: 16px; color: var(--c2-ink); }
+.nav__logo .logo__mark { width: 26px; height: 25px; }
+.nav__logo .logo__word { width: 65px; height: 23px; }
+.nav__links {
+  position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+  display: flex; gap: 28px;
+}
+.nav__links a { display: block; font-size: 15px; line-height: 20px; color: #1B1814; }
+.nav__actions { position: relative; flex: 1 1 0; display: flex; justify-content: flex-end; align-items: center; gap: 16px; }
+.nav__links, .nav__actions { --glider: rgba(27, 24, 20, 0.06); }
+/* Contact is plain text on the boards; its hover pill needs room, so the padding is offset by margin */
+.nav__contact { height: 40px; padding-inline: 12px; margin-inline: -12px; color: #1B1814; background: none; }
+
+/* ---------- buttons on the boards: 40px arrow chip ---------- */
+.btn--chip-lg .chip { width: 40px; height: 40px; }
+.c2 .btn--ink { background: var(--c2-night); }
+
+/* ---------- hero (22KS-0) ---------- */
+.hero { position: relative; display: flex; flex-direction: column; height: 100vh; min-height: 640px; padding-top: 80px; }
+.hero__title {
+  align-self: center; width: min(1024px, 92vw); text-align: center;
+  padding: calc(64 * var(--dpx)) 0 calc(32 * var(--dpx));
+  font-size: clamp(56px, calc(80 * var(--dpx)), 104px); letter-spacing: -0.06em; line-height: 100%; color: var(--c2-ink);
+}
+.hero__title .l1 { font-weight: 300; }
+.hero__title .l2 { font-weight: 500; }
+.line { display: block; }
+
+/* ---------- doors (22KS-0 → 22ML-0) ---------- */
+.doors { flex: 1 1 auto; min-height: 0; display: flex; gap: 8px; padding: 8px; }
+.door {
+  position: relative; flex: 1 1 0; min-width: 0; overflow: hidden; isolation: isolate;
+  border-radius: 24px; background: #2A2723; cursor: pointer;
+  -webkit-mask-image: -webkit-radial-gradient(white, black);
+}
+.door__media { position: absolute; inset: 0; }
+.door__img, .door__video { position: absolute; inset: 0; width: 100%; height: 100%; max-width: none; object-fit: cover; }
+.door__video { opacity: 0; }
+.door__shade { position: absolute; inset: 0; pointer-events: none; background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.66) 100%); }
+.door__content {
+  position: absolute; left: 32px; right: 32px; bottom: 32px; z-index: 2;
+  display: flex; justify-content: space-between; align-items: flex-end; gap: 24px;
+}
+.door__heads { display: flex; flex-direction: column; gap: 8px; }
+.door__label { font-family: var(--font-display); font-size: 24px; line-height: 100%; color: #F8F4EC; }
+.door__title { font-family: var(--font-display); font-weight: 500; font-size: clamp(28px, calc(32 * var(--dpx)), 40px); line-height: 100%; letter-spacing: -0.035em; color: #F8F4EC; }
+.door__more { height: 0; overflow: hidden; } /* opens to its height + the 24px gap on the board (motion: c2.js) */
+.door__body { width: 271px; padding-top: 24px; font-size: var(--text-body); line-height: 125%; color: rgba(248, 244, 236, 0.68); }
+.btn--round { width: 40px; height: 40px; padding: 0; flex-shrink: 0; background: #F8F4EC; color: #000; }
+.door__go { opacity: 0; visibility: hidden; }
+.btn--round > .btn__glow { mix-blend-mode: multiply; }
+
+/* ---------- gallery (22GL-0) ---------- */
+.gallery { position: relative; height: 260vh; }
+.gallery__stage { position: sticky; top: 0; height: 100vh; padding: 8px; }
+.gallery__frame {
+  position: relative; height: 100%; overflow: hidden; isolation: isolate;
+  display: grid; place-items: center;
+  border-radius: 24px; background: var(--c2-stone);
+  perspective: 1100px;
+  -webkit-mask-image: -webkit-radial-gradient(white, black);
+}
+.statement {
+  position: relative; z-index: 2; width: min(1024px, 92vw); text-align: center;
+  padding: calc(64 * var(--dpx)) 0 calc(32 * var(--dpx));
+  font-size: clamp(52px, calc(72 * var(--dpx)), 94px); letter-spacing: -0.06em; line-height: 100%; color: var(--c2-ink);
+}
+.statement .l1 { font-weight: 300; }
+.statement .l2 { font-weight: 500; }
+/* photos keep the board's composition: position as a share of the 1424×877 frame, size in design px */
+.float {
+  position: absolute; z-index: 1; left: calc(var(--x) / 1424 * 100%); top: calc(var(--y) / 877 * 100%);
+  width: calc(var(--w) * var(--dpx)); height: calc(var(--h) * var(--dpx));
+  will-change: transform, filter, opacity;
+}
+.float__inner { position: absolute; inset: 0; border-radius: 24px; overflow: hidden; background: #2A2723; -webkit-mask-image: -webkit-radial-gradient(white, black); }
+.float__inner img { position: absolute; inset: 0; width: 100%; height: 100%; max-width: none; object-fit: cover; }
+
+/* ---------- end cap: the two ways in, on ink ---------- */
+.close { position: relative; padding: 0 8px 8px; }
+.close__frame {
+  position: relative; min-height: calc(100vh - 8px); border-radius: 24px; background: var(--c2-night); color: #F8F4EC;
+  display: flex; flex-direction: column; gap: 96px;
+  padding: calc(96 * var(--dpx)) 32px 32px;
+}
+.close__cols { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-block: auto; }
+.close__col { display: flex; flex-direction: column; align-items: flex-start; padding-inline: 32px; }
+.close__label { font-family: var(--font-display); font-size: 24px; line-height: 100%; color: rgba(248, 244, 236, 0.68); }
+.close__title { margin-top: 12px; font-family: var(--font-display); font-weight: 500; font-size: clamp(44px, calc(64 * var(--dpx)), 84px); line-height: 100%; letter-spacing: -0.035em; }
+.close__body { margin-top: 20px; max-width: 300px; font-size: var(--text-body); line-height: 125%; color: rgba(248, 244, 236, 0.68); }
+.close__cta { margin-top: 36px; }
+.footer { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 0 32px 12px; }
+.footer__logo { color: #F8F4EC; }
+.footer__links { position: relative; display: flex; gap: 28px; font-size: 14px; line-height: 20px; color: rgba(248, 244, 236, 0.86); --glider: rgba(248, 244, 236, 0.1); }
+.footer__links a { display: block; }
+.footer__legal { font-size: 13px; line-height: 18px; color: rgba(248, 244, 236, 0.5); }
+
+/* ---------- static flow ---------- */
+/* phones and small tablets: everything stacks */
+@media (max-width: 820px) {
+  .is-static .hero { height: auto; min-height: 0; padding-top: 72px; }
+  .is-static .hero__title { font-size: clamp(40px, 10vw, 80px); padding: 56px 0 32px; }
+  .is-static .doors { flex-direction: column; }
+  .is-static .door { flex: none; height: 72svh; min-height: 460px; cursor: default; }
+  .is-static .door__body { width: auto; max-width: 300px; }
+  .is-static .gallery { height: auto; }
+  .is-static .gallery__stage { position: relative; height: auto; }
+  .is-static .gallery__frame { grid-template-columns: 1fr 1fr; place-items: stretch; gap: 12px; padding: 12px; perspective: none; }
+  .is-static .statement { grid-column: 1 / -1; order: -1; width: auto; padding: 72px 8px 48px; font-size: clamp(36px, 9vw, 72px); }
+  .is-static .float { position: relative; left: auto; top: auto; width: 100%; height: auto; aspect-ratio: 3 / 4; }
+  .is-static .float[data-float="b"], .is-static .float[data-float="c"] { aspect-ratio: 4 / 3; grid-column: 1 / -1; }
+  .is-static .close__cols { grid-template-columns: 1fr; gap: 72px; }
+  .is-static .close__frame { min-height: 0; padding-top: 80px; }
+  .is-static .nav__links { display: none; }
+}
+/* every static layout: doors show their line and arrow, since nothing opens them */
+.is-static .door__more { height: auto; }
+.is-static .door__go { opacity: 1; visibility: visible; }
+/* reduced motion on a desktop: the boards' compositions, held still */
+@media (min-width: 821px) {
+  .is-static .gallery { height: auto; }
+  .is-static .gallery__stage { position: relative; }
+}
+@media (max-width: 520px) {
+  .nav__contact { display: none; }
+  .nav__inner { padding: 12px; }
+  .nav__logo { padding-inline: 8px; }
+  .footer { flex-direction: column; align-items: flex-start; }
+  .footer__links { flex-wrap: wrap; gap: 12px 20px; }
+  .close__col { padding-inline: 8px; }
+}
