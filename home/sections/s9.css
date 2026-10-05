@@ -49,14 +49,6 @@
 .band__mark { position: relative; display: flex; align-items: flex-end; gap: 94.47em; flex-shrink: 0; color: var(--P); }
 .band__m { width: 341.18em; height: 342.45em; flex-shrink: 0; }
 .band__w { width: 936.36em; height: 328.49em; flex-shrink: 0; }
-/* amber light: a blurred amber copy of the wordmark under the paper letters, added onto the photo as light
-   and shown only inside a soft band that sweeps across once, so a glow travels along the letters.
-   (An amber fill on the letters themselves just sinks into the amber field.) The padding leaves the
-   blur room inside the mask. */
-.band__glow { --glint: -0.6; position: absolute; left: 50%; bottom: calc(-60 * var(--s)); padding: 60em; margin-left: -746em; color: rgb(200, 125, 35); pointer-events: none;
-  filter: blur(calc(26 * var(--s))); mix-blend-mode: screen; mix-blend-mode: plus-lighter; /* additive light; screen where unsupported */
-  -webkit-mask-image: linear-gradient(105deg, transparent calc((var(--glint) - 0.3) * 100%), #000 calc(var(--glint) * 100%), transparent calc((var(--glint) + 0.3) * 100%));
-          mask-image: linear-gradient(105deg, transparent calc((var(--glint) - 0.3) * 100%), #000 calc(var(--glint) * 100%), transparent calc((var(--glint) + 0.3) * 100%)); }
 /* Paper: the band's lower half fades into deeper amber, over the wordmark on desktop */
 .band__fade { position: absolute; left: 0; right: 0; bottom: 0; height: 634em; pointer-events: none;
   background-image: linear-gradient(180deg, rgba(240, 160, 64, 0) 56.57%, rgb(226, 125, 30) 100%);
@@ -81,7 +73,6 @@
   .band__mark { z-index: 1; gap: 25.2em; }
   .band__m { width: 91.01em; height: 91.35em; }
   .band__w { width: 249.79em; height: 87.63em; }
-  .band__glow { z-index: 1; bottom: calc(-4 * var(--s)); padding: 20em; margin-left: -203em; filter: blur(calc(9 * var(--s))); }
   .band__fade { height: 100%; }
 }
 

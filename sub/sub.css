@@ -56,6 +56,10 @@ body.sub { background: var(--P); color: var(--K); font-size: max(13px, 16rem); o
 .nav__sheet a { padding: 12px 16px; font-family: var(--serif); font-size: 26px; line-height: 1.1; letter-spacing: -0.03em; color: #fff; }
 .nav__sheet[hidden] { display: none; }
 
+/* ================================================================ rhythm: modules sit 140 apart (as home's Lab, s8);
+   the close follows the last module directly, like home */
+.sub main > section + section:not(.close) { margin-top: 140rem; }
+
 /* ================================================================ module · strip opener */
 .opener { display: flex; flex-direction: column; height: calc(max(640rem, min(100svh, 1100rem)) - max(44px, 48rem)); min-height: 0; }
 .opener__strip { flex: 1; min-height: 0; padding: 8rem 8rem 0; display: flex; }
@@ -184,6 +188,7 @@ body.sub { background: var(--P); color: var(--K); font-size: max(13px, 16rem); o
 
 /* ================================================================ phone (390 frames) */
 @media (max-width: 767px) {
+  .sub main > section + section:not(.close) { margin-top: 88rem; }
 
   .opener { height: auto; }
   .opener__strip { flex: none; height: 360rem; }

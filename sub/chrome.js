@@ -90,7 +90,6 @@
       </div>
       <div class="band" aria-hidden="true">
         <span class="band__photo"><span class="band__img" style="background-image:url(home/media/amber-mountains.jpg)"></span><span class="band__shade"></span></span>
-        <span class="band__mark band__glow">${mark}</span>
         <span class="band__mark">${mark}</span>
         <span class="band__fade"></span>
       </div>

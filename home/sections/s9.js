@@ -6,8 +6,8 @@
    Footer: the brand block and the link columns rise; the links share one glider (R.glider, pill).
    Band: a curtain reveal (INVENTORY §15). The band is sticky to the bottom of the screen behind the
    ink sheet (CSS), so the sheet scrolls up off it. As it uncovers, the band comes out of the sheet's
-   shadow and its photo settles; once the wordmark is mostly uncovered, amber light sweeps it once.
-   The light is never left resting on it. */
+   shadow, its photo settles and the wordmark rises out of the bottom edge into place.
+   (2026-10-05: the amber light sweep was cut, Jerry found it cheesy.) */
 (function () {
   // listeners from the last init; removed whenever the breakpoint (and so the layout) changes
   const offs = [];
@@ -84,15 +84,12 @@
     H.riseOnEnter([$('.foot__logo', foot), $('.foot__tag', foot), $('.foot__copy', foot), ...$$('.foot__col', foot)], foot, 'top 92%', 0.1);
     if (!links.dataset.glider) { links.dataset.glider = '1'; R.glider(links, $$('.foot__link', links), { kind: 'pill', padX: 12, padY: 6 }); }
 
-    /* ---------------- band: out of the sheet's shadow while it uncovers, then one sweep of amber light */
+    /* ---------------- band: out of the sheet's shadow while it uncovers; the wordmark rises into place */
     const reveal = () => ({ trigger: sheet, start: 'bottom bottom', end: () => 'bottom ' + (innerHeight - band.offsetHeight) + 'px', scrub: true, invalidateOnRefresh: true });
     gsap.fromTo($('.band__shade', band), { opacity: 0.5 }, { opacity: 0, ease: 'none', scrollTrigger: reveal() });
     gsap.fromTo($('.band__img', band), { scale: 1.08 }, { scale: 1, ease: 'none', scrollTrigger: reveal() });
-    const glow = $('.band__glow', band);
-    ST.create({
-      trigger: sheet, start: () => 'bottom ' + (innerHeight - band.offsetHeight * 0.6) + 'px',
-      onEnter: () => gsap.fromTo(glow, { '--glint': -0.6 }, { '--glint': 1.6, duration: 2.4, ease: 'power1.inOut', overwrite: true }),
-    });
+    // the wordmark rises out of the band's bottom edge as it is uncovered, and settles; no light on it
+    gsap.fromTo($('.band__mark', band), { yPercent: 24 }, { yPercent: 0, ease: 'none', scrollTrigger: reveal() });
   }
 
   (window.RovnHomeSections = window.RovnHomeSections || []).push({
