@@ -68,6 +68,7 @@
     const cards = $$('.fly > .card', stack), n = cards.length;
     const ys = cards.map((c) => gsap.quickTo(c, 'y', { duration: 0.55, ease: 'power3' }));
     stack.addEventListener('pointermove', (e) => {
+      if (stack.dataset.busy) { ys.forEach((to) => to(0)); return; }
       const r = stack.getBoundingClientRect(), step = 38 * K();
       const at = Math.min(n - 1, Math.max(0, (e.clientY - r.top) / step - 0.5));
       ys.forEach((to, i) => to(-Math.max(0, 1 - Math.abs(i - at) / 2.2) * 10 * K() - (i < at ? 3 * K() : 0)));
@@ -75,38 +76,63 @@
     stack.addEventListener('pointerleave', () => ys.forEach((to) => to(0)));
   }
 
-  // Door tiles: the photo leans in, the arrow slides through its chip.
-  function door(el) {
-    if (!R.fine || R.reduce) return;
-    const img = $('.door__img', el), shade = $('.door__shade', el), arrow = $('.door__chip svg', el);
-    const inner = document.createElement('span'); inner.className = 'door__zoom';
-    R.hover(el, () => {
-      gsap.to(img, { scale: 1.045, duration: 1.4, ease: 'expo.out', overwrite: 'auto' });
-      gsap.to(shade, { opacity: 0.82, duration: 0.9, ease: 'power2.out' });
-      gsap.timeline().to(arrow, { x: 22 * K(), duration: 0.22, ease: 'power2.in' }).set(arrow, { x: -22 * K() }).to(arrow, { x: 0, duration: 0.5, ease: 'expo.out' });
-    }, () => {
-      gsap.to(img, { scale: 1, duration: 1.2, ease: 'expo.out', overwrite: 'auto' });
-      gsap.to(shade, { opacity: 1, duration: 0.9, ease: 'power2.out' });
+  // Doors: the hovered door widens and its neighbour gives way (one row, one gesture); the arrow
+  // slides through its chip. The photos are cut wider than either door, so nothing rescales.
+  function doors(row) {
+    if (!R.fine || R.reduce || !row) return;
+    const all = $$('.door', row);
+    const grow = (el, g) => gsap.to(el, { flexGrow: g, duration: 0.9, ease: 'expo.out', overwrite: 'auto' });
+    all.forEach((d) => {
+      const arrow = $('.door__chip svg', d), shade = $('.door__shade', d);
+      d.addEventListener('pointerenter', () => {
+        all.forEach((o) => grow(o, o === d ? 1.6 : 1));
+        gsap.to(shade, { opacity: 0.8, duration: 0.6, ease: 'power2.out' });
+        gsap.timeline().to(arrow, { x: 22 * K(), duration: 0.18, ease: 'power2.in' }).set(arrow, { x: -22 * K() }).to(arrow, { x: 0, duration: 0.45, ease: 'expo.out' });
+      });
+      d.addEventListener('pointerleave', () => gsap.to(shade, { opacity: 1, duration: 0.6, ease: 'power2.out' }));
     });
+    row.addEventListener('pointerleave', () => all.forEach((o) => grow(o, 1)));
+  }
+
+  // A name pill grows out of its avatar, like a status island: the avatar lands, then the label opens.
+  function pillIn(pill) {
+    const av = $('.pill__av', pill), text = $('.pill__text', pill);
+    const closed = () => `inset(0px ${Math.max(0, pill.offsetWidth - av.offsetWidth - 8 * K())}px 0px 0px round 999px)`;
+    gsap.set(pill, { autoAlpha: 0, y: -14 * K(), clipPath: closed() });
+    gsap.set(av, { scale: 0.5 });
+    gsap.set(text, { autoAlpha: 0, x: -14 * K(), filter: 'blur(6px)' });
+    return gsap.timeline({ paused: true })
+      .to(pill, { autoAlpha: 1, y: 0, duration: 0.35, ease: 'power3.out' }, 0)
+      .to(av, { scale: 1, duration: 0.5, ease: 'back.out(2.2)' }, 0)
+      .fromTo(pill, { clipPath: closed }, { clipPath: 'inset(0px 0px 0px 0px round 999px)', duration: 0.75, ease: 'expo.out', immediateRender: false }, 0.2)
+      .to(text, { autoAlpha: 1, x: 0, filter: 'blur(0px)', duration: 0.6, ease: 'expo.out' }, 0.28);
+  }
+
+  // The wallet arrives closed (every card tucked behind the front one), rises, then fans its cards
+  // up into the cascade, front to back.
+  function walletIn(stack) {
+    const flys = $$('.fly', stack), n = flys.length;
+    gsap.set(stack, { autoAlpha: 0, y: 70 * K(), rotationX: 24, transformPerspective: 1400, transformOrigin: '50% 100%' });
+    gsap.set(flys, { y: (i) => (n - 1 - i) * 38 * K() });
+    return gsap.timeline({ paused: true })
+      .to(stack, { autoAlpha: 1, y: 0, rotationX: 0, duration: 1.0, ease: 'expo.out' }, 0)
+      .to(flys.slice().reverse(), { y: 0, duration: 1.1, ease: 'expo.out', stagger: 0.06 }, 0.3);
   }
 
   /* ---------------------------------------------------------------- nav */
   const nav = $('.nav');
   nav.style.setProperty('--glider', 'rgba(255, 255, 255, 0.08)');
   R.glider($('.nav__links'), $$('.nav__links .nav__cell'), { kind: 'cell' });
-  const glint = R.glint($('.nav__logo'));
-  (function ctaLight() {
-    const cta = $('.nav__cta'); if (!cta || !R.fine || R.reduce) return;
-    const band = document.createElement('span'); band.className = 'nav__band'; band.setAttribute('aria-hidden', 'true');
-    Object.assign(band.style, { position: 'absolute', inset: '0', zIndex: 0, pointerEvents: 'none',
-      background: 'linear-gradient(105deg, rgba(255,240,210,0) 30%, rgba(255,240,210,.6) 50%, rgba(255,240,210,0) 70%)' });
-    cta.prepend(band); gsap.set(band, { xPercent: -110 });
-    const arrow = $('.arrow', cta);
-    R.hover(cta, () => {
-      gsap.fromTo(band, { xPercent: -110 }, { xPercent: 110, duration: 0.9, ease: 'power2.inOut', overwrite: true });
-      gsap.to(arrow, { x: 3, duration: 0.45, ease: 'rovn.out' });
-    }, () => gsap.to(arrow, { x: 0, duration: 0.45, ease: 'rovn.out' }));
-  })();
+  // logo: an amber glint that starts the moment the pointer arrives (no slow ramp-in)
+  const glint = (function fastGlint(logo) {
+    if (!logo) return () => {};
+    const over = document.createElement('span'); over.className = 'logo__glint'; over.setAttribute('aria-hidden', 'true');
+    logo.querySelectorAll('svg').forEach((s) => over.append(s.cloneNode(true)));
+    logo.append(over);
+    const sweep = (dur = 0.55) => (R.reduce ? null : gsap.fromTo(over, { '--glint': -0.08 }, { '--glint': 1.3, duration: dur, ease: 'power3.out', overwrite: true }));
+    if (R.fine) logo.addEventListener('pointerenter', () => sweep(0.55));
+    return sweep;
+  })($('.nav__logo'));
   // hides on the way down, returns on the way up
   let navShown = true;
   ST.create({
@@ -164,15 +190,16 @@
   }
 
   /* ---------------------------------------------------------------- split headings */
-  const heroWords = R.words($$('.hero__title > span'));
-  const moveT1 = R.words($('.move__t1'));
-  const moveT2 = R.words($('.move__t2'));
-  const recordWords = R.words($('.record__title'));
+  const split = (els) => { const list = [].concat(els).filter(Boolean); return list.length ? R.words(list) : []; };
+  const heroWords = split($$('.hero__title > span'));
+  const moveT1 = split($('.move__t1'));
+  const moveT2 = split($('.move__t2'));
+  const recordWords = split($('.record__title'));
 
   /* ---------------------------------------------------------------- load-in (no preloader) */
   function loadIn() {
     const poster = $('.hero__poster'), sub = $('.hero__sub'), ctas = $('.hero__ctas');
-    if (R.reduce) { R.loaded(); return; }
+    if (R.reduce || !poster) { R.loaded(); gsap.set(nav, { yPercent: 0 }); return; }
     gsap.set(nav, { yPercent: -102 });
     gsap.set(heroWords, { ...R.standFrom });
     gsap.set([sub, ctas], { ...R.riseFrom });
@@ -187,7 +214,7 @@
       .to(heroWords, { ...R.standTo, duration: 1.3, ease: 'expo.out', stagger: 0.05 }, 0.55)
       .to([sub, ctas], { ...R.riseTo, duration: 1.1, ease: 'expo.out', stagger: 0.1 }, 0.95)
       .to(nav, { yPercent: 0, duration: 1.1, ease: 'expo.out' }, 1.15)
-      .add(() => glint && glint(), 1.6);
+      .add(() => glint(0.9), 1.6);
   }
 
   /* ---------------------------------------------------------------- headings that stand up on arrival */
@@ -202,14 +229,22 @@
     ST.create({ trigger, start, once: true, onEnter: () => R.rise(targets, { delay }) });
   }
 
+  /* ================================================================ helper kit for section modules */
+  const H = window.RovnHome = { gsap, ST, R, C, $, $$, K, px, MB, tilt, fan, pillIn, walletIn, standOnEnter, riseOnEnter, split };
+
   /* ================================================================ scenes */
   const mm = gsap.matchMedia();
+  // Sections 4–9 live in home/sections/sN.js and register themselves before this file runs:
+  //   (window.RovnHomeSections = window.RovnHomeSections || []).push({ name, init(desk, H), reduce(desk, H) })
+  // init runs inside this matchMedia context, so every tween and trigger it makes reverts on breakpoint change.
+  const sections = window.RovnHomeSections || [];
   mm.add({ desk: '(min-width: 768px)', phone: '(max-width: 767px)', reduce: '(prefers-reduced-motion: reduce)' }, (ctx) => {
     const { desk, reduce } = ctx.conditions;
-    if (reduce) return;
-    hero(desk);
-    move(desk);
-    record(desk);
+    if (reduce) { sections.forEach((s) => s.reduce && s.reduce(desk, H)); return; }
+    if ($('.hero__frame')) hero(desk);
+    if ($('.move__pin')) move(desk);
+    if ($('.record__pin')) record(desk);
+    sections.forEach((s) => { try { s.init(desk, H); } catch (err) { console.error('[home] section ' + s.name, err); } });
     return () => { /* matchMedia reverts every tween and trigger made in here */ };
   });
 
@@ -229,37 +264,45 @@
       .to(heroWords, { ...R.tipTo, duration: 0.3, stagger: 0.012, ease: 'power1.in' }, 0.24);
 
     // the doors rise out of the page and settle flat; their photos drift inside the frame
-    $$('.door').forEach((d, i) => {
+    $$('.door').forEach((d) => {
       gsap.fromTo(d, { y: px(desk ? 90 : 60), rotationX: desk ? 9 : 6, transformPerspective: 1600 },
         { y: 0, rotationX: 0, ease: 'none', scrollTrigger: { trigger: d, start: 'top bottom', end: desk ? 'top 58%' : 'top 70%', scrub: true, invalidateOnRefresh: true } });
-      gsap.fromTo($('.door__img', d), { yPercent: -7 }, { yPercent: 7, ease: 'none', scrollTrigger: { trigger: d, start: 'top bottom', end: 'bottom top', scrub: true } });
-      door(d);
+      const img = $('.door__img', d);
+      gsap.set(img, { xPercent: desk ? -50 : 0 });
+      gsap.fromTo(img, { yPercent: -7 }, { yPercent: 7, ease: 'none', scrollTrigger: { trigger: d, start: 'top bottom', end: 'bottom top', scrub: true } });
     });
+    if (desk) doors($('.doors'));
   }
 
   /* ---------------------------------------------------------------- 2 · one career move, seen from both sides */
   function move(desk) {
-    const sec = $('.move'), pin = $('.move__pin'), row = $('.move__row');
+    const pin = $('.move__pin'), row = $('.move__row');
     const rn = $('.panel--renee'), qs = $('.panel--qs');
-    const qsPill = $('.pill', qs), qsImg = $('.panel__img', qs), rnImg = $('.panel__img', rn);
-    const qsFlys = $$('.stack .fly', qs);
-    const rnFly = Object.fromEntries($$('.stack .fly', rn).map((f) => [f.dataset.key, f]));
+    const rnPill = $('.pill', rn), qsPill = $('.pill', qs), qsImg = $('.panel__img', qs), rnImg = $('.panel__img', rn);
+    const rnStack = $('.stack', rn), rnFlys = $$('.fly', rnStack), qsFlys = $$('.stack .fly', qs);
+    const rnFly = Object.fromEntries(rnFlys.map((f) => [f.dataset.key, f]));
+    const rnKeys = rnFlys.map((f) => f.dataset.key);
+    const t1 = $('.move__t1'), eyebrow = $('.move__eyebrow'), status = $('.move__status');
     const subLines = $$('.move__sub .ln');
+    const rel = (el) => { let x = 0, y = 0, n = el; while (n && n !== pin) { x += n.offsetLeft; y += n.offsetTop; n = n.offsetParent; } return { x, y }; };
 
-    standOnEnter(moveT1, sec, 'top 70%');
+    standOnEnter(moveT1, pin, 'top 78%');
     gsap.set(moveT2, { ...R.standFrom });
     gsap.set(subLines, { ...R.riseFrom });
-    fan($('.stack', rn));
-    // the cards stand up from the panel, back to front, like the headings do
-    const rnCards = $$('.stack .fly > .card', rn);
-    gsap.set(rnCards, { rotationX: 50, autoAlpha: 0, y: px(30), transformPerspective: 1000 });
-    ST.create({ trigger: $('.stack', rn), start: 'top 88%', once: true,
-      onEnter: () => gsap.to(rnCards, { rotationX: 0, autoAlpha: 1, y: 0, duration: 1.1, ease: 'expo.out', stagger: 0.07, delay: 0.1 }) });
-    gsap.fromTo($('.pill', rn), { autoAlpha: 0, y: px(-12), filter: 'blur(8px)' }, { autoAlpha: 1, y: 0, filter: 'blur(0px)', duration: 0.9, ease: 'expo.out',
-      scrollTrigger: { trigger: rn, start: 'top 80%', once: true } });
+    fan(rnStack);
+
+    // Renée's pill and wallet arrive as the panel comes into view
+    const rp = pillIn(rnPill), rw = walletIn(rnStack);
+    ST.create({ trigger: rnPill, start: 'top 88%', once: true, onEnter: () => rp.play() });
+    ST.create({ trigger: rnStack, start: 'top 82%', once: true, onEnter: () => rw.play() });
+    const qp = pillIn(qsPill); qp.paused(false);
 
     // panels drift as the section arrives (the pin holds them afterwards)
-    gsap.fromTo([rnImg, qsImg], { yPercent: 6 }, { yPercent: 0, ease: 'none', scrollTrigger: { trigger: sec, start: 'top bottom', end: 'top top', scrub: true } });
+    gsap.fromTo([rnImg, qsImg], { yPercent: 6 }, { yPercent: 0, ease: 'none', scrollTrigger: { trigger: pin, start: 'top bottom', end: 'top top', scrub: true } });
+
+    // 2.1 keeps "One career move," down by its panels; it rises as the second line stands up under it
+    const drop = () => Math.max(0, rel(status).y - (rel(t1).y + t1.offsetHeight) - 34 * K());
+    const lead = desk ? [t1, eyebrow] : [t1];
 
     if (desk) {
       // where each copy starts: its twin in Renée's stack, measured in the 2.2 layout
@@ -272,49 +315,59 @@
         qs.style.flexBasis = prev;
       };
       measure(); ST.addEventListener('refreshInit', measure);
+      qsFlys.forEach((f) => MB(f, f.firstElementChild, { max: 4, gain: 0.12 }));
 
-      qsFlys.forEach((f) => { MB(f, f.firstElementChild, { max: 6, gain: 0.14 }); });
-
-      const tl = gsap.timeline({ defaults: { ease: 'none' }, scrollTrigger: { trigger: sec, start: 'top top', end: () => '+=' + innerHeight * 2.2, pin, scrub: 0.35, invalidateOnRefresh: true } });
+      const tl = gsap.timeline({ defaults: { ease: 'none' }, scrollTrigger: { trigger: pin, start: 'top top', end: () => '+=' + innerHeight * 2.5, pin, scrub: 0.35, invalidateOnRefresh: true,
+        onUpdate: (s) => { rnStack.dataset.busy = s.progress > 0.4 && s.progress < 0.97 ? '1' : ''; } } });
       tl.to({}, { duration: 0.08 })
-        // 2.1 → 2.2: Quarrystone's sliver opens into its half
+        // 2.1 → 2.2: Quarrystone's sliver opens into its half; the headline makes room for line two
         .fromTo(qs, { flexBasis: px(50) }, { flexBasis: half, duration: 0.4, ease: 'power2.inOut' }, 0.08)
         .fromTo(qsImg, { xPercent: 8, scale: 1.12 }, { xPercent: 0, scale: 1, duration: 0.4, ease: 'power2.out' }, 0.08)
-        .fromTo(qsPill, { autoAlpha: 0, y: px(-12), scale: 0.92, filter: 'blur(8px)' }, { autoAlpha: 1, y: 0, scale: 1, filter: 'blur(0px)', duration: 0.12, ease: 'power2.out' }, 0.38)
-        .fromTo(moveT2, { ...R.standFrom }, { ...R.standTo, duration: 0.18, stagger: 0.03, ease: 'power2.out' }, 0.2)
-        .fromTo(subLines, { ...R.riseFrom }, { ...R.riseTo, duration: 0.16, stagger: 0.05, ease: 'power2.out' }, 0.3);
-      // the copies peel off Renée's cards, lift, cross with an amber glow and land in order
-      qsFlys.forEach((f, i) => {
-        const k = f.dataset.key, t = 0.46 + i * 0.07;
-        tl.fromTo(f, { x: () => off[k].x, y: () => off[k].y, autoAlpha: 0, rotation: 0, rotationY: 0, scale: 1, '--glow': 0 },
-          { y: () => off[k].y - 46 * K(), autoAlpha: 1, rotation: -2.5, rotationY: -14, scale: 1.04, '--glow': 1, duration: 0.07, ease: 'power2.out' }, t)
-          .to(f, { x: 0, y: 0, rotation: 0, rotationY: 0, scale: 1, '--glow': 0, duration: 0.17, ease: 'power3.inOut' }, t + 0.07);
+        .fromTo(lead, { y: drop }, { y: 0, duration: 0.3, ease: 'power2.inOut' }, 0.14)
+        .fromTo(moveT2, { ...R.standFrom }, { ...R.standTo, duration: 0.18, stagger: 0.03, ease: 'power2.out' }, 0.24)
+        .fromTo(subLines, { ...R.riseFrom }, { ...R.riseTo, duration: 0.16, stagger: 0.05, ease: 'power2.out' }, 0.31)
+        .add(qp.timeScale(qp.duration() / 0.13), 0.36);
+
+      // The copies: each one slides sideways out of Renée's wallet toward Quarrystone, hidden where the
+      // cards in front still cover it, then arcs over and drops into Quarrystone's stack, back to front.
+      const out = () => 380 * K(), hover = () => 64 * K();
+      const isFront = (k) => rnKeys.indexOf(k) === rnKeys.length - 1;
+      qsFlys.forEach((f, j) => {
+        const k = f.dataset.key, t = 0.45 + j * 0.085;
+        gsap.set(f, { autoAlpha: 0 });
+        tl.set(f, { autoAlpha: 1 }, t)
+          .fromTo(f, { x: () => off[k].x, y: () => off[k].y, '--d': isFront(k) ? '4000px' : '0px', '--lift': 0, scale: 1, rotation: 0 },
+            { x: () => off[k].x + out(), '--d': () => (isFront(k) ? 4000 : out()) + 'px', duration: 0.07, ease: 'power1.in' }, t)
+          .set(f, { '--d': '4000px' }, t + 0.07)
+          .to(f, { x: 0, y: () => -hover(), '--lift': 1, scale: 1.03, rotation: -1.5, duration: 0.09, ease: 'power2.out' }, t + 0.07)
+          .to(f, { y: 0, '--lift': 0, scale: 1, rotation: 0, duration: 0.06, ease: 'power3.out' }, t + 0.16);
       });
-      tl.to({}, { duration: 0.12 });
+      tl.to({}, { duration: 0.08 });
     } else {
       // phone: one side per beat. Quarrystone's panel rises from its 20px peek while Renée's
-      // collapses into a 20px sliver at the top; the copies cascade into place.
+      // collapses into a 20px sliver at the top; the copies are dealt onto the new stack in order.
       const qsCards = $$('.stack .fly > .card', qs);
       gsap.set(qs, { yPercent: 0, y: () => qs.offsetHeight - 20 * K() });
-      const tl = gsap.timeline({ defaults: { ease: 'none' }, scrollTrigger: { trigger: sec, start: 'top top', end: () => '+=' + innerHeight * 1.8, pin, scrub: 0.35, invalidateOnRefresh: true } });
+      const tl = gsap.timeline({ defaults: { ease: 'none' }, scrollTrigger: { trigger: pin, start: 'top top', end: () => '+=' + innerHeight * 1.9, pin, scrub: 0.35, invalidateOnRefresh: true } });
       tl.to({}, { duration: 0.08 })
         .fromTo(qs, { y: () => qs.offsetHeight - 20 * K() }, { y: 0, duration: 0.4, ease: 'power2.inOut' }, 0.08)
         .fromTo(rn, { height: () => row.offsetHeight }, { height: px(20), duration: 0.4, ease: 'power2.inOut' }, 0.08)
-        .fromTo([$('.pill', rn), $('.stack', rn)], { autoAlpha: 1, scale: 1, filter: 'blur(0px)' }, { autoAlpha: 0, scale: 0.94, filter: 'blur(6px)', duration: 0.22 }, 0.1)
+        .fromTo([rnPill, rnStack], { autoAlpha: 1, scale: 1, filter: 'blur(0px)' }, { autoAlpha: 0, scale: 0.94, filter: 'blur(6px)', duration: 0.22, immediateRender: false }, 0.1)
         .fromTo(qsImg, { yPercent: 10 }, { yPercent: 0, duration: 0.4, ease: 'power2.out' }, 0.08)
-        .fromTo(moveT2, { ...R.standFrom }, { ...R.standTo, duration: 0.16, stagger: 0.03, ease: 'power2.out' }, 0.22)
-        .fromTo(subLines, { ...R.riseFrom }, { ...R.riseTo, duration: 0.16, stagger: 0.04, ease: 'power2.out' }, 0.3)
-        .fromTo(qsPill, { autoAlpha: 0, y: px(-10), filter: 'blur(8px)' }, { autoAlpha: 1, y: 0, filter: 'blur(0px)', duration: 0.12, ease: 'power2.out' }, 0.42)
-        .fromTo(qsCards, { autoAlpha: 0, y: px(70), rotationX: -18, filter: 'blur(8px)' },
-          { autoAlpha: 1, y: 0, rotationX: 0, filter: 'blur(0px)', duration: 0.2, stagger: 0.06, ease: 'power3.out' }, 0.48)
-        .to({}, { duration: 0.14 });
+        .fromTo(lead, { y: drop }, { y: 0, duration: 0.3, ease: 'power2.inOut' }, 0.14)
+        .fromTo(moveT2, { ...R.standFrom }, { ...R.standTo, duration: 0.16, stagger: 0.03, ease: 'power2.out' }, 0.24)
+        .fromTo(subLines, { ...R.riseFrom }, { ...R.riseTo, duration: 0.16, stagger: 0.04, ease: 'power2.out' }, 0.31)
+        .add(qp.timeScale(qp.duration() / 0.13), 0.4)
+        // opaque copies slide down out from under Renée's sliver and land front to back
+        .fromTo(qsCards, { y: () => -qs.offsetHeight }, { y: 0, duration: 0.16, stagger: 0.06, ease: 'power3.out' }, 0.5)
+        .to({}, { duration: 0.12 });
     }
   }
 
   /* ---------------------------------------------------------------- 3 · a record that does more */
   function record(desk) {
     const sec = $('.record'), pin = $('.record__pin'), stage = $('.record__stage');
-    const wrap = $('.record__logwrap'), log = $('.log', wrap), rows = $$('.log__row', log), head = $('.log__head', log);
+    const wrap = $('.record__logwrap'), log = $('.log', wrap);
     const holder = $('.record__card'), card = $('.card', holder);
     const sub = $$('.record__sub .ln');
 
@@ -327,27 +380,21 @@
     // the dark sheet arrives inset in the 8px shell and opens to full bleed as it reaches the top
     if (desk) gsap.fromTo(pin, { '--ri': px(8)().toFixed(2) + 'px' }, { '--ri': '0px', ease: 'none', scrollTrigger: { trigger: sec, start: 'top bottom', end: 'top top', scrub: true, invalidateOnRefresh: true } });
 
-    gsap.set(rows, { autoAlpha: 0, y: px(14), filter: 'blur(6px)' });
-    gsap.set(head, { autoAlpha: 0 });
-    const rowsBox = $('.log__rows', log);
-    gsap.set(rowsBox, { autoAlpha: 0 });
+    // 3.1 → 3.2: the log slides out from under the card like a drawer. The card itself is the edge
+    // it emerges from, so nothing is cut; the column makes room as it opens.
     const tl = gsap.timeline({ defaults: { ease: 'none' }, scrollTrigger: { trigger: sec, start: 'top top', end: () => '+=' + innerHeight * 1.6, pin, scrub: 0.35, invalidateOnRefresh: true } });
     tl.to({}, { duration: 0.1 })
-      // 3.1 → 3.2: the log unfolds under the card; the card lifts with it, tipping toward you
-      .fromTo(wrap, { height: 0 }, { height: () => log.offsetHeight, duration: 0.4, ease: 'power2.inOut' }, 0.1)
-      .to(card, { rotationX: 9, duration: 0.2, ease: 'power1.out' }, 0.1)
-      .to(card, { rotationX: 0, duration: 0.25, ease: 'power2.out' }, 0.3);
-    if (desk) tl.fromTo(stage, { gap: px(32) }, { gap: px(48), duration: 0.4, ease: 'power2.inOut' }, 0.1);
-    // the drawer opens top-down and each entry settles as the edge passes it
-    tl.to(head, { autoAlpha: 1, duration: 0.1 }, 0.12)
-      .to(rowsBox, { autoAlpha: 1, duration: 0.12 }, 0.14)
-      .to(rows, { autoAlpha: 1, y: 0, filter: 'blur(0px)', duration: 0.16, stagger: 0.06, ease: 'power2.out' }, 0.2)
-      .to({}, { duration: 0.22 });
+      .fromTo(wrap, { height: 0 }, { height: () => log.offsetHeight, duration: 0.45, ease: 'power2.inOut' }, 0.1)
+      .fromTo(log, { y: () => -log.offsetHeight }, { y: 0, duration: 0.45, ease: 'power2.inOut' }, 0.1)
+      .to(card, { rotationX: 6, duration: 0.2, ease: 'power1.out' }, 0.1)
+      .to(card, { rotationX: 0, duration: 0.3, ease: 'power2.out' }, 0.3);
+    if (desk) tl.fromTo(stage, { gap: px(32) }, { gap: px(48), duration: 0.45, ease: 'power2.inOut' }, 0.1);
+    tl.to({}, { duration: 0.3 });
   }
 
   /* ---------------------------------------------------------------- go */
   R.progress();
-  R.glow($('.hero .pbtn'));
+  if ($('.hero .pbtn')) R.glow($('.hero .pbtn'));
   R.ready(() => {
     loadIn();
     mountStage();
