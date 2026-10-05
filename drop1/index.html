@@ -127,7 +127,8 @@
   --press-scale: 0.97;
 }
 @media (prefers-reduced-motion: reduce) {
-  :root { --dur-fast: 1ms; --dur-base: 1ms; --dur-slow: 1ms; }
+  :root { --dur-fast: 1ms; --dur-base: 1ms; --dur-slow: 1ms; --dur-spring: 1ms; }
+  *, *::before, *::after { transition-duration: 1ms !important; animation-duration: 1ms !important; animation-iteration-count: 1 !important; }
 }
 
 /* ------------------------------------------------------------------ page */
@@ -340,9 +341,9 @@ select.fl__input { padding-right: var(--space-10); cursor: pointer; background-i
 .submit[data-phase="done"] { min-width: 120px; }
 .submit .tick path { stroke-dasharray: 16; stroke-dashoffset: 16; animation: draw 320ms var(--ease-out) 80ms forwards; }
 @keyframes draw { to { stroke-dashoffset: 0; } }
-.submit::after { content: ""; position: absolute; inset: 0; border-radius: inherit; overflow: hidden; background: linear-gradient(100deg, transparent 35%, rgb(235 148 49 / 0.55) 50%, transparent 65%); transform: translateX(-120%); pointer-events: none; }
+.submit::after { content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; opacity: 0; background: linear-gradient(100deg, transparent 35%, rgb(235 148 49 / 0.55) 50%, transparent 65%) no-repeat; background-size: 250% 100%; background-position: 130% 0; }
 .submit[data-phase="done"]::after { animation: glint 900ms var(--ease-out) 120ms; }
-@keyframes glint { to { transform: translateX(120%); } }
+@keyframes glint { 0% { opacity: 1; background-position: 130% 0; } 85% { opacity: 1; } 100% { opacity: 0; background-position: -30% 0; } }
 .form-foot { display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); margin-top: var(--space-6); }
 .saved-note { font-size: var(--text-xs); color: var(--text-secondary); margin: 0; opacity: 0; transform: translateY(4px); transition: opacity var(--dur-base), transform var(--dur-base) var(--ease-out); }
 .saved-note.is-on { opacity: 1; transform: none; }
@@ -371,8 +372,8 @@ select.fl__input { padding-right: var(--space-10); cursor: pointer; background-i
 
 /* Loading: one soft light sweep crosses every bone together. */
 .screen-state[data-state="loading"] { --sweep: 0%; }
-.skel { border-radius: 6px; background-color: var(--ink-06); background-image: linear-gradient(100deg, transparent 30%, rgb(255 255 255 / 0.6) 50%, transparent 70%); background-size: 340px 100%; background-repeat: no-repeat; animation: sweep 1.7s var(--ease-in-out) infinite; }
-@keyframes sweep { from { background-position: -340px 0; } to { background-position: 340px 0; } }
+.skel { border-radius: 6px; background-color: var(--ink-06); background-image: linear-gradient(100deg, transparent 40%, rgb(255 255 255 / 0.6) 50%, transparent 60%); background-size: 200% 100%; background-repeat: no-repeat; animation: sweep 1.7s var(--ease-in-out) infinite; }
+@keyframes sweep { from { background-position: 100% 0; } to { background-position: -100% 0; } }
 .skel-rows { display: grid; gap: 0; margin: var(--space-8) calc(-1 * var(--space-8)) 0; }
 .skel-row { display: grid; grid-template-columns: 32px 1fr 72px; gap: var(--space-6); align-items: center; padding: var(--space-5) var(--space-8); }
 .skel-row + .skel-row { box-shadow: 0 -1px 0 var(--divider); }
@@ -430,7 +431,7 @@ footer { padding: var(--space-24) 0; color: var(--text-muted); font-size: var(--
   .matrix { grid-template-columns: 1fr; gap: var(--space-4); }
   .matrix > .h.col { display: none; }
   .matrix > .h.rowlab { grid-column: 1 / -1; font: 600 var(--text-sm)/1.3 var(--font-ui); color: var(--text-primary); margin-top: var(--space-4); }
-  .matrix > .h.rowlab:first-of-type { margin-top: 0; }
+  .matrix > .h.rowlab.is-first { margin-top: 0; }
   .matrix > .cell { display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); }
   .matrix > .cell::after { content: attr(data-l); font-size: var(--text-2xs); color: var(--text-muted); }
   .matrix > .cell:empty { display: none; }
@@ -469,7 +470,7 @@ footer { padding: var(--space-24) 0; color: var(--text-muted); font-size: var(--
 <main id="main" tabindex="-1">
   <div class="wrap hero">
     <h1>Shared defaults, drop one.</h1>
-    <p>Tokens, buttons, forms and the six screen states every Rōvn surface builds on. White surfaces, ink for structure and action, amber as light. Names map onto <code>packages/tokens</code> so product screens can consume them as they are.</p>
+    <p>Tokens, buttons, forms and the screen states every Rōvn surface builds on. White surfaces, ink for structure and action, amber as light. Names map onto <code>packages/tokens</code> so product screens can consume them as they are.</p>
   </div>
 
   <!-- ============================================================ COLOUR -->
@@ -706,7 +707,7 @@ footer { padding: var(--space-24) 0; color: var(--text-muted); font-size: var(--
   <section class="block" id="states">
     <div class="wrap">
       <h2>Screen states</h2>
-      <p class="lede">Every screen that reads data shows one of six states. Each one says what happened in plain words and offers an honest next step. Forbidden renders no data at all, not even a count. These are the shapes <code>ScreenState</code> takes in <code>packages/ui</code> (issue #749).</p>
+      <p class="lede">Every screen that reads data shows exactly one of these states: the six from #749 plus unavailable. Each one says what happened in plain words and offers an honest next step. Denied renders no data at all, not even a count. This is <code>ScreenState</code> from <code>@rovn/ui</code>, rendered here under <code>data-theme="rovn"</code>.</p>
 
       <div class="states">
         <article class="state-card">
@@ -734,7 +735,7 @@ footer { padding: var(--space-24) 0; color: var(--text-muted); font-size: var(--
         </article>
 
         <article class="state-card">
-          <div class="cap"><b>Ready</b><span>the data itself</span></div>
+          <div class="cap"><b>Success</b><span>the data itself</span></div>
           <div class="screen-state" data-state="ready">
             <a class="row" href="#states"><span class="avatar" aria-hidden="true">MR</span><b>Maria Reyes <span class="who">RN</span></b><span class="status status--positive">Current</span></a>
             <a class="row" href="#states"><span class="avatar" aria-hidden="true">DO</span><b>David Okafor <span class="who">CNA</span></b><span class="status status--attention">Expires in 21 days</span></a>
@@ -745,7 +746,7 @@ footer { padding: var(--space-24) 0; color: var(--text-muted); font-size: var(--
         </article>
 
         <article class="state-card">
-          <div class="cap"><b>Error</b><span>role="alert", retry</span></div>
+          <div class="cap"><b>Failure</b><span>role="alert", request id, retry</span></div>
           <div class="screen-state" data-state="error" role="alert">
             <h3 class="ss-title">We couldn't load your roster</h3>
             <p class="ss-body">The connection dropped while we were fetching it. Nothing was changed. Try again, and if it keeps happening, send us the reference below.</p>
@@ -755,11 +756,20 @@ footer { padding: var(--space-24) 0; color: var(--text-muted); font-size: var(--
         </article>
 
         <article class="state-card">
-          <div class="cap"><b>Forbidden</b><span>renders no data</span></div>
-          <div class="screen-state" data-state="forbidden">
+          <div class="cap"><b>Denied</b><span>names who grants access, renders no data</span></div>
+          <div class="screen-state" data-state="denied">
             <h3 class="ss-title">You don't have access to this roster</h3>
-            <p class="ss-body">Rosters are visible to people your organization's admin has added. Ask them for access, or switch to an organization you belong to.</p>
-            <div class="ss-actions"><button class="btn btn--primary btn--sm" type="button">Request access</button><button class="btn btn--quiet btn--sm" type="button">Switch organization</button></div>
+            <p class="ss-body">You need roster access for this facility. Your facility admin can give you access.</p>
+            <div class="ss-actions"><button class="btn btn--primary btn--sm" type="button">Request access</button></div>
+          </div>
+        </article>
+
+        <article class="state-card">
+          <div class="cap"><b>Recovery</b><span>the way to resume</span></div>
+          <div class="screen-state" data-state="recovery">
+            <h3 class="ss-title">Pick up where you left off</h3>
+            <p class="ss-body">Your import stopped at row 41 of 120. Nothing after it was saved.</p>
+            <div class="ss-actions"><button class="btn btn--primary btn--sm" type="button">Resume import</button></div>
           </div>
         </article>
 
@@ -775,18 +785,28 @@ footer { padding: var(--space-24) 0; color: var(--text-muted); font-size: var(--
 
       <h3>Contract</h3>
       <div class="tone" style="padding: var(--space-6)">
-<pre class="mono" style="margin:0; white-space: pre-wrap; font-size: var(--text-xs); line-height: 1.6">&lt;ScreenState
-  state="loading" | "empty" | "ready" | "error" | "forbidden" | "unavailable"
-  title="What happened, in plain words"
-  body="Why, and what is or isn't affected"
-  recovery={{ label: "Try again", onAction }}      // required for empty, error, forbidden, unavailable
-                                                   // primary when it fixes the state (Try again, Request access, Import staff)
-                                                   // secondary when it only leaves (Back to dashboard)
-  secondary={{ label: "Contact support", href }}   // optional
-  reference="7F3A-21C9"                            // error only
-&gt;
-  {children}                                       // rendered only when state="ready"
-&lt;/ScreenState&gt;</pre>
+<pre class="mono" style="margin:0; white-space: pre-wrap; font-size: var(--text-xs); line-height: 1.6">import { ScreenState, type ScreenStateModel } from '@rovn/ui';
+
+type ScreenStateModel&lt;T&gt; =
+  | { kind: 'success';     data: T }
+  | { kind: 'empty';       what: string; nextAction: ScreenAction }
+  | { kind: 'denied';      missing: string; grantor: string; request?: ScreenAction }
+  | { kind: 'loading';     label: string }                       // polite live region, no percentage
+  | { kind: 'failure';     requestId: string; retry: ScreenAction; detail?: string }
+  | { kind: 'recovery';    message: string; resume: ScreenAction }
+  | { kind: 'unavailable'; what: string; back?: ScreenAction };  // off here, not broken
+
+type ScreenAction = { label: string; onAction?: () =&gt; void; href?: string };
+
+&lt;div data-theme="rovn"&gt;
+  &lt;ScreenState state={model} title="this roster" dataOrigin="synthetic"&gt;
+    {(rows) =&gt; &lt;Roster rows={rows} /&gt;}                         // called only for success
+  &lt;/ScreenState&gt;
+&lt;/div&gt;
+
+// The action is primary when it fixes the state (retry, request, resume, import)
+// and secondary when it only leaves (Back to dashboard).
+// A view that forgets a kind fails the typecheck (assertNever).</pre>
       </div>
     </div>
   </section>
@@ -828,7 +848,7 @@ footer { padding: var(--space-24) 0; color: var(--text-muted); font-size: var(--
           <ul>
             <li>Loading sets <code>aria-busy</code> with a polite status message, so screen readers hear what's loading.</li>
             <li>Errors use <code>role="alert"</code>. Success uses <code>role="status"</code>.</li>
-            <li>Forbidden renders nothing from the protected data: no names, counts or totals.</li>
+            <li>Denied renders nothing from the protected data: no names, counts or totals.</li>
             <li>Every non-ready state has at least one action except loading.</li>
           </ul>
         </div>
@@ -887,7 +907,7 @@ document.addEventListener('click', async e => {
   const m = document.querySelector('.matrix'), cols = ['', 'Rest', 'Disabled', 'Busy', 'Small'];
   [...m.children].forEach((el, i) => {
     if (i < 5) { el.classList.add('col'); return; }
-    if ((i % 5) === 0) el.classList.add('rowlab');
+    if ((i % 5) === 0) el.classList.add('rowlab', ...(i === 5 ? ['is-first'] : []));
     else { el.classList.add('cell'); el.dataset.l = cols[i % 5]; }
   });
 })();
@@ -970,15 +990,20 @@ const setErr = (r, bad) => {
   } else {
     const box = document.getElementById('f-lic-msg');
     box.classList.toggle('msg--err', bad);
-    box.querySelector('p').innerHTML = (bad ? errIcon : '') + `<span>${bad ? r.msg : LIC_HELP}</span>`;
+    const ok = !bad && licOk(lic.value);
+    box.classList.toggle('msg--ok', ok);
+    box.querySelector('p').innerHTML = (bad ? errIcon : '') + `<span>${bad ? r.msg : ok ? `Looks right. We'll confirm it with the ${stateSel.value} board.` : LIC_HELP}</span>`;
   }
 };
 
 // License: uppercase as you type, strip spaces, and draw a check once it looks right.
 lic.addEventListener('input', () => {
-  const pos = lic.selectionStart;
+  const pos = lic.selectionStart ?? lic.value.length;
   const clean = lic.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
-  if (clean !== lic.value) { lic.value = clean; lic.setSelectionRange(pos, pos); }
+  if (clean !== lic.value) {
+    const caret = lic.value.slice(0, pos).toUpperCase().replace(/[^A-Z0-9]/g, '').length;
+    lic.value = clean; lic.setSelectionRange(caret, caret);
+  }
   const ok = licOk(clean);
   licWrap.classList.toggle('is-valid', ok);
   if (lic.getAttribute('aria-invalid') === 'true') { if (ok) setErr(rules[1], false); return; }

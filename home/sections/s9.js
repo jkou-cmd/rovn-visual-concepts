@@ -1,8 +1,8 @@
 /* Rōvn home · 9 · Close: two doors, the ink footer and the giant wordmark band.
    No pin. Doors: the photos drift inside their frames as the doors cross the screen (as section 1);
    once a door's copy is on screen its label and title stand up word by word and its paper pill
-   unrolls out of the arrow chip. Desktop hover (fine pointers): the door widens, its neighbour gives
-   way and the arrow slides through its chip (section 1's doors(), rebuilt here for .cdoor).
+   unrolls out of the arrow chip. Desktop hover (fine pointers): the doors keep their width; the hovered photo eases in
+   close and to full colour while the other door dims (see doorsHover).
    Footer: the brand block and the link columns rise; the links share one glider (R.glider, pill).
    Band: a curtain reveal (INVENTORY §15). The band is sticky to the bottom of the screen behind the
    ink sheet (CSS), so the sheet scrolls up off it. As it uncovers, the band comes out of the sheet's
@@ -36,24 +36,30 @@
       .set(btn, { clearProps: 'clipPath' });
   }
 
-  // Desktop hover: the hovered door widens and its neighbour gives way; the arrow slides through its chip.
+  // Desktop hover: the doors keep their width, so no text ever moves (2026-10-05: the widening made Jerry queasy).
+  // Instead the hovered door comes forward in light, not in position: its photo eases in close and to full
+  // colour, its shade lifts, and the arrow slides through its chip. The other door steps back: it dims and
+  // loses some colour.
   function doorsHover(row, H) {
     const { gsap, R, $, $$, K } = H;
     if (!R.fine) return;
     const all = $$('.cdoor', row);
-    const grow = (el, g) => gsap.to(el, { flexGrow: g, duration: 0.9, ease: 'expo.out', overwrite: 'auto' });
+    const look = (d, state) => {
+      const img = $('.cdoor__img', d), shade = $('.door__shade', d);
+      const v = { rest: [1, 'saturate(1) brightness(1)', 1], on: [1.045, 'saturate(1.08) brightness(1.04)', 0.72], off: [1, 'saturate(0.55) brightness(0.82)', 1] }[state];
+      gsap.to(img, { scale: v[0], filter: v[1], duration: state === 'on' ? 1.4 : 0.8, ease: 'expo.out', overwrite: 'auto' });
+      gsap.to(shade, { opacity: v[2], duration: 0.6, ease: 'power2.out', overwrite: 'auto' });
+    };
     all.forEach((d) => {
-      const arrow = $('.pbtn__chip svg', d), shade = $('.door__shade', d);
+      const arrow = $('.pbtn__chip svg', d);
       let slide = null;
       on(d, 'pointerenter', () => {
-        all.forEach((o) => grow(o, o === d ? 1.6 : 1));
-        gsap.to(shade, { opacity: 0.8, duration: 0.6, ease: 'power2.out', overwrite: 'auto' });
+        all.forEach((o) => look(o, o === d ? 'on' : 'off'));
         if (slide) slide.kill();
         slide = gsap.timeline().to(arrow, { x: 22 * K(), duration: 0.18, ease: 'power2.in' }).set(arrow, { x: -22 * K() }).to(arrow, { x: 0, duration: 0.45, ease: 'expo.out' });
       });
-      on(d, 'pointerleave', () => gsap.to(shade, { opacity: 1, duration: 0.6, ease: 'power2.out', overwrite: 'auto' }));
     });
-    on(row, 'pointerleave', () => all.forEach((o) => grow(o, 1)));
+    on(row, 'pointerleave', () => all.forEach((o) => look(o, 'rest')));
   }
 
   function init(desk, H) {
