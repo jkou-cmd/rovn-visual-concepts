@@ -1,9 +1,10 @@
 # Rōvn · Visual concept prototypes
 
-Four directions for the Rōvn landing page, built from the Paper storyboards and animated with GSAP and Lenis.
+The Rōvn home page in motion, plus four earlier directions, all built from the Paper storyboards and animated with GSAP and Lenis.
 
 **Live:** https://jkou-cmd.github.io/rovn-visual-concepts/
 
+- [Home](https://jkou-cmd.github.io/rovn-visual-concepts/home.html) (checkpoint 1: sections 1–3; [desktop tour video](https://jkou-cmd.github.io/rovn-visual-concepts/home/tour-desktop.mp4))
 - [Cover](https://jkou-cmd.github.io/rovn-visual-concepts/c1-cover)
 - [Doors](https://jkou-cmd.github.io/rovn-visual-concepts/c2-doors)
 - [Editorial](https://jkou-cmd.github.io/rovn-visual-concepts/c3-editorial)
@@ -25,6 +26,8 @@ Photos (Unsplash License unless noted) are graded warm. Brand text was retouched
 - Hallway by an incubator: Hush Naidoo Jade Photography, https://unsplash.com/photos/person-walking-on-hallway-in-blue-scrub-suit-near-incubator-ZCO_5Y29s8k
 - Clinician at a window: Лера :^, https://unsplash.com/photos/a-woman-stands-by-a-window-looking-outside--JSIJObcgqU
 - Two clinicians sharing a phone: Thirdman (Pexels License), https://www.pexels.com/photo/medical-professionals-looking-at-the-screen-of-the-cellphone-5327867/
+- Clinician in a lobby: Brooke Cagle, https://unsplash.com/photos/woman-sitting-in-front-of-brown-wooden-table-NoRsyXmHGpI
+- Amber mountains, green abstract and other atmospheric textures: Rōvn brand imagery from the Paper boards.
 
 Video (Pexels License) was cut into loops with the same grade and grain:
 
@@ -36,7 +39,11 @@ Video (Pexels License) was cut into loops with the same grade and grain:
 - A Lady Doctor Talking to Her Patient: Tima Miroshnichenko, https://www.pexels.com/video/a-lady-doctor-talking-to-her-patient-6011424/
 - Two Doctors Sharing a Smartphone: Thirdman, https://www.pexels.com/video/two-doctors-sharing-a-smartphone-5426206/
 
+The home page hero is a live WebGL scene ("Dreamy", recoloured amber) built with three.js:
+
+- 3D model: "a pink tulip." by kapeluskin, https://sketchfab.com/3d-models/a-pink-tulip-81b1e9be6b3543e99f6706182189da4d, licensed CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Recoloured and lit in the scene.
+
 Type and code:
 
 - Type: Erode by Indian Type Foundry, from Fontshare.
-- Code: GSAP by GreenSock (standard no-charge license) and Lenis by darkroom.engineering (MIT), both vendored in `shared/vendor`.
+- Code: GSAP by GreenSock (standard no-charge license), Lenis by darkroom.engineering (MIT) and three.js (MIT), all vendored in `shared/vendor`.

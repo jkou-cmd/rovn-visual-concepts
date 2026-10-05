@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Rōvn · Atmospheres</title>
+  <meta name="robots" content="noindex">
+  <link rel="icon" href="shared/favicon.svg" type="image/svg+xml">
+  <link rel="preload" href="shared/fonts/Erode-Light.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="stylesheet" href="shared/tokens.css">
+  <link rel="stylesheet" href="shared/base.css">
+  <script src="atmos/rovn-atmos.js" defer></script>
+  <style>
+    body { background: var(--ink); }
+    rovn-atmos { height: 100svh; }
+    .frame { height: 100%; display: flex; flex-direction: column; padding: 32px 40px 36px; }
+    .frame__nav { display: flex; align-items: center; justify-content: space-between; }
+    .frame__body { margin: auto 0; max-width: 980px; }
+    .frame--center .frame__body { margin: auto; text-align: center; }
+    .title { font-size: clamp(48px, 7.4vw, 112px); color: var(--ink); }
+    .title--paper { color: var(--paper); }
+    .lede { margin-top: 24px; max-width: 440px; font-size: 18px; line-height: 27px; color: rgba(27, 24, 20, 0.72); }
+    .frame--center .lede { margin-inline: auto; }
+    .actions { margin-top: 32px; display: flex; gap: 8px; }
+    .frame--center .actions { justify-content: center; }
+    .note { font-size: 13px; line-height: 18px; color: rgba(27, 24, 20, 0.62); }
+    .note--paper { color: rgba(248, 244, 236, 0.55); }
+    .note code { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 12px; }
+    .frame__foot { display: flex; justify-content: space-between; align-items: end; gap: 24px; }
+
+    /* clearing: the scene sticks while its tall wrapper scrolls past */
+    .clearing { height: 260vh; position: relative; }
+    .clearing rovn-atmos { position: sticky; top: 0; }
+
+    @media (max-width: 720px) {
+      .frame { padding: 20px 20px 24px; }
+      .frame__foot { flex-direction: column; align-items: start; }
+    }
+  </style>
+</head>
+<body>
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="rovn-mark" viewBox="0 0 23.8727 23.9612">
+      <path fill="currentColor" d="M4.29024 8.79812C4.96552 8.51314 5.71421 8.97746 6.3063 9.3165C7.55655 10.1223 8.86796 10.8593 10.3604 10.9281C13.0689 11.0608 16.1811 9.9921 18.5519 8.8276C18.9703 8.61387 19.3935 8.36328 19.7434 8.0611C21.1869 6.78359 20.1349 5.96794 18.5568 5.90898C17.0252 5.84756 15.4911 5.8623 13.9595 5.90898C11.2951 6.08341 8.6233 6.38559 5.98089 6.80324C4.84564 6.99732 3.69326 7.12999 2.57268 7.39286C0.693639 7.79085 0.0844177 8.50577 0.0281443 10.4982C0.0403777 11.5571 -0.260563 13.4561 0.855119 13.977C1.77751 14.3848 3.78378 13.8025 4.67192 13.3185C6.73936 12.1098 4.90925 11.2917 4.15323 10.056C3.90612 9.67027 3.79846 9.0438 4.28046 8.80058L4.2878 8.79566L4.29024 8.79812Z"/>
+      <path fill="currentColor" d="M1.46189 4.23108C1.9659 4.56274 2.82958 4.51852 3.50731 4.52589C4.10185 4.51852 4.71107 4.50869 5.31539 4.49641C7.76207 4.49641 10.2063 4.30969 12.6432 4.14018C14.6005 4.02962 16.5578 3.96575 18.5127 4.06893C20.1398 4.12544 22.2757 4.68558 22.4152 6.6043C22.6378 11.3655 10.7862 11.4441 12.3887 15.5149C12.7264 16.3085 13.4237 16.962 14.0353 17.5712C15.4299 18.9175 16.8417 20.2368 18.2901 21.5168C19.2296 22.3644 20.4921 23.1235 21.62 22.1432C24.4019 19.3548 23.8269 14.1883 23.8171 10.1936C23.7657 7.78108 23.9443 5.00004 22.3467 3.02236C19.3544 -0.677512 11.8358 -0.0191024 6.9987 0.162697C6.30385 0.2364 5.5356 0.405915 4.83585 0.673701C3.68347 1.11346 2.57268 1.821 1.79953 2.67841C1.36158 3.16976 0.940748 3.86748 1.4521 4.22616L1.45944 4.23108H1.46189Z"/>
+      <path fill="currentColor" d="M4.85542 16.844C4.38077 15.9056 3.30423 16.1316 2.45768 16.4682C1.53529 16.8465 0.556621 17.5295 0.559068 18.6203C0.468541 19.7332 2.21057 23.2414 3.6223 21.9811C4.04557 21.5929 4.30737 21.0353 4.5398 20.4653C4.95329 19.3598 5.36433 17.952 4.86276 16.8539L4.85542 16.8416V16.844Z"/>
+      <path fill="currentColor" d="M16.9885 23.3986C16.9811 22.7083 15.9388 21.814 15.3051 21.1262C14.7718 20.5881 14.2506 20.0526 13.7026 19.4777C12.3104 18.07 10.0326 15.3724 8.03365 17.2592C7.06721 18.2051 6.54852 19.6496 6.06163 20.9886C5.85366 21.6789 5.28359 22.9687 5.90015 23.5141C6.13258 23.718 6.5265 23.8237 7.05742 23.8728C8.38841 23.9637 9.92248 23.9514 11.3562 23.9612C12.7166 23.9612 13.9448 23.9539 15.1608 23.9367C15.6868 23.9219 16.9297 23.949 16.986 23.4085V23.4011L16.9885 23.3986Z"/>
+    </symbol>
+    <symbol id="arrow" viewBox="0 0 24 24"><path d="M5 12h14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="m12 5 7 7-7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  </svg>
+
+  <!-- 1 · bloom -->
+  <rovn-atmos look="bloom">
+    <div class="frame">
+      <nav class="frame__nav">
+        <a class="logo" href="./" aria-label="Rōvn"><svg class="logo__mark" aria-hidden="true"><use href="#rovn-mark"/></svg></a>
+        <a class="btn btn--ink btn--chip" href="./"><span class="btn__label">All prototypes</span><span class="chip"><svg class="arrow" aria-hidden="true"><use href="#arrow"/></svg></span></a>
+      </nav>
+      <div class="frame__body">
+        <h1 class="title title--paper display" style="font-size: clamp(44px, 5.4vw, 80px)">Healthcare runs on you.<br>Rōvn works for you.</h1>
+      </div>
+      <div class="frame__foot">
+        <p class="note note--paper">Amber take on the tulip stage: a drifting field, tulips swaying at the same value, glowing petals, glass ripple and grain. WebGL, no images or models.</p>
+        <p class="note note--paper"><code>&lt;rovn-atmos look="bloom"&gt;</code></p>
+      </div>
+    </div>
+  </rovn-atmos>
+
+  <!-- 2 · clearing -->
+  <section class="clearing" id="clearing">
+    <rovn-atmos look="peaks" clear="scroll" scroll-target="#clearing">
+      <div class="frame frame--center">
+        <div class="frame__body" style="margin-top: 14vh">
+          <h2 class="title display">Less runaround.<br>More career.</h2>
+        </div>
+        <div class="frame__foot">
+          <p class="note">Scroll: the cloud sea sinks and the peaks surface.</p>
+          <p class="note"><code>&lt;rovn-atmos look="peaks" clear="scroll"&gt;</code></p>
+        </div>
+      </div>
+    </rovn-atmos>
+  </section>
+
+  <!-- 3 · lake -->
+  <rovn-atmos look="lake">
+    <div class="frame">
+      <div class="frame__body" style="margin-left:auto; max-width: 620px">
+        <h2 class="title display" style="font-size: clamp(44px, 5.6vw, 84px)">One move, from both sides.</h2>
+      </div>
+      <div class="frame__foot">
+        <p class="note">Mist rolls over a still lake; move across the water to leave rings, click for a stronger one.</p>
+        <p class="note"><code>&lt;rovn-atmos look="lake"&gt;</code></p>
+      </div>
+    </div>
+  </rovn-atmos>
+
+</body>
+</html>
