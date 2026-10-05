@@ -1,0 +1,44 @@
+/* Rōvn home · 5 · Each department knows what happens next (Working Board 2: 5.1 2H8S, 5.2a 2H90,
+   5.2b 2H9N, 5.2c 2HAA; phone 2II0–2II3). A centred statement holds still while five department photos
+   swirl in from the edges and ring it; then Renée's pill appears under it.
+   Units follow home.css (containers in em of var(--s); text leaves use calc(N * var(--s))). */
+
+.depts { background: var(--P); padding-top: 120em; }
+.depts__pin { position: relative; height: 100svh; display: flex; flex-direction: column; align-items: center; padding: 24em; overflow: hidden; background: var(--P); }
+/* the eyebrow is printed on the page: a photo turning past it along the top edge (5.2a → 5.2b) slides over it */
+.depts__eyebrow { position: relative; z-index: 0; flex-shrink: 0; text-align: center; }
+
+/* ---------- the statement (Paper 2HAD: centred column, gap 48). The pill's slot is kept from the start,
+   as in 5.2a/b and all four phone frames, so the headline never moves. */
+.depts__copy { position: relative; z-index: 2; pointer-events: none; flex: 1; min-height: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; perspective: 900px; }
+/* 54px lines at 55% line-height + 16px gap in Paper = a 54px pitch; at line-height 1 the block lifts 12.15px */
+.depts__title { margin-top: calc(-12.3 * var(--s)); }
+.depts__sub { width: calc(440 * var(--s)); margin-top: calc(36.15 * var(--s)); font-size: max(12px, 14em); }
+.depts__pill { margin-top: 48em; }
+/* the statement's box spans the pin; only its own content takes the pointer, so the photos can be hovered */
+.depts__copy > * { pointer-events: auto; }
+
+/* ---------- the photos: each one sits where it lands (5.2c), measured from the middle of the pin, and
+   s5.js carries it there along its swirl. Wrapper → motion-blur layer → frame → photo. */
+.depts__sky { position: absolute; inset: 0; z-index: 1; pointer-events: none; }
+.sat { position: absolute; width: calc(var(--sw) * 1em); height: calc(var(--sh) * 1em);
+  left: calc(50% + (var(--sx) - 720 - var(--sw) / 2) * var(--s)); top: calc(50% + (var(--sy) - 450 - var(--sh) / 2) * var(--s));
+  transform-origin: 50% 50%; pointer-events: auto; }
+.sat__mb { width: 100%; height: 100%; }
+.sat__frame { position: relative; width: 100%; height: 100%; overflow: hidden; background: #D9CFBF; }
+.sat__img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transform-origin: 50% 50%; }
+
+/* ================================================================ phone (M · 5.1–5.2c, 390×844) */
+@media (max-width: 767px) {
+  .depts { padding-top: 56em; }
+  /* Paper's content block is padded 24 / 8 under the status bar; the status bar becomes the same 18 that
+     section 2 keeps at the top. No eyebrow on phones. */
+  .depts__pin { padding: 42em 16em 8em; }
+  .depts__eyebrow { display: none; }
+  .depts__title { margin-top: 0; }
+  .depts__sub { width: calc(330 * var(--s)); margin-top: calc(16 * var(--s)); font-size: max(12.5px, 14em); }
+  .depts__sub .ln { display: inline; }
+  .depts__pill { margin-top: 32em; }
+  .sat { width: calc(var(--pw) * 1em); height: calc(var(--ph) * 1em);
+    left: calc(50% + (var(--px) - 195 - var(--pw) / 2) * var(--s)); top: calc(50% + (var(--py) - 444 - var(--ph) / 2) * var(--s)); }
+}

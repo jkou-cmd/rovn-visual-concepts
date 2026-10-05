@@ -1,0 +1,94 @@
+/* ================================================================ 7 · you decide who sees what
+   Working Board 2 frames 7a 2JNM-0 · 7b 2JOZ-0 (desktop) and 2IH6-0 · 2JS5-0 (phone). A dark split: the amber
+   mountain panel with Renée's pill on the left, the copy on the right. 7a is a white permissions sheet for
+   Quarrystone; its frame becomes the dark share receipt (7b) and the "used" log slides out from under it. */
+
+.s7 { background: var(--K); color: var(--P); }
+.s7__pin { position: relative; height: 100svh; display: flex; gap: 8em; padding: 8em; background: var(--K); overflow: hidden; }
+
+/* left: the amber panel (Paper: 708 of 1440, padding-block 32, pill on top, the object at the bottom) */
+.s7__panel { flex: 0 0 calc(50% - 4em); justify-content: space-between; } /* 708 of 1440: half, less half the gap */
+.s7__panel .panel__img { inset: 0; }
+.s7__panel > .s7__object { position: relative; z-index: 1; }
+
+/* right: the copy (Paper: padding 16 24 24, eyebrow on top, copy centred with a 48 gap) */
+.s7__copy { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; padding: 16em 24em 24em; }
+.s7__eyebrow { color: var(--P66); }
+.s7__titles { flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 48em; perspective: 900px; }
+.s7__title { color: var(--P); }
+.s7__sub { line-height: 1.25; color: var(--P66); }
+.s7__sub .ln { white-space: nowrap; }
+
+/* pill: the sub line rolls to its next state; the mask feathers the roll, the width follows the label */
+.s7__roll { display: grid; justify-items: start; padding-block: calc(3 * var(--s)); margin-block: calc(-3 * var(--s));
+  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 calc(3 * var(--s)), #000 calc(100% - 3 * var(--s)), transparent);
+          mask-image: linear-gradient(to bottom, transparent, #000 calc(3 * var(--s)), #000 calc(100% - 3 * var(--s)), transparent); }
+.s7__roll > .rl { grid-area: 1 / 1; will-change: transform; }
+
+/* ---------- the object: one frame that is the sheet (7a), then the receipt (7b) ---------- */
+.s7__object { display: flex; flex-direction: column; align-items: center; perspective: 1200px; }
+.s7__tilt { position: relative; z-index: 2; flex-shrink: 0; }
+.s7__morph { position: relative; flex-shrink: 0; width: 380em; height: 263em; border-radius: 20em; overflow: hidden; isolation: isolate;
+  transform-origin: 50% 100%; box-shadow: 0 1em 2em rgba(40, 25, 10, 0.08), 0 18em 44em rgba(40, 25, 10, 0.16); }
+.s7__face { position: absolute; inset: 0; background: #FFFFFF; }
+/* the receipt's dark face floods up from the bottom behind a soft edge (--fl 0 → 1), so the fill never passes
+   through a flat mid-grey */
+.s7__dark { --fl: 0; position: absolute; inset: 0; background-image: linear-gradient(160deg, #222221, #0E0E0E);
+  -webkit-mask-image: linear-gradient(to top, #000 calc(var(--fl) * 145% - 45%), transparent calc(var(--fl) * 145%));
+          mask-image: linear-gradient(to top, #000 calc(var(--fl) * 145% - 45%), transparent calc(var(--fl) * 145%)); }
+.s7__card { position: absolute; left: 50%; bottom: 0; width: 340em; height: 214em; margin-left: -170em; opacity: 0; }
+.s7__card .card { box-shadow: none; background: none !important; } /* the frame carries the shadow and the face */
+.s7__card .card__bottom { bottom: 20em; }      /* Paper 7b: the receipt's text block sits 20 from the bottom */
+
+/* the sheet (Paper: 380 wide, padding 6/11, header 14/20/12, rows 9/20, 28px icon tiles, 42×26 switches) */
+.s7__sheet { position: absolute; left: 50%; bottom: 0; width: 380em; margin-left: -190em; display: flex; flex-direction: column; padding: 6em 0 11em; transform-origin: 50% 100%; }
+.s7__head { display: flex; align-items: center; gap: 12em; padding: 14em 20em 12em; }
+.s7__av { width: 36em; height: 36em; border-radius: 999px; background-color: var(--frame); background-size: cover; background-position: 50%; flex-shrink: 0; }
+.s7__org { font-family: var(--sans); font-weight: 600; font-size: 15em; line-height: calc(20 / 15); color: #0F0F0F; white-space: nowrap; }
+.s7__row { display: flex; align-items: center; gap: 12em; padding: 9em 20em; }
+.s7__tile { width: 28em; height: 28em; border-radius: 8em; background: rgba(15, 15, 15, 0.06); display: grid; place-items: center; flex-shrink: 0; color: #0F0F0F; }
+.s7__tile svg { width: 16em; height: 16em; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.s7__label { flex: 1; min-width: 0; font-family: var(--sans); font-size: 15em; line-height: calc(20 / 15); color: #0F0F0F; white-space: nowrap; }
+.s7__trail { display: flex; align-items: center; gap: 6em; flex-shrink: 0; }
+.s7__date { font-family: var(--sans); font-size: 15em; line-height: calc(20 / 15); color: rgba(15, 15, 15, 0.55); }
+.s7__chev { width: 14em; height: 14em; fill: none; stroke: rgba(15, 15, 15, 0.45); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+/* switches: 42×26, radius 13, padding 3, a white 20px knob; on = ink fill + knob right, off = #0F0F0F1A + knob left */
+.s7__switch { position: relative; display: block; flex-shrink: 0; width: 42em; height: 26em; padding: 3em; border-radius: 13em; background: rgba(15, 15, 15, 0.1); isolation: isolate; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.s7__fill { position: absolute; inset: 0; border-radius: inherit; background: #0F0F0F; transform-origin: 0% 50%; }
+.s7__switch[aria-checked="false"] .s7__fill { opacity: 0; }
+.s7__knob { position: relative; z-index: 1; display: block; width: 20em; height: 20em; border-radius: 10em; background: #FFFFFF; box-shadow: 0 1em 2em rgba(0, 0, 0, 0.15); }
+.s7__switch[aria-checked="true"] .s7__knob { transform: translateX(16em); }
+.s7__switch:focus-visible { outline-offset: 2px; border-radius: 13em; }
+
+/* ---------- the "used" log: a light variant of .log that slides out from under the receipt ---------- */
+.s7__logwrap { position: relative; z-index: 1; height: 0; flex-shrink: 0; }
+.log--light { padding-top: 12em; }
+.log--light .log__rows { padding: 4em 0; border-radius: 16em; background: #FFFFFF; box-shadow: 0 1em 2em rgba(40, 25, 10, 0.08), 0 14em 34em rgba(40, 25, 10, 0.12); }
+.log--light .log__text { color: #0F0F0F; }
+.log--light .log__date { color: rgba(15, 15, 15, 0.5); }
+.log--light .log__av { background-color: rgba(15, 15, 15, 0.06); color: #0F0F0F; }
+.log--light .log__av.s7__dw { background-color: #0F0F0F; color: #FFFFFF; }
+
+/* ================================================================ phone (390×844 frames): copy on top, the panel below */
+@media (max-width: 767px) {
+  .s7__pin { flex-direction: column; gap: 0; padding: 0; }
+  .s7__copy { order: -1; flex: none; height: 186em; padding: 22em 8em 16em; align-items: center; text-align: center; }
+  .s7__eyebrow { display: none; }
+  .s7__titles { flex: none; justify-content: flex-start; align-items: center; gap: 16em; }
+  .s7__title > span { display: inline; }
+  .s7__sub { line-height: 1.5; }
+  .s7__sub .ln { display: inline; white-space: normal; }
+  .s7__panel { flex: 1 1 0; min-height: 0; padding-block: 24em; }
+  .s7__morph { width: 358em; }
+  .s7__sheet { width: 358em; margin-left: -179em; }
+}
+
+/* ================================================================ reduced motion: 7b, unpinned */
+@media (prefers-reduced-motion: reduce) {
+  .s7__morph { width: 340em; height: 214em; border-radius: 18em; box-shadow: 0 1em 2em rgba(40, 25, 10, 0.12), 0 16em 38em rgba(40, 25, 10, 0.22); }
+  .s7__dark { --fl: 1; }
+  .s7__card { opacity: 1; }
+  .s7__sheet { visibility: hidden; }
+  .s7__logwrap { height: auto; }
+}

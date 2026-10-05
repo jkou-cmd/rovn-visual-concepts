@@ -12,6 +12,11 @@
   const px = (n) => () => n * K();
 
   ST.config({ ignoreMobileResize: true });
+  // Scenes measure their layout on refreshInit, when a pinned section still carries its old size. After a
+  // resize, one more refresh lets every scene measure against the new layout (pins already re-sized).
+  let resized = false;
+  addEventListener('resize', () => { resized = true; });
+  ST.addEventListener('refresh', () => { if (resized) { resized = false; requestAnimationFrame(() => ST.refresh()); } });
   // Lenis: a touch quicker than the concept prototypes (.075) so the pinned scenes don't feel heavy
   if (R.lenis) R.lenis.options.lerp = 0.1;
 

@@ -1,0 +1,67 @@
+/* ================================================================ 6 · your career is bigger than one job
+   Working Board 2 frames 6a 2GTS-0 · 6b 2GY5-0 · 6c 2H12-0 (desktop) and 2IH1-0 · 2IH2-0 · 2IH3-0 (phone).
+   One record, three applications: each hospital is a frame that waits as a tile at the bottom right, grows
+   into the main panel, then shrinks to a tile at the top left. The pill and Renée's stack stay put on top
+   (the record keeps working) and re-deal per hospital. 6c turns the page dark, which carries into section 7.
+   Frames, the deck and the cards are placed by s6.js in pin coordinates; everything else is storyboard px in em. */
+
+.s6 {
+  --dk: 0; /* 0 = paper, 1 = dark (6c); tweened by s6.js with hysteresis */
+  --s6-bg: color-mix(in oklab, var(--P), var(--K) calc(var(--dk) * 100%));
+  --s6-fg: color-mix(in oklab, var(--K), var(--P) calc(var(--dk) * 100%));
+  --s6-mute: color-mix(in oklab, var(--mute), color-mix(in oklab, var(--P) 66%, transparent) calc(var(--dk) * 100%));
+  background: var(--P);
+  padding-top: 140em;
+}
+.s6__pin { position: relative; height: 100svh; display: flex; overflow: hidden; background: var(--s6-bg); }
+
+/* copy: the left third (Paper: round(33%, 1px), padding 24, eyebrow on top, copy centred with a 48 gap) */
+.s6__copy { position: relative; z-index: 2; width: 33%; flex-shrink: 0; display: flex; flex-direction: column; padding: 24em; }
+.s6__eyebrow { color: var(--s6-mute); }
+.s6__titles { flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 48em; perspective: 900px; }
+/* Paper sets each line at 55% leading inside an 84px block (38 + 16 + 30); line-height 1 lands the same
+   baselines when the 108px block gives 12px back on each side */
+.s6__title { color: var(--s6-fg); white-space: nowrap; margin-block: calc(-12 * var(--s)); }
+.s6__sub { color: var(--s6-mute); white-space: nowrap; }
+
+/* stage: the frames and the deck, positioned by s6.js in pin coordinates */
+.s6__stage { position: absolute; inset: 0; z-index: 1; }
+.s6__frame { position: absolute; left: 0; top: 0; width: 0; height: 0; }
+.s6__frame[data-h="1"] { z-index: 1; }
+.s6__frame[data-h="2"] { z-index: 2; }
+.s6__frame[data-h="3"] { z-index: 3; }
+/* the image keeps the main panel's scale in every slot: a tile is a window onto it, not a thumbnail */
+.s6__frame .panel__img { inset: auto; left: 0; top: 0; width: var(--pw, 100%); height: var(--ph, 100%); transform-origin: 0% 50%; }
+.s6__shade { position: absolute; inset: 0; background: var(--K); opacity: 0; pointer-events: none; }
+
+/* the deck sits over the main panel: pill on top, the stack centred below (Paper: padding-block 32, gap 33) */
+.s6__deck { position: absolute; z-index: 5; left: 0; top: 0; width: 0; height: 0; pointer-events: none; }
+.s6__deck .pill, .s6__deck .stack { pointer-events: auto; }
+.s6 .fly { top: 0; } /* s6.js places each card with yPercent */
+
+/* rolling label: lines share one grid cell; the mask feathers the roll so no hard edge shows */
+.s6__roll { display: grid; justify-items: start; padding-block: calc(4 * var(--s)); margin-block: calc(-4 * var(--s));
+  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 calc(4 * var(--s)), #000 calc(100% - 4 * var(--s)), transparent);
+          mask-image: linear-gradient(to bottom, transparent, #000 calc(4 * var(--s)), #000 calc(100% - 4 * var(--s)), transparent); }
+.s6__roll > .rl { grid-area: 1 / 1; will-change: transform; }
+
+/* ================================================================ phone (390×844 frames: one hospital per beat) */
+@media (max-width: 767px) {
+  .s6 { padding-top: 56em; }
+  .s6__pin { flex-direction: column; }
+  /* fixed headline block, opaque so the sliver of the previous hospital can tuck away under it */
+  .s6__copy { z-index: 3; width: auto; height: 186em; padding: 22em 8em 16em; align-items: center; text-align: center; background: var(--s6-bg); }
+  .s6__eyebrow { display: none; }
+  .s6__titles { flex: none; justify-content: flex-start; align-items: center; gap: 16em; }
+  .s6__title { white-space: normal; margin-block: 0; }
+  .s6__sub { white-space: normal; }
+  .s6__sub .ln { display: inline; }
+  .s6__stage { position: relative; inset: auto; flex: 1; min-height: 0; }
+  .s6__deck { padding-block: 24em; }
+  .s6__deck .panel__body { margin-top: 0; }
+}
+
+/* ================================================================ reduced motion: 6c, unpinned (s6.js reduce() places it) */
+@media (prefers-reduced-motion: reduce) {
+  .s6 { --dk: 1; }
+}

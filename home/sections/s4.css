@@ -1,0 +1,104 @@
+/* Rōvn home · 4 · Agents do the follow-through (Working Board 2: 4a 2H6F, 4b 2H4G, 4c 2H7M; phone 2IGY–2IH0).
+   Copy on paper at the left; a column of two agent panels at the right whose frames morph between the
+   beats (4a Quarrystone full + Renée peeking, 4b halves, 4c Quarrystone sliver + Renée full).
+   Units follow home.css: containers inherit font-size: var(--s) and size in em; text leaves set their
+   own font-size in em and use calc(N * var(--s)) for every other dimension. */
+
+.agents { background: var(--P); padding-top: 140em; }
+.agents__pin { position: relative; height: 100svh; display: flex; gap: 8em; background: var(--P); }
+
+/* ---------- copy (Paper 2H4I: 716 wide, padding 24; eyebrow on top, the block centred below it) */
+.agents__copy { width: calc(50% - 4em); flex-shrink: 0; display: flex; flex-direction: column; padding: 24em; }
+.agents__eyebrow { flex-shrink: 0; }
+.agents__text { flex: 1; min-height: 0; display: flex; flex-direction: column; align-items: flex-start; justify-content: center; perspective: 900px; }
+/* Paper sets each 54px line at 55% line-height with 16px between them (a 54px pitch). At line-height 1 the
+   glyphs sit 12.15px lower in their boxes, so the block rises by that much and the sub keeps its 48px. */
+.agents__title { margin-top: calc(-12.3 * var(--s)); }
+.agents__sub { width: calc(510 * var(--s)); margin-top: calc(35.85 * var(--s)); }
+
+/* ---------- the right column: two windows onto each agent's work (Paper 2H4R: padding 8, gap 8) */
+.agents__col { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 8em; padding: 8em; }
+/* Paper lays each window out space-between (pill on top, log at the bottom). Packing from the end with the
+   pill held up by an auto margin looks the same, and when a window gets shorter than its contents the log
+   stays docked to the bottom edge and pushes the pill up and out under the top of the frame. */
+/* Paper's 32px padding-block lives on the pill and the log as margins, so a window can close to a sliver
+   thinner than its padding would allow. */
+.agent { --peek: 64em; --pad: 32em; padding-block: 0; justify-content: flex-end; gap: 33em; overflow: hidden; isolation: isolate; }
+.agent > .agent__pill { margin: var(--pad) 0 auto; }
+.agent > .log { margin-bottom: var(--pad); }
+/* Quarrystone's height is the one value the scroll drives (--h, set by s4.js) plus a hover nudge (--hov);
+   Renée's panel takes the rest. Without script it rests at 4b, both halves. */
+.agent--qs { flex: none; height: clamp(var(--peek), calc(var(--h, calc(50% - 4em)) + var(--hov, 0px)), calc(100% - var(--peek) - 8em)); }
+.agent--rn { flex: 1 1 0; min-height: 0; }
+/* the photo is cut taller than any window by a fixed margin, so parallax never shows an edge, even in a sliver */
+.agent .panel__img { inset: -40em -3%; }
+.agent__pill { z-index: 2; }
+.agent > .log { position: relative; z-index: 1; }
+
+/* the agent tile: Rōvn's mark on the agent's own gradient (Paper 2H6T / 2H5O) */
+.agent__av { display: grid; place-items: center; color: #F9F4EA; }
+.agent__av svg { width: 20em; height: 20em; }
+.agent__av--qs { background-image: linear-gradient(180deg, oklab(65% 0.26 0.145) 0%, oklab(74.1% -0.022 -0.143) 100%);
+  background-image: linear-gradient(in oklab 180deg, oklab(65% 0.26 0.145) 0%, oklab(74.1% -0.022 -0.143) 100%); }
+.agent__av--rn { background-image: linear-gradient(180deg, oklab(68.2% 0.005 0.161) 0%, oklab(74.1% -0.079 0.121) 100%);
+  background-image: linear-gradient(in oklab 180deg, oklab(68.2% 0.005 0.161) 0%, oklab(74.1% -0.079 0.121) 100%); }
+/* "Thinking": a slow band of light passes through the word, the way assistants show they're working */
+.agent__think { align-self: flex-start; background: linear-gradient(100deg, rgba(245, 242, 236, 0.62) 39%, rgba(255, 252, 246, 0.97) 50%, rgba(245, 242, 236, 0.62) 61%) 0 0 / 300% 100% no-repeat;
+  -webkit-background-clip: text; background-clip: text; color: transparent; -webkit-text-fill-color: transparent;
+  animation: agent-think 2.8s linear infinite; }
+@keyframes agent-think { 0% { background-position: 100% 0; } 72%, 100% { background-position: 0% 0; } }
+
+/* ---------- the agent log: a light variant of .log (Paper 2H6Y: white, r18, 360 wide, rows 40/44) */
+.log--agent { width: 360em; gap: 0; }
+.log--agent .log__rows { position: relative; padding: 8em 0; border-radius: 18em; background: #FFFFFF;
+  box-shadow: 0 1em 2em rgba(40, 25, 10, 0.08), 0 14em 34em rgba(40, 25, 10, 0.12); --glider: rgba(15, 15, 15, 0.045); }
+/* --o opens a row (0 → 1) as the agent logs it; the card grows with it */
+.log--agent .log__row { --rh: 40; height: calc(var(--o, 1) * var(--rh) * 1em); padding: 0 18em; }
+.log--agent .log__row--live { --rh: 44; }
+.log--agent .log__text { color: #0F0F0F; }
+.log--agent .log__date { color: rgba(15, 15, 15, 0.5); }
+.log--agent .glider { clip-path: inset(2em 8em round 10em); }
+.log__check { width: 16em; height: 16em; flex-shrink: 0; overflow: visible; }
+.log__check path { fill: none; stroke: rgba(15, 15, 15, 0.42); stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 1 1; stroke-dashoffset: 0; }
+.log__live { position: relative; width: 16em; height: 16em; display: grid; place-items: center; flex-shrink: 0; }
+/* the live step: amber only as light, breathing (home.css keyframes) */
+.log__dot { width: 7em; height: 7em; border-radius: 50%; background-image: var(--amber-face);
+  box-shadow: 0 0 0 2em rgba(235, 148, 49, 0.22), 0 0 8em rgba(235, 148, 49, 0.9); animation: breathe 2.6s ease-in-out infinite; }
+.log__live::after { content: ""; position: absolute; inset: -7em; border-radius: 50%; pointer-events: none; opacity: 0;
+  background: radial-gradient(closest-side, rgba(235, 148, 49, 0.34), rgba(235, 148, 49, 0)); transition: opacity .12s ease-out; }
+.log__who { width: 48em; display: flex; justify-content: flex-end; flex-shrink: 0; }
+.log--agent .log__av { width: 24em; height: 24em; }
+.log--agent .log__av b { font-size: 9em; line-height: calc(12 / 9); }
+.log__av--ink { background: #0F0F0F; color: #FFFFFF; }
+@media (hover: hover) and (pointer: fine) {
+  .log__row--live:hover .log__live::after { opacity: 1; }
+}
+
+/* ================================================================ phone (M · 4a–4c, 390×844) */
+@media (max-width: 767px) {
+  .agents { padding-top: 56em; }
+  .agents__pin { flex-direction: column; gap: 0; }
+  /* the headline block keeps a fixed height: Paper's 142 plus the 18 that section 2 adds where the status bar was */
+  .agents__copy { width: auto; height: 160em; padding: 22em 8em 16em; align-items: center; text-align: center; }
+  .agents__eyebrow { display: none; }
+  .agents__text { flex: none; align-items: center; justify-content: flex-start; gap: 16em; }
+  .agents__title { margin-top: 0; }
+  .agents__sub { width: auto; margin-top: 0; }
+  .agents__sub .ln { display: inline; }
+  .agents__col { flex: 1; min-height: 0; padding: 0; }
+  .agent { --peek: 20em; --pad: 16em; }
+  .log--agent { width: 342em; }
+  .log--agent .log__rows { padding: 6em 0; border-radius: 16em; }
+  .log--agent .log__row { --rh: 36; padding: 0 16em; }
+  .log--agent .log__row--live { --rh: 38; }
+  .log--agent .log__text { font-size: max(12.5px, 14em); line-height: calc(20 / 14); }
+  .log--agent .log__date { width: calc(44 * var(--s)); font-size: max(11px, 12em); line-height: calc(16 / 12); }
+  .log--agent .log__who { width: 44em; }
+  .log--agent .log__av { width: 22em; height: 22em; }
+  .log--agent .log__av b { font-size: 8.5em; }
+}
+
+/* ================================================================ reduced motion: 4b, both agents at rest */
+@media (prefers-reduced-motion: reduce) {
+  .log__dot, .agent__think { animation: none; }
+}

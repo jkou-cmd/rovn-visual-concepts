@@ -289,6 +289,10 @@ body.home { background: var(--P); color: var(--K); overflow-x: clip; }
 }
 
 /* ================================================================ reduced motion: final states, nothing pinned */
+@media (prefers-reduced-motion: reduce) and (max-width: 767px) {
+  .move__row > .panel--renee { height: 20em; }
+  .move__row > .panel--qs { transform: none; }
+}
 @media (prefers-reduced-motion: reduce) {
   .panel--qs { flex-basis: 50%; }
   .panel--qs .pill { opacity: 1; }

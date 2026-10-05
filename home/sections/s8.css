@@ -1,0 +1,46 @@
+/* Rōvn home · 8 · Rōvn Lab: "How we think."
+   Desktop follows 2HAX-0 (1440×900): the headline block (178) over three notes (482), then 96 of paper
+   before the close section's doors peek in. Phone follows 2IH4-0 (390×844): a swipe row of 300-wide
+   notes with the next one peeking in, then 67 of paper before the close peeks in. Values from Paper. */
+
+.lab { background: var(--P); padding: 140em 0 96em; }
+
+/* headline block: eyebrow on the left half, headline + sub on the right (as section 2) */
+.lab__head { height: 178em; display: flex; gap: 4em; padding: 8em; }
+.lab__eyebrow { width: 50%; height: calc(92 * var(--s)); flex-shrink: 0; }
+.lab__titles { flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: flex-start; gap: 32em; perspective: 900px; }
+/* Paper: Erode Light 54, line-height 55% in a 38-tall box */
+.lab__title { line-height: .55; height: calc(38 * var(--s)); }
+.lab__sub { width: calc(510 * var(--s)); line-height: 1.25; }
+
+/* the notes */
+.lab__row { position: relative; display: flex; gap: 16em; height: 482em; padding: 0 8em; }
+.lab__post { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; gap: 16em; color: var(--K); -webkit-tap-highlight-color: transparent; }
+.lab__tile { position: relative; display: block; flex: 1; min-height: 0; overflow: hidden; background: var(--frame); transform-origin: 50% 100%; will-change: transform; }
+.lab__img { position: absolute; inset: -6% 0; background-size: cover; background-position: 50%; will-change: transform; }
+.lab__cap { display: flex; flex-direction: column; gap: 8em; }
+.lab__date { display: block; font-family: var(--sans); font-size: max(13px, 16em); line-height: 1.25; color: var(--mute); }
+/* Paper sizes each title to 66% of its one-line width (278 / 298 / 287), which sets the two-line break */
+.lab__name { display: block; width: calc(var(--w, 280) * var(--s)); max-width: 100%; font-family: var(--serif); font-weight: 400; font-size: 24em; line-height: calc(28 / 24); letter-spacing: -0.02em; }
+
+/* ================================================================ phone (2IH4-0) */
+@media (max-width: 767px) {
+  .lab { padding: 56em 0 67em; }
+  .lab__head { height: 168em; flex-direction: column; align-items: center; gap: 16em; padding: 4em 8em 16em; text-align: center; }
+  .lab__eyebrow { display: none; }
+  .lab__titles { flex: none; align-items: center; gap: 16em; }
+  .lab__title { line-height: 1; height: auto; }
+  .lab__sub { width: auto; line-height: 1.5; }
+
+  /* a native swipe row: momentum scrolling, gentle (proximity) snap, the next note peeking in */
+  .lab__row { height: auto; gap: 8em; padding: 0 0 0 8em; overflow-x: auto; overflow-y: hidden; overscroll-behavior-x: contain;
+    scroll-snap-type: x proximity; scroll-padding-inline: 8em; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+  .lab__row::-webkit-scrollbar { display: none; }
+  .lab__row::after { content: ""; flex: 0 0 0.01px; } /* trailing 8 (the gap): Safari drops end padding in scrollers */
+  .lab__post { flex: 0 0 300em; gap: 12em; scroll-snap-align: start; }
+  .lab__tile { flex: none; height: 392em; }
+  .lab__img { inset: 0 -9%; } /* room for the sideways parallax */
+  .lab__cap { gap: 6em; padding: 0 4em; }
+  .lab__date { font-size: max(12.5px, 14em); line-height: 1.5; }
+  .lab__name { width: calc(270 * var(--s)); font-size: 22em; line-height: calc(26 / 22); }
+}

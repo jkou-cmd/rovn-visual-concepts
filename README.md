@@ -4,7 +4,7 @@ The Rōvn home page in motion, plus four earlier directions, all built from the 
 
 **Live:** https://jkou-cmd.github.io/rovn-visual-concepts/
 
-- [Home](https://jkou-cmd.github.io/rovn-visual-concepts/home.html) (checkpoint 1: sections 1–3; [desktop tour video](https://jkou-cmd.github.io/rovn-visual-concepts/home/tour-desktop.mp4))
+- [Home](https://jkou-cmd.github.io/rovn-visual-concepts/home.html) (all nine sections; [desktop tour video](https://jkou-cmd.github.io/rovn-visual-concepts/home/tour-desktop.mp4))
 - [Cover](https://jkou-cmd.github.io/rovn-visual-concepts/c1-cover)
 - [Doors](https://jkou-cmd.github.io/rovn-visual-concepts/c2-doors)
 - [Editorial](https://jkou-cmd.github.io/rovn-visual-concepts/c3-editorial)
@@ -27,7 +27,11 @@ Photos (Unsplash License unless noted) are graded warm. Brand text was retouched
 - Clinician at a window: Лера :^, https://unsplash.com/photos/a-woman-stands-by-a-window-looking-outside--JSIJObcgqU
 - Two clinicians sharing a phone: Thirdman (Pexels License), https://www.pexels.com/photo/medical-professionals-looking-at-the-screen-of-the-cellphone-5327867/
 - Clinician in a lobby: Brooke Cagle, https://unsplash.com/photos/woman-sitting-in-front-of-brown-wooden-table-NoRsyXmHGpI
-- Amber mountains, green abstract and other atmospheric textures: Rōvn brand imagery from the Paper boards.
+- Signing a form: Scott Graham, https://unsplash.com/photos/man-writing-on-paper-OQMZwNd3ThU
+- At the front desk: Ozkan Guner, https://unsplash.com/photos/a-woman-sitting-at-a-table-aOnJSN230sA
+- Clinician in scrubs: TopSphere Media, https://unsplash.com/photos/woman-in-black-crew-neck-shirt-wearing-blue-earbuds-WxRd7byFxs4
+- Reading at a desk: Aleksandra Sapozhnikova, https://unsplash.com/photos/woman-in-black-scoop-neck-shirt-holding-white-printer-paper-DPD9KMGSOAA
+- Amber mountains, green, blue and pastel abstracts, hospital textures and the two agent backdrops: Rōvn brand imagery from the Paper boards (the agent backdrops' original sources are still to be confirmed).
 
 Video (Pexels License) was cut into loops with the same grade and grain:
 

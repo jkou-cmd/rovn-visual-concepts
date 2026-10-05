@@ -1,0 +1,91 @@
+/* Rōvn home · 9 · Close: two doors, the ink footer and the giant wordmark band.
+   Desktop follows 2HPJ-0 (1440×1122): doors 430, footer 235, band 457. Phone follows 2IH5-0 (390×1400):
+   stacked doors 704, footer 406, band 228. Values from Paper.
+   The doors use their own .cdoor class: home.js hero() animates every .door on the page, so reusing
+   .door here would hand these doors section 1's scroll rise and parallax as well. Their type, shade and
+   pill reuse .door__text / .door__label / .door__title / .door__shade and .pbtn. */
+
+.close { background: var(--K); color: var(--P); }
+/* the ink sheet (doors + footer) sits above the band and scrolls up off it */
+.close__sheet { position: relative; z-index: 1; background: var(--K); }
+
+/* ---------------------------------------------------------------- doors */
+.close__doors { display: flex; gap: 8em; padding: 8em; }
+.cdoor { position: relative; flex: 1 1 0; min-width: 0; height: 414em; overflow: hidden; isolation: isolate; display: flex; flex-direction: column; justify-content: flex-end;
+  padding: 32em; background: var(--frame); color: #F8F4EC; -webkit-tap-highlight-color: transparent; }
+/* the photo is cut wider than a widened door (as section 1), so a hover never rescales it. It is centred
+   with a margin, not a transform, so it sits right even when no script runs (reduced motion) */
+.cdoor__img { position: absolute; z-index: -2; top: -9%; bottom: -9%; left: 50%; width: calc((100vw - 24 * var(--s)) * 0.62); margin-left: calc((100vw - 24 * var(--s)) * -0.31);
+  background-size: cover; background-position: var(--pos, 50%); will-change: transform; }
+.cdoor .door__shade { transition: none; } /* GSAP drives it, so the hover answers at once */
+.cdoor__body { display: flex; flex-direction: column; align-items: flex-start; gap: 24em; }
+.cdoor .door__text { flex: none; }
+.cdoor .pbtn__chip { overflow: hidden; } /* the arrow slides through its chip */
+
+/* ---------------------------------------------------------------- footer */
+.foot { display: flex; align-items: flex-start; height: 235em; padding: 32em; }
+.foot__brand { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; align-items: flex-start; gap: 17em; }
+.foot__logo { display: flex; align-items: flex-end; gap: 6.61em; height: 24em; color: #F9F4EA; }
+.foot__mark { width: 23.87em; height: 23.96em; flex-shrink: 0; }
+.foot__word { width: 65.52em; height: 22.98em; flex-shrink: 0; }
+.foot__tag { width: calc(560 * var(--s)); max-width: 100%; font-family: var(--serif); font-weight: 300; font-size: 24em; line-height: calc(28 / 24); letter-spacing: -0.02em; color: #F9F4EA; }
+.foot__copy { font-family: var(--sans); font-size: max(12px, 14em); line-height: calc(18 / 14); color: #A8A196; }
+/* one glider for every footer link (R.glider, pill), tinted for the ink surface */
+.foot__links { position: relative; flex: 1 1 0; min-width: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24em; --glider: rgba(249, 244, 234, 0.09); }
+.foot__col { display: flex; flex-direction: column; gap: 24em; min-width: 0; }
+/* Paper keeps 8 + a 1px rule under each heading; the rule is ink on ink (invisible), so only its space stays */
+.foot__head { padding-bottom: calc(9 * var(--s)); font-family: var(--sans); font-weight: 600; font-size: max(12px, 14em); line-height: calc(18 / 14); color: #A8A196; }
+.foot__list { display: flex; flex-direction: column; align-items: flex-start; gap: 8em; }
+.foot__link { display: block; font-family: var(--sans); font-size: max(13px, 16em); line-height: calc(20 / 16); color: #F9F4EA; white-space: nowrap; }
+
+/* ---------------------------------------------------------------- the wordmark band */
+/* sticky to the bottom of the screen inside the section: it waits behind the sheet and is uncovered
+   as the sheet scrolls up (the last 457 of the page) */
+.band { position: sticky; bottom: 0; z-index: 0; height: 457em; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; background: #D97A28; }
+.band__photo { position: absolute; inset: 0; overflow: hidden; }
+.band__img { position: absolute; inset: 0; background-size: cover; background-position: 50%; transform-origin: 50% 100%; will-change: transform; }
+.band__shade { position: absolute; inset: 0; background: #0F0F0F; opacity: 0; } /* the sheet's shadow, lifted as it uncovers */
+/* the footer logo at 14.29× (1372 wide): mark and word bottom-aligned, as Paper's band SVG */
+.band__mark { position: relative; display: flex; align-items: flex-end; gap: 94.47em; flex-shrink: 0; color: var(--P); }
+.band__m { width: 341.18em; height: 342.45em; flex-shrink: 0; }
+.band__w { width: 936.36em; height: 328.49em; flex-shrink: 0; }
+/* amber light: a blurred amber copy of the wordmark under the paper letters, added onto the photo as light
+   and shown only inside a soft band that sweeps across once, so a glow travels along the letters.
+   (An amber fill on the letters themselves just sinks into the amber field.) The padding leaves the
+   blur room inside the mask. */
+.band__glow { --glint: -0.6; position: absolute; left: 50%; bottom: calc(-60 * var(--s)); padding: 60em; margin-left: -746em; color: rgb(200, 125, 35); pointer-events: none;
+  filter: blur(calc(26 * var(--s))); mix-blend-mode: screen; mix-blend-mode: plus-lighter; /* additive light; screen where unsupported */
+  -webkit-mask-image: linear-gradient(105deg, transparent calc((var(--glint) - 0.3) * 100%), #000 calc(var(--glint) * 100%), transparent calc((var(--glint) + 0.3) * 100%));
+          mask-image: linear-gradient(105deg, transparent calc((var(--glint) - 0.3) * 100%), #000 calc(var(--glint) * 100%), transparent calc((var(--glint) + 0.3) * 100%)); }
+/* Paper: the band's lower half fades into deeper amber, over the wordmark on desktop */
+.band__fade { position: absolute; left: 0; right: 0; bottom: 0; height: 634em; pointer-events: none;
+  background-image: linear-gradient(180deg, rgba(240, 160, 64, 0) 56.57%, rgb(226, 125, 30) 100%);
+  background-image: linear-gradient(in oklab 180deg, oklab(82% 0.026 0.150 / 0%) 56.57%, oklab(72.8% 0.093 0.169) 100%); }
+
+/* ================================================================ phone (2IH5-0) */
+@media (max-width: 767px) {
+  .close__doors { flex-direction: column; }
+  .cdoor { flex: none; height: 340em; padding: 24em; }
+  .cdoor__img { left: 0; right: 0; width: auto; margin-left: 0; }
+  .cdoor__body { gap: 20em; }
+
+  .foot { flex-direction: column; align-items: stretch; gap: 32em; height: auto; padding: 32em 24em; }
+  .foot__brand { flex: none; gap: 12em; }
+  .foot__tag { width: auto; }
+  .foot__links { flex: none; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32em 24em; }
+  .foot__col { gap: 12em; }
+  .foot__head { padding-bottom: 0; }
+
+  .band { height: 228em; padding: 0 12em 16em; }
+  /* phone: the wordmark sits over the fade (Paper) */
+  .band__mark { z-index: 1; gap: 25.2em; }
+  .band__m { width: 91.01em; height: 91.35em; }
+  .band__w { width: 249.79em; height: 87.63em; }
+  .band__glow { z-index: 1; bottom: calc(-4 * var(--s)); padding: 20em; margin-left: -203em; filter: blur(calc(9 * var(--s))); }
+  .band__fade { height: 100%; }
+}
+
+/* ================================================================ reduced motion: the band simply scrolls in */
+@media (prefers-reduced-motion: reduce) {
+  .band { position: relative; }
+}
