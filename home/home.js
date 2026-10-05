@@ -81,22 +81,26 @@
     stack.addEventListener('pointerleave', () => ys.forEach((to) => to(0)));
   }
 
-  // Doors: the hovered door widens and its neighbour gives way (one row, one gesture); the arrow
-  // slides through its chip. The photos are cut wider than either door, so nothing rescales.
+  // Doors: they keep their width, so no text moves (2026-10-05). The hovered door comes forward in light:
+  // its photo eases in close and to full colour and its shade lifts; the other door dims. The arrow slides
+  // through its chip. Same hover as the close doors (home/sections/s9.js).
   function doors(row) {
     if (!R.fine || R.reduce || !row) return;
     const all = $$('.door', row);
-    const grow = (el, g) => gsap.to(el, { flexGrow: g, duration: 0.9, ease: 'expo.out', overwrite: 'auto' });
+    const look = (d, state) => {
+      const img = $('.door__img', d), shade = $('.door__shade', d);
+      const v = { rest: [1, 'saturate(1) brightness(1)', 1], on: [1.045, 'saturate(1.08) brightness(1.04)', 0.72], off: [1, 'saturate(0.55) brightness(0.82)', 1] }[state];
+      gsap.to(img, { scale: v[0], filter: v[1], duration: state === 'on' ? 1.4 : 0.8, ease: 'expo.out', overwrite: 'auto' });
+      gsap.to(shade, { opacity: v[2], duration: 0.6, ease: 'power2.out', overwrite: 'auto' });
+    };
     all.forEach((d) => {
-      const arrow = $('.door__chip svg', d), shade = $('.door__shade', d);
+      const arrow = $('.door__chip svg', d);
       d.addEventListener('pointerenter', () => {
-        all.forEach((o) => grow(o, o === d ? 1.6 : 1));
-        gsap.to(shade, { opacity: 0.8, duration: 0.6, ease: 'power2.out' });
+        all.forEach((o) => look(o, o === d ? 'on' : 'off'));
         gsap.timeline().to(arrow, { x: 22 * K(), duration: 0.18, ease: 'power2.in' }).set(arrow, { x: -22 * K() }).to(arrow, { x: 0, duration: 0.45, ease: 'expo.out' });
       });
-      d.addEventListener('pointerleave', () => gsap.to(shade, { opacity: 1, duration: 0.6, ease: 'power2.out' }));
     });
-    row.addEventListener('pointerleave', () => all.forEach((o) => grow(o, 1)));
+    row.addEventListener('pointerleave', () => all.forEach((o) => look(o, 'rest')));
   }
 
   // A name pill grows out of its avatar, like a status island: the avatar lands, then the label opens.
