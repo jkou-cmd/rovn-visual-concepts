@@ -10,12 +10,15 @@
   <script>
     document.documentElement.classList.add("is-loading");
     setTimeout(function () { document.documentElement.classList.remove("is-loading"); }, 4000);
-    // 1rem = one storyboard px: desktop frames are 1440 wide, phone frames 390.
+    // 1rem = one storyboard px, on the same scale as home: the frames are 1440×900 (desktop) and
+    // 390×844 (phone), and --k fits them to the window. Phones keep the first height so the URL bar
+    // sliding in and out never rescales the page.
     (function () {
-      var d = document.documentElement;
+      var d = document.documentElement, w0 = 0, h0 = 0;
       function k() {
-        var w = innerWidth, m = w < 768;
-        var v = m ? Math.min(w / 390, 1.3) : Math.max(0.78, Math.min(w / 1440, 1.5));
+        var w = innerWidth, h = innerHeight, m = w < 768;
+        if (m && w === w0 && h0) h = h0; else { w0 = w; h0 = h; }
+        var v = m ? Math.min(w / 390, h / 844) : Math.min(w / 1440, h / 900);
         d.style.setProperty("--k", v.toFixed(4));
         d.classList.toggle("is-phone", m);
       }
@@ -25,10 +28,13 @@
   <link rel="icon" href="shared/favicon.svg" type="image/svg+xml">
   <link rel="preload" href="shared/fonts/Erode-Light.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="shared/fonts/Erode-Regular.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="shared/fonts/Erode-Medium.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="sub/media/org-desk.jpg" as="image">
   <link rel="stylesheet" href="shared/vendor/lenis.css">
   <link rel="stylesheet" href="shared/tokens.css">
   <link rel="stylesheet" href="shared/base.css">
+  <link rel="stylesheet" href="shared/site.css">
+  <link rel="stylesheet" href="home/sections/s9.css">
   <link rel="stylesheet" href="sub/sub.css">
 </head>
 <body class="sub">
@@ -49,7 +55,7 @@
           <h1 class="opener__title" id="title" data-stand><span>Get people working.</span><span>Keep every team moving.</span></h1>
           <p class="opener__sub" data-rise>From open role to first shift. Recruiting, HR, credentialing and onboarding, coordinated. Each department keeps its own call.</p>
           <div class="opener__actions" data-rise>
-            <a class="pill pill--ink" href="#economics"><span class="pill__label">Explore your economics</span><span class="pill__chip"><svg aria-hidden="true"><use href="#arrow"/></svg></span></a>
+            <a class="pbtn pbtn--ink" href="#economics"><span class="pbtn__label">Explore your economics</span><span class="pbtn__chip"><svg class="arrow" aria-hidden="true"><use href="#arrow"/></svg></span></a>
             <a class="tlink" href="#close">Talk through a role</a>
           </div>
         </div>
@@ -190,26 +196,11 @@
       </div>
     </section>
 
-    <!-- ============================== close: two doors + light footer ============================== -->
-    <section class="close" id="close" aria-label="Next steps">
-      <div class="doors">
-        <a class="door door--main" href="#" data-soon data-rise>
-          <span class="door__img" style="background-image:url(sub/media/close-hallway.jpg); --pos: 50% 55%" aria-hidden="true"></span>
-          <span class="door__copy">
-            <span class="door__text"><span class="door__label">For organizations</span><span class="door__title">Bring us one open role.</span></span>
-            <span class="pill pill--paper"><span class="pill__label">Talk through a role</span><span class="pill__chip"><svg aria-hidden="true"><use href="#arrow"/></svg></span></span>
-          </span>
-        </a>
-        <a class="door door--side" href="#" data-soon data-rise>
-          <span class="door__img" style="background-image:url(sub/media/close-lobby.jpg); --pos: 62% 40%" aria-hidden="true"></span>
-          <span class="door__copy">
-            <span class="door__text"><span class="door__label">For clinicians</span><span class="door__title">Find your next role.</span></span>
-            <span class="pill pill--paper"><span class="pill__label">Plan my next step</span><span class="pill__chip"><svg aria-hidden="true"><use href="#arrow"/></svg></span></span>
-          </span>
-        </a>
-      </div>
-      <script>RovnChrome.footer()</script>
-    </section>
+    <!-- ============================== close: home's doors, ink footer and wordmark band ============================== -->
+    <script>RovnChrome.close([
+      { label: 'For organizations', title: 'Bring us one open role.', cta: 'Talk through a role', img: 'sub/media/close-hallway.jpg', pos: '50% 55%' },
+      { label: 'For clinicians', title: 'Find your next role.', cta: 'Plan my next step', img: 'sub/media/close-lobby.jpg', pos: '62% 40%' },
+    ])</script>
 
   </main>
 
@@ -220,6 +211,7 @@
   <script src="shared/vendor/CustomEase.min.js"></script>
   <script src="shared/vendor/lenis.min.js"></script>
   <script src="shared/motion.js"></script>
+  <script src="home/sections/s9.js"></script>
   <script src="sub/sub.js"></script>
 </body>
 </html>

@@ -6,7 +6,7 @@
      [data-object]  product object: rises 24px; on hover it tilts toward the pointer with an amber glint
      [data-exit]    section content lifts and fades as it leaves the top of the screen
      .acc / .faq    accordion and questions open on click
-     .door          close doors: photo darkens, button glows amber
+     .close         home's own close (home/sections/s9.js): doors, ink footer, wordmark band
    Built on shared/motion.js (GSAP + Lenis, eases, word split, glow, glider, glint). */
 (function () {
   const gsap = window.gsap, ST = window.ScrollTrigger, R = window.Rovn;
@@ -51,7 +51,7 @@
   }
 
   /* ---------------------------------------------------------------- buttons */
-  $$('.pill').forEach((b) => R.glow(b));
+  $$('.pbtn').forEach((b) => R.glow(b));
 
   /* ---------------------------------------------------------------- objects: tilt + amber glint on hover */
   function tilt(obj) {
@@ -215,6 +215,29 @@
   });
   addEventListener('pageshow', (e) => { if (e.persisted) { gsap.set(veil, { opacity: 0 }); gsap.set($('main'), { y: 0 }); } });
 
+  /* ---------------------------------------------------------------- home's shared sections (the close)
+     home/sections/s9.js registers itself on window.RovnHomeSections; run it with the same helper kit and
+     breakpoint handling home.js gives it, so the close behaves exactly as on home. */
+  function homeSections() {
+    const sections = window.RovnHomeSections || [];
+    if (!sections.length) return;
+    const K = () => parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--k')) || 1;
+    const split = (els) => { const list = [].concat(els).filter(Boolean); return list.length ? R.words(list) : []; };
+    const riseOnEnter = (targets, trigger, start = 'top 80%', delay = 0.25) => {
+      if (R.reduce) return;
+      gsap.set(targets, { ...R.riseFrom });
+      ST.create({ trigger, start, once: true, onEnter: () => R.rise(targets, { delay }) });
+    };
+    const H = { gsap, ST, R, $, $$, K, split, riseOnEnter };
+    gsap.matchMedia().add({ desk: '(min-width: 768px)', phone: '(max-width: 767px)', reduce: '(prefers-reduced-motion: reduce)' }, (ctx) => {
+      const { desk, reduce } = ctx.conditions;
+      sections.forEach((sec) => {
+        try { if (reduce) { if (sec.reduce) sec.reduce(desk, H); } else sec.init(desk, H); }
+        catch (err) { console.error('[sub] section ' + sec.name, err); }
+      });
+    });
+  }
+
   /* ---------------------------------------------------------------- boot */
   R.ready(() => {
     const sections = $$('main > section');
@@ -224,6 +247,7 @@
       else { enter(s, false); if (s.hasAttribute('data-exit-section')) exit(s); }
     });
     $$('.acc').forEach(accordion);
+    homeSections();
     $$('.faq__list').forEach(faq);
 
     if (R.reduce) { R.loaded(); return; }

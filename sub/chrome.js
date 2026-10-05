@@ -1,7 +1,7 @@
 /* Rōvn subpage chrome: logo sprite, nav and footer, written in place by the script tag that calls them.
    One source for every subpage, so a new page only carries its own modules.
      <script>RovnChrome.nav('organizations')</script>   right after <body>
-     <script>RovnChrome.footer()</script>               inside the close section */
+     <script>RovnChrome.close([...doors])</script>     last thing in <main> */
 (function () {
   // Pages that exist. Anything not listed links to "#" and is marked as coming later.
   const ROUTES = {
@@ -23,28 +23,27 @@
 <symbol id="menu" viewBox="0 0 18 18"><path d="M2 6h14M2 12h14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></symbol>
 </svg>`;
 
+  // Home's nav, word for word (home.html), so every page starts the same way.
   const NAV_LINKS = [
-    ['career', 'Your career'],
-    ['opportunities', 'Career opportunities'],
-    ['how', 'How it works'],
+    ['clinicians', 'For clinicians'],
     ['organizations', 'For organizations'],
+    ['about', 'About us'],
   ];
-
-  const logo = (cls) => `<a class="${cls} logo" href="${ROUTES.home}" aria-label="Rōvn home">
-      <svg class="logo__mark" aria-hidden="true"><use href="#rovn-mark"/></svg>
-      <svg class="logo__word" aria-hidden="true"><use href="#rovn-word"/></svg></a>`;
 
   function nav(active) {
     const links = NAV_LINKS.map(([k, l]) =>
-      `<a class="nav__cell${k === active ? ' is-active' : ''}" href="${href(k)}"${soon(k)}${k === active ? ' aria-current="page"' : ''}>${l}</a>`).join('');
+      `<a class="nav__cell" href="${href(k)}"${soon(k)}${k === active ? ' aria-current="page"' : ''}>${l}</a>`).join('');
     const html = `${SPRITE}
 <header class="nav" data-intro>
   <nav class="nav__bar" aria-label="Primary">
-    ${logo('nav__cell nav__logo')}
+    <a class="nav__cell nav__logo logo" href="${ROUTES.home}" aria-label="Rōvn home">
+      <svg class="logo__mark" aria-hidden="true"><use href="#rovn-mark"/></svg>
+      <svg class="logo__word" aria-hidden="true"><use href="#rovn-word"/></svg>
+    </a>
     <div class="nav__links">${links}</div>
     <span class="nav__spacer" aria-hidden="true"></span>
     <a class="nav__cell nav__contact" href="#"${soon('contact')}>Contact us</a>
-    <a class="nav__cell nav__cta" href="${href('guide')}"${soon('guide')}><span>Plan my next step</span></a>
+    <a class="nav__cell nav__cta" href="#"${soon('waitlist')}><span>Join the waitlist</span><svg class="arrow" aria-hidden="true"><use href="#arrow"/></svg></a>
     <button class="nav__cell nav__menu" type="button" aria-label="Menu" aria-expanded="false"><svg aria-hidden="true"><use href="#menu"/></svg></button>
   </nav>
   <div class="nav__sheet" hidden>
@@ -55,21 +54,49 @@
     document.currentScript.insertAdjacentHTML('beforebegin', html);
   }
 
-  const COLS = [
-    ['Explore', [['career', 'Your career'], ['organizations', 'Organizations'], ['vision', 'Vision']]],
-    ['Understand', [['trust', 'Trust'], ['coverage', 'Coverage'], ['lab', 'Lab']]],
-    ['Help', [['contact', 'Contact'], ['privacy', 'Privacy'], ['terms', 'Terms']]],
+  // Home's close (section 9): two doors, the ink footer and the wordmark band. Only the doors change per page:
+  //   RovnChrome.close([{ label, title, cta, img, pos, href }, { … }])   — this page's audience first
+  const FOOT = [
+    ['Product', [['clinicians', 'For clinicians'], ['organizations', 'For organizations'], ['lab', 'Lab']]],
+    ['Company', [['about', 'About'], ['careers', 'Careers'], ['contact', 'Contact']]],
+    ['Trust', [['privacy', 'Privacy policy'], ['terms', 'Terms of service']]],
   ];
 
-  function footer() {
-    const cols = COLS.map(([h, ls]) => `<div class="foot__col"><p class="foot__head">${h}</p>${
-      ls.map(([k, l]) => `<a href="${href(k)}"${soon(k)}>${l}</a>`).join('')}</div>`).join('');
-    const html = `<footer class="foot" data-reveal>
-  <div class="foot__brand">${logo('foot__logo')}<p class="foot__copy">© 2026 Rōvn</p></div>
-  <nav class="foot__cols" aria-label="Footer">${cols}</nav>
-</footer>`;
+  function close(doors) {
+    const door = (d) => `<a class="cdoor" href="${d.href || '#'}"${d.href ? '' : ' data-soon'}>
+          <span class="cdoor__img" style="background-image:url(${d.img}); --pos: ${d.pos || '50%'}" aria-hidden="true"></span>
+          <span class="door__shade" aria-hidden="true"></span>
+          <span class="cdoor__body">
+            <span class="door__text"><span class="door__label">${d.label}</span><span class="door__title">${d.title}</span></span>
+            <span class="pbtn pbtn--paper cdoor__cta"><span class="pbtn__label">${d.cta}</span><span class="pbtn__chip"><svg class="arrow" aria-hidden="true"><use href="#arrow"/></svg></span></span>
+          </span>
+        </a>`;
+    const cols = FOOT.map(([h, ls], i) => `<div class="foot__col">
+            <p class="foot__head" id="foot-h${i}">${h}</p>
+            <ul class="foot__list" aria-labelledby="foot-h${i}">${ls.map(([k, l]) => `<li><a class="foot__link" href="${href(k)}"${soon(k)}>${l}</a></li>`).join('')}</ul>
+          </div>`).join('');
+    const mark = '<svg class="band__m"><use href="#rovn-mark"/></svg><svg class="band__w"><use href="#rovn-word"/></svg>';
+    const html = `<section class="close" id="close" aria-label="Get started with Rōvn">
+      <div class="close__sheet">
+        <div class="close__doors">${doors.map(door).join('')}</div>
+        <footer class="foot" role="contentinfo">
+          <div class="foot__brand">
+            <span class="foot__logo" role="img" aria-label="Rōvn"><svg class="foot__mark" aria-hidden="true"><use href="#rovn-mark"/></svg><svg class="foot__word" aria-hidden="true"><use href="#rovn-word"/></svg></span>
+            <p class="foot__tag">Less runaround. More career.</p>
+            <p class="foot__copy">© 2026 Rōvn</p>
+          </div>
+          <nav class="foot__links" aria-label="Footer">${cols}</nav>
+        </footer>
+      </div>
+      <div class="band" aria-hidden="true">
+        <span class="band__photo"><span class="band__img" style="background-image:url(home/media/amber-mountains.jpg)"></span><span class="band__shade"></span></span>
+        <span class="band__mark band__glow">${mark}</span>
+        <span class="band__mark">${mark}</span>
+        <span class="band__fade"></span>
+      </div>
+    </section>`;
     document.currentScript.insertAdjacentHTML('beforebegin', html);
   }
 
-  window.RovnChrome = { nav, footer, ROUTES };
+  window.RovnChrome = { nav, close, ROUTES };
 })();

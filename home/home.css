@@ -3,23 +3,6 @@
    font-size: var(--s); text leaves set their own font-size in em and use calc(N * var(--s)) for
    anything else, so the frames scale as one piece. */
 
-:root {
-  --k: 1;
-  --s: calc(var(--k) * 1px);
-  --K: #0F0F0F;
-  --P: #F8F4EC;
-  --P66: rgba(248, 244, 236, 0.66);
-  --mute: rgba(22, 22, 22, 0.66);
-  --frame: #2A2723;
-  --amber-grad: linear-gradient(180deg, oklab(64.4% 0.121 0.130) 0%, oklab(69.6% 0.088 0.141) 100%);
-  --amber-face: linear-gradient(160deg, oklab(76% 0.085 0.135), oklab(66% 0.115 0.135));
-  --serif: "Erode", "Iowan Old Style", Georgia, serif;
-  --sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", system-ui, sans-serif;
-  --disp: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", system-ui, sans-serif;
-}
-@supports (color: color(display-p3 1 1 1)) {
-  :root { --P: color(display-p3 0.973 0.958 0.922); --K: color(display-p3 0.059 0.059 0.059); }
-}
 
 html { background: var(--P); }
 body.home { background: var(--P); color: var(--K); overflow-x: clip; }
@@ -35,43 +18,7 @@ body.home { background: var(--P); color: var(--K); overflow-x: clip; }
 .sub .ln { display: block; }
 .split-word { display: inline-block; will-change: transform; }
 
-/* ---------- pill button (paper pill + ink chip) ---------- */
-.pbtn { position: relative; isolation: isolate; overflow: hidden; display: inline-flex; align-items: center; padding: 4em; border-radius: 999px;
-  -webkit-mask-image: -webkit-radial-gradient(white, black); }
-.pbtn--paper { background: var(--P); color: var(--K); }
-.pbtn, .door__chip { transition: transform .6s cubic-bezier(.34, 1.4, .5, 1); }
-@media (hover: hover) and (pointer: fine) { .pbtn:hover { transform: scale(1.03); } }
-.pbtn:active { transform: scale(.98); transition-duration: .2s; }
-.pbtn__label { position: relative; z-index: 1; padding: 0 calc(16 * var(--s)); font-family: var(--sans); font-weight: 500; font-size: max(13px, 15em); line-height: calc(20 / 15); white-space: nowrap; }
-.pbtn__chip { position: relative; z-index: 1; width: 40em; height: 40em; border-radius: 999px; background: var(--K); color: var(--P); display: grid; place-items: center; flex-shrink: 0; }
-.pbtn__chip .arrow, .door__chip svg { width: 16em; height: 16em; }
-.pbtn > .btn__glow { position: absolute; z-index: 0; left: 0; top: 0; width: 168px; height: 168px; margin: -84px 0 0 -84px; border-radius: 50%; pointer-events: none; opacity: 0;
-  background: radial-gradient(closest-side, rgba(235, 148, 49, 0.62), rgba(235, 148, 49, 0.24) 52%, rgba(235, 148, 49, 0) 100%); mix-blend-mode: multiply; }
 
-/* ================================================================ nav */
-.nav { position: fixed; z-index: 50; inset: 0 0 auto 0; height: max(44px, 48em); background: var(--K); color: #fff; will-change: transform; }
-.nav__bar { display: flex; height: 100%; }
-.nav__links { display: flex; position: relative; }
-.nav__cell { position: relative; display: flex; align-items: center; gap: calc(8 * var(--s)); padding: calc(8 * var(--s)) calc(16 * var(--s)); height: 100%;
-  border-right: 1px solid rgba(255, 255, 255, 0.05); font-family: var(--sans); font-size: max(12.5px, calc(14 * var(--s))); line-height: 1.43; color: #fff; white-space: nowrap; }
-.nav__links .nav__cell { transition: color .4s var(--ease-out); }
-.nav__logo { gap: calc(7 * var(--s)); color: #fff; font-size: var(--s); }
-.nav__logo .logo__mark { width: 24em; height: 24em; }
-.nav__logo .logo__word { width: 65.5em; height: 23em; }
-.nav__logo .logo__glint { padding: calc(8 * var(--s)) calc(16 * var(--s)); gap: calc(7 * var(--s)); }
-.nav__spacer { flex: 1; border-right: 1px solid rgba(255, 255, 255, 0.05); }
-.nav__cta { background-image: var(--amber-grad); color: var(--K); font-weight: 500; overflow: hidden; isolation: isolate; }
-.nav__cta > * { position: relative; z-index: 1; }
-.nav__cta .arrow { width: calc(16 * var(--s)); height: calc(16 * var(--s)); }
-.nav__cta::after { /* lights up the moment the pointer arrives */
-  content: ""; position: absolute; inset: 0; z-index: 0; pointer-events: none; opacity: 0; background: rgba(255, 246, 228, 0.22);
-  transition: opacity .12s ease-out; }
-.nav__cta .arrow { transition: transform .3s cubic-bezier(.22, 1, .36, 1); }
-@media (hover: hover) and (pointer: fine) { .nav__cta:hover::after { opacity: 1; } .nav__cta:hover .arrow { transform: translateX(3px); } }
-.nav__cta:active::after { opacity: .5; background: rgba(60, 20, 0, 0.12); }
-.nav__menu { display: none; width: max(44px, calc(48 * var(--s))); justify-content: center; padding: 0; border-right: 0; }
-.nav__menu svg { width: calc(18 * var(--s)); height: calc(18 * var(--s)); }
-.nav .glider--cell { background: rgba(255, 255, 255, 0.07); }
 
 /* ================================================================ 1 · hero */
 .hero { background: var(--P); }
@@ -105,11 +52,7 @@ body.home { background: var(--P); color: var(--K); overflow-x: clip; }
   background: var(--frame); color: #F8F4EC; transform-origin: 50% 100%; will-change: transform; }
 .door__img { position: absolute; top: -9%; bottom: -9%; left: 50%; width: calc((100vw - 24px) * 0.62); z-index: -2; background-size: cover; background-position: var(--pos, 50%); will-change: transform; }
 .door__img::after { content: ""; position: absolute; inset: 0; transform: scale(1); }
-.door__shade { position: absolute; inset: 0; z-index: -1; background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.66) 100%); transition: opacity .9s var(--ease-out); }
 .door__body { display: flex; align-items: flex-end; gap: 24em; }
-.door__text { flex: 1; display: flex; flex-direction: column; gap: 8em; }
-.door__label { font-family: var(--serif); font-weight: 400; font-size: 24em; line-height: 1; }
-.door__title { font-family: var(--serif); font-weight: 500; font-size: 32em; line-height: 1; letter-spacing: -0.035em; }
 .door__chip { width: 40em; height: 40em; border-radius: 999px; background: #F8F4EC; color: #000; display: grid; place-items: center; flex-shrink: 0; overflow: hidden; }
 
 /* ================================================================ shared objects */
@@ -246,8 +189,6 @@ body.home { background: var(--P); color: var(--K); overflow-x: clip; }
 
 /* ================================================================ phone (390×844 storyboards) */
 @media (max-width: 767px) {
-  .nav__links, .nav__contact { display: none; }
-  .nav__menu { display: flex; }
 
   .hero { padding-top: max(44px, 48em); }
   .hero__frame { height: calc(100svh - max(44px, 48em)); }
@@ -258,8 +199,6 @@ body.home { background: var(--P); color: var(--K); overflow-x: clip; }
   .doors { flex-direction: column; padding: 8em 8em 0; }
   .door__img { left: 0; right: 0; width: auto; }
   .door { flex: none; height: 300em; padding: 24em; }
-  .door__label { font-size: 20em; }
-  .door__title { font-size: 28em; }
   .door__body { gap: 16em; }
 
   .move { padding-top: 56em; }
