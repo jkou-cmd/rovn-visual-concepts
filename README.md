@@ -27,6 +27,7 @@ Photos (Unsplash License unless noted) are graded warm. Brand text was retouched
 - Clinician at a window: Лера :^, https://unsplash.com/photos/a-woman-stands-by-a-window-looking-outside--JSIJObcgqU
 - Two clinicians sharing a phone: Thirdman (Pexels License), https://www.pexels.com/photo/medical-professionals-looking-at-the-screen-of-the-cellphone-5327867/
 - Clinician in a lobby: Brooke Cagle, https://unsplash.com/photos/woman-sitting-in-front-of-brown-wooden-table-NoRsyXmHGpI
+- Walking past a green wall (Organizations, Agents): Adam Hornyak, https://unsplash.com/photos/people-walk-past-a-green-wall-installation-LZ_cpzOUIqA
 - Signing a form: Scott Graham, https://unsplash.com/photos/man-writing-on-paper-OQMZwNd3ThU
 - At the front desk: Ozkan Guner, https://unsplash.com/photos/a-woman-sitting-at-a-table-aOnJSN230sA
 - Clinician in scrubs: TopSphere Media, https://unsplash.com/photos/woman-in-black-crew-neck-shirt-wearing-blue-earbuds-WxRd7byFxs4

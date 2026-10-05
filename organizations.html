@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Workforce operations for healthcare organizations | Rōvn</title>
+  <meta name="description" content="Explore coordinated healthcare workforce operations, departmental handoffs, deployment scope and transparent workforce economics.">
+  <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#0F0F0F">
+  <script>
+    document.documentElement.classList.add("is-loading");
+    setTimeout(function () { document.documentElement.classList.remove("is-loading"); }, 4000);
+    // 1rem = one storyboard px: desktop frames are 1440 wide, phone frames 390.
+    (function () {
+      var d = document.documentElement;
+      function k() {
+        var w = innerWidth, m = w < 768;
+        var v = m ? Math.min(w / 390, 1.3) : Math.max(0.78, Math.min(w / 1440, 1.5));
+        d.style.setProperty("--k", v.toFixed(4));
+        d.classList.toggle("is-phone", m);
+      }
+      k(); addEventListener("resize", k);
+    })();
+  </script>
+  <link rel="icon" href="shared/favicon.svg" type="image/svg+xml">
+  <link rel="preload" href="shared/fonts/Erode-Light.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="shared/fonts/Erode-Regular.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="sub/media/org-desk.jpg" as="image">
+  <link rel="stylesheet" href="shared/vendor/lenis.css">
+  <link rel="stylesheet" href="shared/tokens.css">
+  <link rel="stylesheet" href="shared/base.css">
+  <link rel="stylesheet" href="sub/sub.css">
+</head>
+<body class="sub">
+  <script src="sub/chrome.js"></script>
+  <script>RovnChrome.nav('organizations')</script>
+  <div class="progress" aria-hidden="true"><span></span></div>
+
+  <main>
+
+    <!-- ============================== strip opener ============================== -->
+    <section class="opener" aria-labelledby="title">
+      <div class="opener__strip">
+        <div class="opener__photo" data-photo><div class="opener__img" style="background-image:url(sub/media/org-desk.jpg); --pos: 50% 45%"></div></div>
+      </div>
+      <div class="opener__body">
+        <p class="opener__label" data-rise>For healthcare organizations</p>
+        <div class="opener__copy">
+          <h1 class="opener__title" id="title" data-stand><span>Get people working.</span><span>Keep every team moving.</span></h1>
+          <p class="opener__sub" data-rise>From open role to first shift. Recruiting, HR, credentialing and onboarding, coordinated. Each department keeps its own call.</p>
+          <div class="opener__actions" data-rise>
+            <a class="pill pill--ink" href="#economics"><span class="pill__label">Explore your economics</span><span class="pill__chip"><svg aria-hidden="true"><use href="#arrow"/></svg></span></a>
+            <a class="tlink" href="#close">Talk through a role</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================== accordion: start / agents / economics / scope ============================== -->
+    <section class="acc" aria-label="How Rōvn works for your teams" data-exit-section>
+      <div class="acc__inner" data-exit>
+        <div class="acc__list">
+          <div class="acc__item is-open">
+            <button class="acc__head" type="button" aria-expanded="true"><span class="t-label"><span>Start</span></span></button>
+            <div class="acc__body">
+              <h2 class="t-title acc__title">A target start. A coordinated path.</h2>
+              <p class="t-body acc__text">Requirements, owners and dependencies, mapped to the start date. A missed handoff becomes a task with a next step.</p>
+            </div>
+          </div>
+          <div class="acc__item">
+            <button class="acc__head" type="button" aria-expanded="false"><span class="t-label"><span>Agents</span></span></button>
+            <div class="acc__body">
+              <h2 class="t-title acc__title">Take recurring admin out of the queue.</h2>
+              <p class="t-body acc__text">Collecting, checking at the source, reminding and booking. Exceptions go back to the right person, with the evidence attached.</p>
+            </div>
+          </div>
+          <div class="acc__item" id="economics">
+            <button class="acc__head" type="button" aria-expanded="false"><span class="t-label"><span>Economics</span></span></button>
+            <div class="acc__body">
+              <h2 class="t-title acc__title">Make the economics easy to check.</h2>
+              <p class="t-body acc__text">Agency premium, admin capacity and uncovered shifts, kept separate. Your assumptions and the full cost, nothing hidden.</p>
+            </div>
+          </div>
+          <div class="acc__item">
+            <button class="acc__head" type="button" aria-expanded="false"><span class="t-label"><span>Scope</span></span></button>
+            <div class="acc__body">
+              <h2 class="t-title acc__title">Start with a scope you can run.</h2>
+              <p class="t-body acc__text">Pick the roles, locations and people first. Agree what done looks like before real data comes in.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="acc__stage" data-photo>
+          <!-- Start: the start card on the corridor -->
+          <div class="scene is-on">
+            <div class="scene__img" style="background-image:url(sub/media/org-corridor.jpg); --pos: 50% 60%"></div>
+            <div class="scene__top"><span class="chip-planned">Planned · example case</span></div>
+            <div class="scene__mid">
+              <div class="obj startcard" data-object>
+                <div class="startcard__top">
+                  <div class="startcard__org"><span class="mono">QFM</span><span>Quarrystone Family Medicine · Start card</span></div>
+                  <span class="status">In progress</span>
+                </div>
+                <p class="startcard__title">First shift</p>
+                <p class="startcard__who">Renée Okafor, NP · Clinic B · Mon, Nov 3, 7:00 am</p>
+                <div class="depts">
+                  <div class="dept dept--done" data-tick><span class="dept__dot"><svg aria-hidden="true"><use href="#check"/></svg></span><div><p class="dept__name">Recruiting</p><p class="dept__state">Offer signed · Oct 6</p></div></div>
+                  <div class="dept dept--done" data-tick><span class="dept__dot"><svg aria-hidden="true"><use href="#check"/></svg></span><div><p class="dept__name">HR</p><p class="dept__state">I-9 and payroll · Oct 17</p></div></div>
+                  <div class="dept dept--live" data-tick><span class="dept__dot" data-live>OH</span><div><p class="dept__name">Occupational health</p><p class="dept__state">Waiting on a decision</p></div></div>
+                  <div class="dept" data-tick><span class="dept__dot">Cr</span><div><p class="dept__name">Credentialing</p><p class="dept__state">Not yet</p></div></div>
+                  <div class="dept" data-tick><span class="dept__dot">Tr</span><div><p class="dept__name">Training</p><p class="dept__state">Not yet</p></div></div>
+                  <div class="dept" data-tick><span class="dept__dot">Md</span><div><p class="dept__name">Medical director</p><p class="dept__state">Not yet</p></div></div>
+                </div>
+                <p class="startcard__next">Next · Occupational health: TB read on Oct 24</p>
+              </div>
+            </div>
+          </div>
+          <!-- Agents: the agent's log on the walker photo -->
+          <div class="scene">
+            <div class="scene__img" style="background-image:url(sub/media/org-walker.jpg); --pos: 40%"></div>
+            <div class="scene__top">
+              <span class="namepill"><span class="namepill__mark"><img src="sub/media/mark-ink.svg" alt=""></span><span class="namepill__text"><span class="namepill__name">Quarrystone’s agent</span><span class="namepill__sub">Working on Renée Okafor’s file</span></span></span>
+              <span class="chip-planned">Planned</span>
+            </div>
+            <div class="scene__mid">
+              <div class="obj log" data-object>
+                <div class="log__row" data-tick><span class="log__ic"><svg aria-hidden="true"><use href="#check"/></svg></span><span class="log__text">License checked at source</span><span class="log__date">Oct 8</span></div>
+                <div class="log__row" data-tick><span class="log__ic"><svg aria-hidden="true"><use href="#check"/></svg></span><span class="log__text">References collected</span><span class="log__date">Oct 13</span></div>
+                <div class="log__row" data-tick><span class="log__ic"><svg aria-hidden="true"><use href="#check"/></svg></span><span class="log__text">TB result received</span><span class="log__date">Oct 24</span></div>
+                <div class="log__row" data-tick><span class="log__ic log__ic--live"></span><span class="log__text">Ready for Dana’s sign-off</span><span class="log__who">DW</span></div>
+              </div>
+            </div>
+          </div>
+          <!-- Economics: the scenario on a tonal surface -->
+          <div class="scene scene--tone">
+            <div class="scene__top"></div>
+            <div class="scene__mid">
+              <div class="obj scenario" data-object>
+                <p class="scenario__title">Your scenario</p>
+                <div class="field"><p class="field__label">Agency hours replaced, a month</p><p class="field__box">300</p></div>
+                <div class="field"><p class="field__label">Premium over staff rate, an hour</p><p class="field__box">$38</p></div>
+                <div class="scenario__result">
+                  <p class="scenario__sum">= $<span data-count="11400">11,400</span> a month in agency premium</p>
+                  <p class="scenario__note">Cash, at full ramp. Capacity and contribution are worked out separately.</p>
+                </div>
+                <a class="tlink" href="#" data-soon>Open the calculator <svg aria-hidden="true"><use href="#arrow"/></svg></a>
+              </div>
+            </div>
+          </div>
+          <!-- Scope: no frame yet; a checklist on the same tonal surface -->
+          <div class="scene scene--tone">
+            <div class="scene__top"><span class="chip-planned">Planned · example case</span></div>
+            <div class="scene__mid">
+              <div class="obj scope" data-object>
+                <p class="scope__title">First scope</p>
+                <div class="scope__row scope__row--done" data-tick><span class="scope__box"><svg aria-hidden="true"><use href="#check"/></svg></span><span class="scope__k">Roles</span><span class="scope__v">Nurse practitioners</span></div>
+                <div class="scope__row scope__row--done" data-tick><span class="scope__box"><svg aria-hidden="true"><use href="#check"/></svg></span><span class="scope__k">Locations</span><span class="scope__v">Clinic B</span></div>
+                <div class="scope__row scope__row--done" data-tick><span class="scope__box"><svg aria-hidden="true"><use href="#check"/></svg></span><span class="scope__k">People</span><span class="scope__v">Dana Whitfield, credentialing</span></div>
+                <div class="scope__row" data-tick><span class="scope__box"></span><span class="scope__k">Done means</span><span class="scope__v">Agreed before real data comes in</span></div>
+                <p class="scope__foot">Illustrative. Your scope is agreed with you.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================== questions ============================== -->
+    <section class="faq" aria-labelledby="faq-title" data-exit-section>
+      <div class="faq__inner" data-exit>
+        <h2 class="faq__title" id="faq-title" data-stand>Questions</h2>
+        <div class="faq__list" data-rise>
+          <div class="faq__item is-open">
+            <button class="faq__q" type="button"><span class="faq__qt">Is this only for nursing facilities?</span><span class="faq__icon" aria-hidden="true"></span></button>
+            <div class="faq__a"><p class="faq__at">No. Rōvn works across healthcare workforce operations. Each deployment starts with a defined set of professions, locations and settings.</p></div>
+          </div>
+          <div class="faq__item">
+            <button class="faq__q" type="button"><span class="faq__qt">What does Rōvn cost?</span><span class="faq__icon" aria-hidden="true"></span></button>
+            <div class="faq__a"><p class="faq__at">It depends on the roles, locations and work in your scope. We’ll walk through it with you when we talk through a role.</p></div>
+          </div>
+          <div class="faq__item">
+            <button class="faq__q" type="button"><span class="faq__qt">Do we have to replace our systems?</span><span class="faq__icon" aria-hidden="true"></span></button>
+            <div class="faq__a"><p class="faq__at">No. Rōvn coordinates work across the systems you already use. Each integration is set up and checked on its own.</p></div>
+          </div>
+          <div class="faq__item">
+            <button class="faq__q" type="button"><span class="faq__qt">Does Rōvn become the employer?</span><span class="faq__icon" aria-hidden="true"></span></button>
+            <div class="faq__a"><p class="faq__at">No. You stay the employer, and agencies and partners keep their roles. Rōvn coordinates the work between them.</p></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================== close: two doors + light footer ============================== -->
+    <section class="close" id="close" aria-label="Next steps">
+      <div class="doors">
+        <a class="door door--main" href="#" data-soon data-rise>
+          <span class="door__img" style="background-image:url(sub/media/close-hallway.jpg); --pos: 50% 55%" aria-hidden="true"></span>
+          <span class="door__copy">
+            <span class="door__text"><span class="door__label">For organizations</span><span class="door__title">Bring us one open role.</span></span>
+            <span class="pill pill--paper"><span class="pill__label">Talk through a role</span><span class="pill__chip"><svg aria-hidden="true"><use href="#arrow"/></svg></span></span>
+          </span>
+        </a>
+        <a class="door door--side" href="#" data-soon data-rise>
+          <span class="door__img" style="background-image:url(sub/media/close-lobby.jpg); --pos: 62% 40%" aria-hidden="true"></span>
+          <span class="door__copy">
+            <span class="door__text"><span class="door__label">For clinicians</span><span class="door__title">Find your next role.</span></span>
+            <span class="pill pill--paper"><span class="pill__label">Plan my next step</span><span class="pill__chip"><svg aria-hidden="true"><use href="#arrow"/></svg></span></span>
+          </span>
+        </a>
+      </div>
+      <script>RovnChrome.footer()</script>
+    </section>
+
+  </main>
+
+  <script src="shared/vendor/gsap.min.js"></script>
+  <script src="shared/vendor/ScrollTrigger.min.js"></script>
+  <script src="shared/vendor/Flip.min.js"></script>
+  <script src="shared/vendor/SplitText.min.js"></script>
+  <script src="shared/vendor/CustomEase.min.js"></script>
+  <script src="shared/vendor/lenis.min.js"></script>
+  <script src="shared/motion.js"></script>
+  <script src="sub/sub.js"></script>
+</body>
+</html>
