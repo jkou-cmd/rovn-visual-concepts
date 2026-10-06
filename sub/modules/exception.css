@@ -1,7 +1,7 @@
 /* module · exception (Paper P11 · 3). 1rem = 1px. */
 .sub main > section.exc { padding-inline: max(8rem, (100% - var(--maxw)) / 2 + 8rem); }
 .exc__inner { display: flex; gap: 8rem; min-height: 900rem; box-sizing: border-box; padding-block: 8rem; }
-.exc__copy { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; justify-content: flex-end; padding: 24rem 16rem 32rem; }
+.exc__copy { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; justify-content: flex-end; padding: 24rem 24rem 32rem; }
 .exc__copy-in { display: flex; flex-direction: column; align-items: flex-start; gap: 24rem; }
 .exc__title { width: min(560rem, 100%); font-family: var(--serif); font-weight: 300; font-size: 54rem; line-height: 1; letter-spacing: -0.05em; color: var(--K); }
 .exc__title > span { display: block; }

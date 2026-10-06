@@ -2,7 +2,7 @@
    so the plot stretches or compresses with the window while all type stays fixed. */
 .lanes { --lab: 270rem; --pr: 44rem; --plot: 1110; }
 .sub main > section.lanes { padding-inline: max(8rem, (100% - var(--maxw)) / 2 + 8rem); }
-.lanes__head { display: flex; align-items: flex-end; justify-content: space-between; gap: 32rem; padding: 40rem 40rem 8rem 16rem; }
+.lanes__head { display: flex; align-items: flex-end; justify-content: space-between; gap: 32rem; padding: 40rem 24rem 8rem 24rem; }
 .lanes__title { flex: 1 1 auto; min-width: 0; max-width: 640rem; width: 640rem; font-family: var(--serif); font-weight: 300; font-size: 54rem; line-height: 1; letter-spacing: -0.05em; color: var(--K); }
 .lanes__title > span { display: block; }
 .lanes__side { flex: 0 1 440rem; min-width: 0; display: flex; flex-direction: column; align-items: flex-start; gap: 16rem; }
@@ -25,7 +25,7 @@
 
 /* rows */
 .lane { position: relative; z-index: 1; display: grid; grid-template-columns: var(--lab) minmax(0, 1fr); height: 68rem; }
-.lane__name { display: flex; align-items: center; gap: 12rem; padding-left: 16rem; min-width: 0; }
+.lane__name { display: flex; align-items: center; gap: 12rem; padding-left: 24rem; min-width: 0; }
 .lane__mono { width: 28rem; height: 28rem; border-radius: 28rem; background: #E9E1D3; display: grid; place-items: center; flex-shrink: 0;
   font-family: var(--disp); font-weight: 700; font-size: max(11px, 11rem); line-height: 14rem; color: var(--K); }
 .lane__mono--photo { background-size: cover; background-position: 50%; }
