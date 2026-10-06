@@ -8,7 +8,7 @@
 .steplist__box { width: 20rem; height: 20rem; border-radius: 6rem; background: #E9E2D5; display: grid; place-items: center; flex-shrink: 0; color: var(--P2); }
 .steplist__row--done .steplist__box { background: #0F0F0F; }
 .steplist__box svg { width: 12rem; height: 12rem; }
-.steplist__v { font-family: var(--sans); font-size: max(13px, 15rem); line-height: 20rem; color: #0F0F0F; }
+.steplist__v { font-family: var(--sans); font-size: max(13px, 15rem); line-height: 20rem; color: var(--K); }
 .steplist__row--done .steplist__v { color: var(--muted); }
 .steplist__foot { padding-top: 14rem; font-family: var(--sans); font-size: max(12px, 13rem); line-height: 18rem; color: var(--muted); }
 .steplist { box-sizing: border-box; }

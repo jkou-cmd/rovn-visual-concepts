@@ -102,6 +102,9 @@
     $$('.gl--h[data-y]').forEach((l) => {
       const sec = l.parentNode, el = $(l.dataset.y, sec);
       if (el) l.style.top = `${offsetIn(el, sec).y + el.offsetHeight + (parseFloat(l.dataset.dy) || 0) * rem()}px`;
+      const after = l.dataset.after && $(l.dataset.after, sec), before = l.dataset.before && $(l.dataset.before, sec);
+      if (after) { l.style.left = `${offsetIn(after, sec).x + after.offsetWidth}px`; l.style.right = '0px'; }   // from its right edge to the screen edge
+      if (before) { l.style.left = '0px'; l.style.right = `${sec.offsetWidth - offsetIn(before, sec).x}px`; } // from the screen edge to its left edge
     });
   }
   placeLines();
@@ -247,7 +250,7 @@
       if (prev && prev !== s) {
         prev.classList.add('is-leaving'); prev.style.zIndex = 1;
         if (leaveCall) leaveCall.kill();
-        leaveCall = gsap.delayedCall(stage.hasAttribute('data-morph') ? 1.15 : 0.9, () => prev.classList.remove('is-leaving'));
+        leaveCall = gsap.delayedCall(stage.hasAttribute('data-morph') ? 0.8 : 0.9, () => prev.classList.remove('is-leaving'));
       }
       if (stage.hasAttribute('data-morph')) {
         // the new scene grows out of the step you clicked: a small pill on the panel's edge, level with that
@@ -259,19 +262,25 @@
         const h = 7, startShape = phone() ? [0, 40, 92, 40, 999] : [y - h / 2, 88, 100 - y - h / 2, 0, 999];
         gsap.set(bg, { opacity: 1 });
         if (s.__clipTw) s.__clipTw.kill();
-        s.__clipTw = clip(s, [0, 0, 0, 0, 20], { from: startShape, duration: 1.15, ease: 'power3.inOut' });
-        gsap.fromTo(s, { opacity: 0 }, { opacity: 1, duration: 0.4, ease: 'power1.out', overwrite: 'auto' });
-        if (bg !== s) gsap.fromTo(bg, { scale: 1.16 }, { scale: 1, duration: 1.5, ease: 'expo.out', overwrite: true });
+        s.__clipTw = clip(s, [0, 0, 0, 0, 20], { from: startShape, duration: 0.75, ease: 'expo.out' });
+        gsap.fromTo(s, { opacity: 0 }, { opacity: 1, duration: 0.3, ease: 'power1.out', overwrite: 'auto' });
+        // a scene on the same field as the last (tone after tone) would grow invisibly: it starts a shade deeper
+        // and lightens as it lands, and the old card steps back, so the change always reads
+        const field = (el) => el.className.replace(/\bis-(on|leaving)\b/g, '').trim();
+        if (prev && bg === s && field(prev) === field(s)) gsap.fromTo(s, { filter: 'brightness(0.9)' }, { filter: 'brightness(1)', duration: 0.9, ease: 'power2.out', clearProps: 'filter' });
+        const po = prev && prev !== s && $('[data-object]', prev);
+        if (po) gsap.fromTo(po, { opacity: 1, y: 0 }, { opacity: 0, y: -10 * rem(), duration: 0.3, ease: 'power2.in', onComplete: () => gsap.set(po, { opacity: 1, y: 0 }) });
+        if (bg !== s) gsap.fromTo(bg, { scale: 1.12 }, { scale: 1, duration: 0.95, ease: 'expo.out', overwrite: true });
         if (prev && prev !== s) {
           const pb = $('.scene__img', prev) || prev;
-          gsap.fromTo(pb, { scale: 1 }, { scale: 0.96, duration: 1.15, ease: 'power3.inOut', onComplete: () => gsap.set(pb, { scale: 1 }) });
+          gsap.fromTo(pb, { scale: 1 }, { scale: 0.96, duration: 0.75, ease: 'expo.out', onComplete: () => gsap.set(pb, { scale: 1 }) });
         }
       } else {
         if (bg !== s) gsap.set(s, { opacity: 1 });
         gsap.fromTo(bg, { opacity: 0, scale: 1.04 }, { opacity: 1, scale: 1, duration: 0.9, ease: 'expo.out', overwrite: true });
       }
       if (top) gsap.fromTo(top, { opacity: 0, y: -8 }, { opacity: 1, y: 0, duration: 0.7, delay: 0.1, ease: 'expo.out', overwrite: true });
-      if (obj) gsap.fromTo(obj, { opacity: 0, y: 24 * rem() }, { opacity: 1, y: 0, duration: 1.0, delay: 0.12, ease: 'expo.out', overwrite: 'auto', onStart: () => tick(obj) });
+      if (obj) gsap.fromTo(obj, { opacity: 0, y: 24 * rem() }, { opacity: 1, y: 0, duration: 0.8, delay: 0.1, ease: 'expo.out', overwrite: 'auto', onStart: () => tick(obj) });
     };
     const open = (i) => {
       if (i === current) return;
@@ -305,10 +314,10 @@
       it.classList.toggle('is-open', open); q.setAttribute('aria-expanded', String(open));
       if (R.reduce) return;
       if (open) {
-        gsap.fromTo(a, { height: 0 }, { height: 'auto', duration: 0.7, ease: 'expo.out', overwrite: true });
+        gsap.fromTo(a, { height: 0 }, { height: 'auto', duration: 0.6, ease: 'power3.inOut', overwrite: true, onComplete: () => ST.refresh() });
         gsap.fromTo(a.firstElementChild, { autoAlpha: 0, y: 8 }, { autoAlpha: 1, y: 0, duration: 0.7, delay: 0.08, ease: 'expo.out' });
       } else {
-        gsap.fromTo(a, { height: a.offsetHeight }, { height: 0, duration: 0.6, ease: 'expo.out', overwrite: true, onComplete: () => { a.style.height = ''; } });
+        gsap.fromTo(a, { height: a.offsetHeight }, { height: 0, duration: 0.6, ease: 'power3.inOut', overwrite: true, onComplete: () => { a.style.height = ''; } });
       }
     };
     items.forEach((it) => {
@@ -316,7 +325,6 @@
       q.setAttribute('aria-expanded', String(it.classList.contains('is-open')));
       q.addEventListener('click', () => {
         const opening = !it.classList.contains('is-open');
-        if (!R.reduce) keepInPlace(q, 0.75);
         items.forEach((o) => { if (o !== it) set(o, false); });
         set(it, opening);
         if (R.reduce) ST.refresh();

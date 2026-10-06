@@ -74,7 +74,7 @@ body.sub { background: var(--P); color: var(--K); font-size: max(13px, 16rem); o
 .opener__strip { flex: 1; min-height: 0; padding: 8rem 8rem 0; display: flex; }
 .opener__photo { position: relative; flex: 1; overflow: hidden; background: #2A2723; }
 .opener__img { position: absolute; inset: -6% 0; background-size: cover; background-position: var(--pos, 50%); will-change: transform; }
-.opener__body { flex-shrink: 0; min-height: 338rem; display: flex; padding: 24rem 16rem 32rem; }
+.opener__body { flex-shrink: 0; min-height: 338rem; display: flex; padding: 24rem 24rem 32rem; } /* sides match the top */
 .opener__label { flex: 1; font-family: var(--serif); font-size: max(14px, 20rem); line-height: 1; letter-spacing: -0.03em; color: var(--ink-68); }
 .opener__copy { width: var(--col); flex-shrink: 0; display: flex; flex-direction: column; gap: 24rem; }
 .opener__title { font-family: var(--serif); font-weight: 300; font-size: 68rem; line-height: .92; letter-spacing: -0.05em; color: var(--K); }
@@ -239,6 +239,26 @@ body.sub { background: var(--P); color: var(--K); font-size: max(13px, 16rem); o
 .faq--spruce .faq__item + .faq__item { border-top-color: rgba(249, 244, 234, 0.14); }
 @media (hover: hover) and (pointer: fine) { .faq--spruce .faq__item:not(.is-open) .faq__q:hover .faq__qt { color: var(--spruce-ink); opacity: .72; } }
 .faq--spruce :focus-visible { outline-color: #F0A04A; }
+
+/* ================================================================ colour fields: any section on amber, spruce or ink
+   Add .field--amber / .field--spruce / .field--ink to a section. The page colours flip through the variables
+   (headings, body, labels, lines, pills, the hover fill); photo panels, stages and product objects keep their
+   own colours. One field per page. */
+.field--ink, .field--spruce { --K: #F9F4EA; --P: #0F0F0F; --ink: #F9F4EA; --ink-68: rgba(249, 244, 234, 0.74); --muted: rgba(249, 244, 234, 0.6);
+  --body: rgba(249, 244, 234, 0.74); --line: rgba(249, 244, 234, 0.14); --gl: rgba(249, 244, 234, 0.14); color: var(--K); }
+.field--ink { background: #0F0F0F; --tone: #1E1C1A; }
+.field--spruce { background: var(--spruce); --tone: #2C463B; }
+.field--amber { --K: #1A1006; --P: #F9F4EA; --ink: #1A1006; --ink-68: rgba(26, 16, 6, 0.74); --muted: rgba(26, 16, 6, 0.62); --body: rgba(26, 16, 6, 0.74);
+  --line: rgba(26, 16, 6, 0.16); --gl: rgba(26, 16, 6, 0.16); --tone: rgba(255, 244, 228, 0.28); color: var(--K);
+  background-image: linear-gradient(in oklab 180deg, oklab(69.6% 0.088 0.141) 0%, oklab(64.4% 0.121 0.130) 100%); }
+.field--ink .pbtn--ink .pbtn__chip, .field--spruce .pbtn--ink .pbtn__chip { background: #0F0F0F; color: #F9F4EA; }
+/* fields carry their own breathing room top and bottom (the 8px gutter alone would crowd the colour) */
+.field--ink, .field--spruce, .field--amber { padding-block: 8rem; }
+.field--ink.faq, .field--spruce.faq, .field--amber.faq { padding-block: 104rem 128rem; }
+.field--ink.opener, .field--spruce.opener, .field--amber.opener { padding-block: 0; }
+/* inside a field, panels and objects keep the page's own colours */
+:is(.field--ink, .field--spruce, .field--amber) :is(.acc__stage, .exc__stage, .calc__side, .sopen__photo, .obj) {
+  --K: #0F0F0F; --P: #F9F4EA; --ink: #1B1814; --ink-68: #1B1814AD; --muted: #6B6358; --body: #161616A8; --line: #0000001A; --tone: #EEE6D7; }
 
 /* ================================================================ page exit veil */
 .veil { position: fixed; inset: 0; z-index: 80; background: var(--P); pointer-events: none; opacity: 0; }
