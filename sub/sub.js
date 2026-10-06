@@ -211,7 +211,7 @@
       else if (stage.parentNode !== inner) inner.append(stage);
     };
     let leaveCall = null;
-    const showScene = (i, animate) => {
+    const showScene = (i, animate, from) => {
       const prev = scenes.find((s) => s.classList.contains('is-on'));
       scenes.forEach((s, j) => { s.classList.toggle('is-on', j === i); s.classList.remove('is-leaving'); s.style.zIndex = j === i ? 2 : 0; });
       const s = scenes[i], obj = $('[data-object]', s), top = $('.scene__top', s), bg = $('.scene__img', s) || s;
@@ -223,11 +223,22 @@
         leaveCall = gsap.delayedCall(stage.hasAttribute('data-morph') ? 1.15 : 0.9, () => prev.classList.remove('is-leaving'));
       }
       if (stage.hasAttribute('data-morph')) {
-        // the new scene grows out of a circle over the last one, then squares off at the frame
-        gsap.set([s, bg], { opacity: 1 });
+        // the new scene grows out of the step you clicked: a small pill on the panel's edge, level with that
+        // step, swells to fill the panel and settles at its rounded corners; it fades up over the first third
+        // so it never pops, and the scene underneath sinks back a little as it's covered
+        const sr = stage.getBoundingClientRect(), H = sr.height || 1;
+        let y = 50;
+        if (from && !phone()) { const r = from.getBoundingClientRect(); y = Math.max(8, Math.min(92, ((r.top + r.height / 2 - sr.top) / H) * 100)); }
+        const h = 7, startShape = phone() ? [0, 40, 92, 40, 999] : [y - h / 2, 88, 100 - y - h / 2, 0, 999];
+        gsap.set(bg, { opacity: 1 });
         if (s.__clipTw) s.__clipTw.kill();
-        s.__clipTw = clip(s, SQUARE, { from: [34, 30, 34, 30, 999], duration: 1.1, ease: 'expo.inOut' });
-        if (bg !== s) gsap.fromTo(bg, { scale: 1.12 }, { scale: 1, duration: 1.4, ease: 'expo.out', overwrite: true });
+        s.__clipTw = clip(s, [0, 0, 0, 0, 20], { from: startShape, duration: 1.15, ease: 'power3.inOut' });
+        gsap.fromTo(s, { opacity: 0 }, { opacity: 1, duration: 0.4, ease: 'power1.out', overwrite: 'auto' });
+        if (bg !== s) gsap.fromTo(bg, { scale: 1.16 }, { scale: 1, duration: 1.5, ease: 'expo.out', overwrite: true });
+        if (prev && prev !== s) {
+          const pb = $('.scene__img', prev) || prev;
+          gsap.fromTo(pb, { scale: 1 }, { scale: 0.96, duration: 1.15, ease: 'power3.inOut', onComplete: () => gsap.set(pb, { scale: 1 }) });
+        }
       } else {
         if (bg !== s) gsap.set(s, { opacity: 1 });
         gsap.fromTo(bg, { opacity: 0, scale: 1.04 }, { opacity: 1, scale: 1, duration: 0.9, ease: 'expo.out', overwrite: true });
@@ -246,7 +257,7 @@
         gsap.fromTo($$('.acc__body > *', items[i]), { autoAlpha: 0, y: 10 }, { autoAlpha: 1, y: 0, duration: 0.8, stagger: 0.06, delay: 0.12, ease: 'expo.out' });
       }
       fitObjects();
-      showScene(i, true);
+      showScene(i, true, $('.acc__head', items[i]));
       if (phone() && R.lenis) R.lenis.scrollTo(items[i], { offset: -60, duration: 1.1 });
       ST.refresh();
     };
@@ -259,20 +270,29 @@
   }
 
   /* ---------------------------------------------------------------- questions */
+  // one answer open at a time: opening a question closes the one that was open
   function faq(list) {
-    $$('.faq__item', list).forEach((it) => {
+    const items = $$('.faq__item', list);
+    const set = (it, open) => {
       const q = $('.faq__q', it), a = $('.faq__a', it);
+      if (it.classList.contains('is-open') === open) return;
+      it.classList.toggle('is-open', open); q.setAttribute('aria-expanded', String(open));
+      if (R.reduce) return;
+      if (open) {
+        gsap.fromTo(a, { height: 0 }, { height: 'auto', duration: 0.7, ease: 'expo.out', overwrite: true, onComplete: () => ST.refresh() });
+        gsap.fromTo(a.firstElementChild, { autoAlpha: 0, y: 8 }, { autoAlpha: 1, y: 0, duration: 0.7, delay: 0.08, ease: 'expo.out' });
+      } else {
+        gsap.fromTo(a, { height: a.offsetHeight }, { height: 0, duration: 0.6, ease: 'expo.out', overwrite: true, onComplete: () => { a.style.height = ''; ST.refresh(); } });
+      }
+    };
+    items.forEach((it) => {
+      const q = $('.faq__q', it);
       q.setAttribute('aria-expanded', String(it.classList.contains('is-open')));
       q.addEventListener('click', () => {
         const opening = !it.classList.contains('is-open');
-        it.classList.toggle('is-open', opening); q.setAttribute('aria-expanded', String(opening));
-        if (R.reduce) { ST.refresh(); return; }
-        if (opening) {
-          gsap.fromTo(a, { height: 0 }, { height: 'auto', duration: 0.7, ease: 'expo.out', onComplete: () => ST.refresh() });
-          gsap.fromTo(a.firstElementChild, { autoAlpha: 0, y: 8 }, { autoAlpha: 1, y: 0, duration: 0.7, delay: 0.08, ease: 'expo.out' });
-        } else {
-          gsap.fromTo(a, { height: a.offsetHeight }, { height: 0, duration: 0.5, ease: 'power3.out', onComplete: () => { a.style.height = ''; ST.refresh(); } });
-        }
+        items.forEach((o) => { if (o !== it) set(o, false); });
+        set(it, opening);
+        if (R.reduce) ST.refresh();
       });
     });
   }

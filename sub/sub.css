@@ -88,13 +88,23 @@ body.sub { background: var(--P); color: var(--K); font-size: max(13px, 16rem); o
 .acc__item { display: flex; flex-direction: column; flex: 0 0 auto; min-height: 0; }
 .acc__item + .acc__item { border-top: 1px solid var(--line); }
 .acc__item.is-open { flex: 1 1 0; justify-content: center; }
-.acc__head { display: flex; width: 100%; padding: 24rem; text-align: left; }
+.acc__head { position: relative; isolation: isolate; display: flex; align-items: center; width: 100%; padding: 24rem; text-align: left; }
 .acc__item.is-open .acc__head { padding-bottom: 8rem; cursor: default; }
 .acc__head .t-label { transition: color .3s var(--ease); }
 .acc__head .t-label > span { display: inline-block; transition: transform .45s var(--ease); }
+/* collapsed steps: a plus at the row's end says "this opens"; on hover the row fills with tone from the left,
+   the label darkens and steps in, and the plus turns */
+.acc__item:not(.is-open) .acc__head { cursor: pointer; }
+.acc__head::before { content: ""; position: absolute; inset: 0; z-index: -1; background: var(--tone); transform: scaleX(0); transform-origin: 0 50%; transition: transform .55s var(--ease); }
+.acc__head::after { content: ""; width: 12rem; height: 12rem; margin-left: auto; flex-shrink: 0; color: var(--ink-68); transition: transform .5s var(--ease), opacity .3s var(--ease);
+  background: linear-gradient(currentColor, currentColor) 50% 50% / 100% 1.4px no-repeat, linear-gradient(currentColor, currentColor) 50% 50% / 1.4px 100% no-repeat; }
+.acc__item.is-open .acc__head::after { opacity: 0; }
+.acc__item:not(.is-open) .acc__head:focus-visible::before { transform: scaleX(1); }
 @media (hover: hover) and (pointer: fine) {
+  .acc__item:not(.is-open) .acc__head:hover::before { transform: scaleX(1); }
   .acc__item:not(.is-open) .acc__head:hover .t-label { color: var(--ink); }
-  .acc__item:not(.is-open) .acc__head:hover .t-label > span { transform: translateX(4rem); }
+  .acc__item:not(.is-open) .acc__head:hover .t-label > span { transform: translateX(8rem); }
+  .acc__item:not(.is-open) .acc__head:hover::after { transform: rotate(90deg); color: var(--ink); }
 }
 .acc__body { display: none; flex-direction: column; gap: 32rem; padding: 0 24rem 24rem; }
 .acc__item.is-open .acc__body { display: flex; }
@@ -195,7 +205,7 @@ body.sub { background: var(--P); color: var(--K); font-size: max(13px, 16rem); o
 /* ================================================================ variant B pieces (opt-in): gridlines, colour fields
    Inspired by Petra Labs, in Rōvn's own terms: hairlines that line up under the nav's cells and draw
    themselves in; one amber field and one spruce field per page, never more. */
-:root { --spruce: #22392F; --spruce-ink: #F9F4EA; --gl: #1B181412; }
+:root { --spruce: #22392F; --spruce-ink: #F9F4EA; --gl: #0000001A; } /* same weight as the accordion and question dividers */
 .gl { position: absolute; z-index: 1; pointer-events: none; background: var(--gl); }
 .gl--h { left: 0; right: 0; height: 1px; transform-origin: 0 50%; }
 .gl--v { top: 0; bottom: 0; width: 1px; transform-origin: 50% 0; }
@@ -206,11 +216,12 @@ body.sub { background: var(--P); color: var(--K); font-size: max(13px, 16rem); o
 
 /* lines always end on something: the screen edge, a container edge or another line */
 .faq--spruce .faq__item + .faq__item { border-top: 0; position: relative; }
-.faq--spruce .faq__item + .faq__item::before { content: ""; position: absolute; top: 0; left: -8rem; right: calc(-24rem - var(--bleed)); height: 1px; background: var(--gl); } /* from the vertical line to the screen edge */
+.faq--spruce .faq__item + .faq__item::before { content: ""; position: absolute; top: 0; left: -8rem; right: 0; height: 1px; background: var(--gl); } /* from the vertical line to the list's edge */
 .acc--lines .acc__item + .acc__item { border-top: 0; position: relative; }
 .acc--lines .acc__item + .acc__item::before { content: ""; position: absolute; top: 0; left: calc(-8rem - var(--bleed)); right: -8rem; height: 1px; background: var(--line); } /* from the screen edge to the photo panel */
 
 /* the amber field: a scene in the accordion stage (amber as light, the white card on it) */
+.acc__stage[data-morph] { border-radius: 20rem; }
 .scene--amber { background-image: linear-gradient(in oklab 180deg, oklab(69.6% 0.088 0.141) 0%, oklab(64.4% 0.121 0.130) 100%); }
 .scene--amber .obj { box-shadow: 0 1px 2px #5A2A0A1F, 0 24px 56px #5A2A0A3D; }
 

@@ -238,7 +238,7 @@ function matchHtml(m, r) {
     const review = l.status === 'human_review_required';
     const ico = ok ? `<span class="ico ico--ok">${CHECK}</span>` : review ? `<span class="ico ico--review">${EYE}</span>` : `<span class="ico ico--miss">${DASH}</span>`;
     const status = ok ? (l.evidence === 'source_confirmed' ? 'Confirmed at the source' : 'Met') : review ? `A person at ${r.employer} will review it` : 'Not shown yet';
-    return `<li>${ico}<div><b>${esc(labels[l.field] ?? human({}, l.field))}</b><span>${status}</span>${l.wouldChangeIf ? `<div class="change">${esc(l.wouldChangeIf)}</div>` : ''}</div></li>`;
+    return `<li>${ico}<div><b>${esc(labels[l.field] ?? human({}, l.field))}</b><span>${status}</span>${l.wouldChangeIf ? `<div class="change">Changes if ${esc(l.wouldChangeIf.charAt(0).toLowerCase() + l.wouldChangeIf.slice(1))}</div>` : ''}</div></li>`;
   };
   return `<div class="met"><strong>${m.met} of ${m.total}</strong><span class="muted small">requirements met</span></div>
     <ul class="lines">${m.lines.map(line).join('')}</ul>`;
@@ -250,7 +250,7 @@ function applyErrorHtml() {
   if (e.code === 'role_not_open') return `<div class="alert alert--attention"><b>This role is no longer accepting applications.</b><span class="small">Your details weren’t sent.</span><a class="link small" href="#/jobs">See current roles</a></div>`;
   if (e.code === 'application_scope_conflict') return `<div class="alert alert--attention"><b>You already have an application for this role.</b><span class="small">It was sent with different sharing settings, so nothing new was sent.</span></div>`;
   if (e.code === 'unconfirmed') return `<div class="alert alert--critical"><b>We couldn’t confirm your application.</b><span class="small">Don’t assume it was sent. Trying again won’t send it twice.</span></div>`;
-  return `<div class="alert alert--critical"><b>Your application was not saved.</b><span class="small">${esc(e.message ?? 'Nothing was sent.')} Trying again won’t send it twice.</span></div>`;
+  return `<div class="alert alert--critical"><b>Your application was not saved.</b><span class="small">Nothing was sent to ${esc(view.role.employer)}. Trying again won’t send it twice.</span></div>`;
 }
 
 function renderReceipt($c) {
@@ -260,7 +260,7 @@ function renderReceipt($c) {
     ${a.replayed ? '<p class="small muted">You’d already applied. This is the same application, not a new one.</p>' : ''}
     <dl class="receipt"><div><dt>Receipt</dt><dd class="mono">${esc(a.receiptId.slice(0, 8))}</dd></div>
       <div><dt>Sent</dt><dd>${time(a.submittedAt)}</dd></div><div><dt>Your match when sent</dt><dd>${a.match.met} of ${a.match.total}</dd></div></dl>
-    <p class="small">${esc(a.humanGate)}</p>
+    <p class="small">A person on the hiring team reviews it and decides. This isn’t an offer or a hiring decision.</p>
     <a class="btn btn--secondary" href="#/jobs">Back to roles</a>`;
   announce(`Application sent to the ${a.destination}. Receipt ${a.receiptId.slice(0, 8)}.`);
 }

@@ -126,11 +126,12 @@ p { margin: 0; }
 /* ---------------------------------------------------------------- sign-in dialog */
 dialog.sheet { border: 0; padding: 0; border-radius: var(--radius-lg); box-shadow: var(--shadow-floating); width: min(440px, calc(100vw - 32px)); color: var(--text-primary); }
 dialog.sheet::backdrop { background: rgb(27 24 20 / 0.4); }
-dialog .card { box-shadow: none; padding: var(--space-8); }
+dialog .card { position: relative; box-shadow: none; padding: var(--space-8); }
+dialog .ctx { padding-right: var(--space-10); }
 dialog .ctx { display: flex; gap: var(--space-3); align-items: center; }
 dialog .mono-tile { width: 36px; height: 36px; border-radius: 9px; background: var(--brand-ink); color: #fff; display: grid; place-items: center; font: 600 13px/1 var(--font-ui); flex-shrink: 0; }
 dialog .stack { display: grid; gap: var(--space-3); }
-dialog .close { position: absolute; top: var(--space-4); right: var(--space-4); }
+dialog .card .close { position: absolute; top: var(--space-4); right: var(--space-4); width: auto; padding: 0 var(--space-3); }
 @media (max-width: 559px) {
   dialog.sheet { margin: auto 0 0; width: 100vw; max-width: 100vw; border-radius: var(--radius-lg) var(--radius-lg) 0 0; }
 }
