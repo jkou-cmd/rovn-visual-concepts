@@ -296,6 +296,21 @@
     };
     const openPhone = (i) => {
       const was = items[current], now = items[i];
+      // when the step closing is above the one you tapped, everything shifts up by its height; if that would carry
+      // the tapped step off the top, the page follows it in the same 0.6s ease, landing it just under the nav
+      const head = $('.acc__head', now), closing = $('.acc__body', was);
+      const lift = current < i ? closing.scrollHeight : 0, endTop = head.getBoundingClientRect().top - lift;
+      if (!R.reduce && endTop < 64) {
+        // the tapped step glides along one smooth path to 64px from the top; the scroll is set each frame to keep it on it
+        const y0 = head.getBoundingClientRect().top, t0 = performance.now(), ease = gsap.parseEase('power3.inOut');
+        const follow = () => {
+          const t = (performance.now() - t0) / 1000, p = ease(Math.min(1, t / 0.6));
+          const d = head.getBoundingClientRect().top - (y0 + (64 - y0) * p);
+          if (Math.abs(d) >= 0.5) { if (R.lenis) R.lenis.scrollTo(R.lenis.scroll + d, { immediate: true, force: true }); else window.scrollBy(0, d); }
+          if (t > 1.0) gsap.ticker.remove(follow); // holds at 64 a little past the motion, while the layout settles
+        };
+        gsap.ticker.add(follow);
+      }
       was.classList.remove('is-open'); $('.acc__head', was).setAttribute('aria-expanded', 'false');
       now.classList.add('is-open'); $('.acc__head', now).setAttribute('aria-expanded', 'true');
       current = i;
