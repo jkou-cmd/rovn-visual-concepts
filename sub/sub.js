@@ -23,13 +23,7 @@
   if (nav) {
     nav.style.setProperty('--glider', 'rgba(255, 255, 255, 0.08)');
     R.glider($('.nav__links'), $$('.nav__links .nav__cell'), { kind: 'cell' });
-    (function glint(logo) {
-      if (!logo || !R.fine || R.reduce) return;
-      const over = document.createElement('span'); over.className = 'logo__glint'; over.setAttribute('aria-hidden', 'true');
-      logo.querySelectorAll('svg').forEach((s) => over.append(s.cloneNode(true)));
-      logo.append(over);
-      logo.addEventListener('pointerenter', () => gsap.fromTo(over, { '--glint': -0.08 }, { '--glint': 1.3, duration: 0.55, ease: 'power3.out', overwrite: true }));
-    })($('.nav__logo'));
+    R.logoGlint($('.nav__logo')); // the same slow pass of light as home
     // hides on the way down, returns on the way up
     let shown = true;
     ST.create({

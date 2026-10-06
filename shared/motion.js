@@ -168,6 +168,26 @@
     return sweep;
   };
 
+  // Nav logo glint (home and every subpage): one slow, even pass of amber light across the logo.
+  // It starts with its leading edge already on the mark, so the hover answers at once, then glides
+  // across in ~1.3s (2026-10-05: the 0.55s sweep read as too fast). A pass in progress is not restarted
+  // by a quick re-hover; it only restarts once it is mostly done.
+  R.logoGlint = (logo) => {
+    if (!logo) return () => {};
+    const over = document.createElement('span'); over.className = 'logo__glint'; over.setAttribute('aria-hidden', 'true');
+    logo.querySelectorAll('svg').forEach((s) => over.append(s.cloneNode(true)));
+    logo.append(over);
+    let tw = null;
+    const sweep = (dur = 1.3) => {
+      if (R.reduce) return null;
+      if (tw && tw.isActive() && tw.progress() < 0.7) return tw;
+      tw = gsap.fromTo(over, { '--glint': -0.2 }, { '--glint': 1.4, duration: dur, ease: 'power1.inOut', overwrite: true });
+      return tw;
+    };
+    if (R.fine) logo.addEventListener('pointerenter', () => sweep());
+    return sweep;
+  };
+
   // Glider: one soft highlight per group that glides to whichever item is under the pointer —
   // a pill inflated around the label ('pill'), or the item's own box in a grid of cells ('cell').
   // It appears where you arrive, travels between neighbours, and fades when you leave the group.

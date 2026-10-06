@@ -132,16 +132,8 @@
   const nav = $('.nav');
   nav.style.setProperty('--glider', 'rgba(255, 255, 255, 0.08)');
   R.glider($('.nav__links'), $$('.nav__links .nav__cell'), { kind: 'cell' });
-  // logo: an amber glint that starts the moment the pointer arrives (no slow ramp-in)
-  const glint = (function fastGlint(logo) {
-    if (!logo) return () => {};
-    const over = document.createElement('span'); over.className = 'logo__glint'; over.setAttribute('aria-hidden', 'true');
-    logo.querySelectorAll('svg').forEach((s) => over.append(s.cloneNode(true)));
-    logo.append(over);
-    const sweep = (dur = 0.55) => (R.reduce ? null : gsap.fromTo(over, { '--glint': -0.08 }, { '--glint': 1.3, duration: dur, ease: 'power3.out', overwrite: true }));
-    if (R.fine) logo.addEventListener('pointerenter', () => sweep(0.55));
-    return sweep;
-  })($('.nav__logo'));
+  // logo: one slow pass of amber light on hover (shared with every subpage: R.logoGlint in shared/motion.js)
+  const glint = R.logoGlint($('.nav__logo'));
   // hides on the way down, returns on the way up
   let navShown = true;
   ST.create({
@@ -223,7 +215,7 @@
       .to(heroWords, { ...R.standTo, duration: 1.3, ease: 'expo.out', stagger: 0.05 }, 0.55)
       .to([sub, ctas], { ...R.riseTo, duration: 1.1, ease: 'expo.out', stagger: 0.1 }, 0.95)
       .to(nav, { yPercent: 0, duration: 1.1, ease: 'expo.out' }, 1.15)
-      .add(() => glint(0.9), 1.6);
+      .add(() => glint(1.3), 1.6);
   }
 
   /* ---------------------------------------------------------------- headings that stand up on arrival */
