@@ -48,7 +48,7 @@
     <header class="lib-intro">
       <h1 class="lib-intro__title">Section library</h1>
       <p class="lib-intro__sub">Every subpage section, finished. Build a page by stacking these and changing the words and photos. Each one enters, exits and responds to hover on its own.</p>
-      <nav class="lib-index" aria-label="Sections"><a href="#m-strip-opener"><span>01</span>Strip opener</a><a href="#m-strip-opener-plain"><span>02</span>Strip opener · plain</a><a href="#m-side-opener"><span>03</span>Side opener</a><a href="#m-accordion"><span>04</span>Accordion</a><a href="#m-feature"><span>05</span>Feature</a><a href="#m-feature-mirrored-on-a-field"><span>06</span>Feature · mirrored, on a field</a><a href="#m-steps"><span>07</span>Steps</a><a href="#m-lanes"><span>08</span>Lanes</a><a href="#m-exception"><span>09</span>Exception</a><a href="#m-calculator"><span>10</span>Calculator</a><a href="#m-article"><span>11</span>Article</a><a href="#m-ledger"><span>12</span>Ledger</a><a href="#m-questions"><span>13</span>Questions</a><a href="#m-questions-spruce"><span>14</span>Questions · spruce</a><a href="#m-close"><span>15</span>Close</a></nav>
+      <nav class="lib-index" aria-label="Sections"><a href="#m-strip-opener"><span>01</span>Strip opener</a><a href="#m-strip-opener-plain"><span>02</span>Strip opener · plain</a><a href="#m-side-opener"><span>03</span>Side opener</a><a href="#m-accordion"><span>04</span>Accordion</a><a href="#m-feature"><span>05</span>Feature</a><a href="#m-feature-mirrored-on-spruce"><span>06</span>Feature · mirrored, on spruce</a><a href="#m-steps"><span>07</span>Steps</a><a href="#m-lanes"><span>08</span>Lanes</a><a href="#m-exception"><span>09</span>Exception</a><a href="#m-calculator"><span>10</span>Calculator</a><a href="#m-article"><span>11</span>Article</a><a href="#m-ledger"><span>12</span>Ledger</a><a href="#m-questions"><span>13</span>Questions</a><a href="#m-questions-spruce"><span>14</span>Questions · spruce</a><a href="#m-close"><span>15</span>Close</a></nav>
     </header>
     <header class="lib-tag" id="m-strip-opener"><span class="lib-tag__n">01</span><h2 class="lib-tag__name">Strip opener</h2>
       <p class="lib-tag__use">The page’s first section: a wide photo strip, the label left and the headline right. This version has the mask morph (arrives as a pill, opens square) and the gridlines.</p><code class="lib-tag__code">section.opener · .opener__photo[data-morph] · .gl</code></header><section class="opener" aria-labelledby="title">
@@ -86,11 +86,11 @@
       </div>
     </section><header class="lib-tag" id="m-side-opener"><span class="lib-tag__n">03</span><h2 class="lib-tag__name">Side opener</h2>
       <p class="lib-tag__use">Copy column left, tall photo right. For pages that open on one person (Your career, Next-role guide, Lab).</p><code class="lib-tag__code">sub/modules/side-opener.html</code></header><!-- module: side-opener (Paper P09 · 1). Page opener: copy column left, tall photo right. -->
-<section class="sopen" aria-labelledby="title">
+<section class="sopen" aria-labelledby="sopen-title">
   <div class="sopen__copy">
     <p class="sopen__label" data-rise>Career guide</p>
     <div class="sopen__block">
-      <h1 class="sopen__title" id="title" data-stand>Make your next move<br>on purpose.</h1>
+      <h1 class="sopen__title" id="sopen-title" data-stand>Make your next move<br>on purpose.</h1>
       <p class="sopen__sub" data-rise>Before you apply or accept, get clear on the work, the terms and the steps between an offer and your first day.</p>
       <div class="sopen__actions" data-rise>
         <a class="pbtn pbtn--ink" href="#steps"><span class="pbtn__label">Start the guide</span><span class="pbtn__chip"><svg class="arrow" aria-hidden="true"><use href="#arrow"/></svg></span></a>
@@ -99,7 +99,7 @@
     </div>
   </div>
   <div class="sopen__side">
-    <div class="sopen__photo" data-photo style="background-image:url(sub/media/side-opener-corkboard.jpg); --pos: 22% 50%"></div>
+    <div class="sopen__photo" data-photo data-morph-in style="background-image:url(sub/media/side-opener-corkboard.jpg); --pos: 22% 50%"></div>
   </div>
 </section>
 <header class="lib-tag" id="m-accordion"><span class="lib-tag__n">04</span><h2 class="lib-tag__name">Accordion</h2>
@@ -136,7 +136,7 @@
           </div>
         </div>
 
-        <div class="acc__stage" data-photo data-morph>
+        <div class="acc__stage" data-photo data-morph data-morph-in>
           <!-- Start: the start card on the corridor -->
           <div class="scene is-on">
             <div class="scene__img" style="background-image:url(sub/media/org-corridor.jpg); --pos: 50% 60%"></div>
@@ -217,7 +217,7 @@
           <p class="t-body acc__text" data-rise>Collecting, checking at the source, reminding and booking. Exceptions go back to the right person, with the evidence attached.</p>
           <a class="tlink" href="#" data-soon data-rise>See the workflow <svg aria-hidden="true"><use href="#arrow"/></svg></a>
         </div>
-        <div class="acc__stage" data-photo><div class="scene is-on">
+        <div class="acc__stage" data-photo data-morph-in><div class="scene is-on">
             <div class="scene__img" style="background-image:url(sub/media/org-walker.jpg); --pos: 40%"></div>
             <div class="scene__top">
               <span class="namepill"><span class="namepill__mark"><img src="sub/media/mark-ink.svg" alt=""></span><span class="namepill__text"><span class="namepill__name">Quarrystone’s agent</span><span class="namepill__sub">Working on Renée Okafor’s file</span></span></span>
@@ -233,15 +233,15 @@
             </div>
           </div></div>
       </div>
-    </section><header class="lib-tag" id="m-feature-mirrored-on-a-field"><span class="lib-tag__n">06</span><h2 class="lib-tag__name">Feature · mirrored, on a field</h2>
-      <p class="lib-tag__use">The same module flipped, here on the tonal surface.</p><code class="lib-tag__code">section.feature.feature--flip · .scene--tone</code></header><section class="feature feature--flip" aria-label="Scope" data-exit-section>
+    </section><header class="lib-tag" id="m-feature-mirrored-on-spruce"><span class="lib-tag__n">06</span><h2 class="lib-tag__name">Feature · mirrored, on spruce</h2>
+      <p class="lib-tag__use">The same module flipped, on the spruce field (a colour block; one per page).</p><code class="lib-tag__code">section.feature.feature--flip · .scene--spruce</code></header><section class="feature feature--flip" aria-label="Scope" data-exit-section>
       <div class="feature__inner" data-exit>
         <div class="feature__copy">
           <div class="feature__head"><p class="t-label" data-rise>Scope</p><h2 class="t-title acc__title" data-stand>Start with a scope you can run.</h2></div>
           <p class="t-body acc__text" data-rise>Pick the roles, locations and people first. Agree what done looks like before real data comes in.</p>
           <a class="tlink" href="#" data-soon data-rise>Check supported scope <svg aria-hidden="true"><use href="#arrow"/></svg></a>
         </div>
-        <div class="acc__stage" data-photo><div class="scene scene--tone is-on">
+        <div class="acc__stage" data-photo data-morph-in><div class="scene scene--spruce is-on">
             <div class="scene__top"><span class="chip-planned">Planned · example case</span></div>
             <div class="scene__mid">
               <div class="obj scope" data-object>
@@ -297,7 +297,7 @@
         </div>
       </div>
     </div>
-    <div class="acc__stage" data-photo data-morph>
+    <div class="acc__stage" data-photo data-morph data-morph-in>
       <div class="scene scene--tone">
         <div class="scene__mid">
           <div class="obj steplist" data-object>
@@ -344,6 +344,7 @@
 <header class="lib-tag" id="m-lanes"><span class="lib-tag__n">08</span><h2 class="lib-tag__name">Lanes</h2>
       <p class="lib-tag__use">Departments on a date axis toward one start date: done, in progress, the one decision (amber), upcoming.</p><code class="lib-tag__code">sub/modules/lanes.html</code></header><!-- module · lanes: department lanes on a date axis (Paper P11 · 2 v3) -->
 <section class="lanes" aria-labelledby="lanes-title" data-exit-section>
+  <span class="gl gl--h" data-y=".lanes__head" aria-hidden="true"></span>
   <div class="lanes__inner" data-exit>
     <div class="lanes__head">
       <h2 class="lanes__title" id="lanes-title" data-stand><span>Every owner sees</span><span>what’s waiting on them.</span></h2>
@@ -411,7 +412,7 @@
         <a class="tlink exc__link" href="#" data-soon data-rise>How decisions stay human <svg aria-hidden="true"><use href="#arrow"/></svg></a>
       </div>
     </div>
-    <div class="exc__stage">
+    <div class="exc__stage" data-morph-in>
       <div class="exc__img" data-photo style="background-image:url(sub/media/exception-chairs.jpg)"></div>
       <div class="exc__top"><span class="chip-planned">Planned · example case</span></div>
       <div class="exc__cards">
@@ -434,7 +435,7 @@
 </section>
 <header class="lib-tag" id="m-calculator"><span class="lib-tag__n">10</span><h2 class="lib-tag__name">Calculator</h2>
       <p class="lib-tag__use">One question at a time; a So-far card fills in; three results kept separate, and a net with honest states.</p><code class="lib-tag__code">sub/modules/calculator.html</code></header><!-- ============================== module: calculator ("one question at a time" ROI calculator) ============================== -->
-    <section class="calc" id="economics" aria-labelledby="calc-title">
+    <section class="calc" id="calculator" aria-labelledby="calc-title">
       <div class="calc__head">
         <div class="calc__headl">
           <div class="calc__label" data-rise>ROI calculator</div>
@@ -445,6 +446,7 @@
           <a class="tlink" href="#method" data-soon data-rise><span>Read the method</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="m12 5 7 7-7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
         </div>
       </div>
+      <span class="gl gl--h" data-y=".calc__head" aria-hidden="true"></span>
       <div class="calc__stage">
         <div class="calc__main" data-rise>
         <div class="cp cq is-on" data-step="0" role="group" aria-label="Step 1 of 5">
@@ -554,7 +556,7 @@
           </div>
         </div>
         </div>
-        <div class="calc__side">
+        <div class="calc__side" data-morph-in>
           <div class="sf obj" data-object>
             <div class="sf__t">So far, at full ramp, a month</div>
           <div class="sfr" data-row="cash" data-step="1">

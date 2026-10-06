@@ -213,7 +213,10 @@ body.sub { background: var(--P); color: var(--K); font-size: max(13px, 16rem); o
 /* lines are children of their section (never of a block that rises or fades), so they stay joined while
    things move: horizontal lines run screen edge to screen edge; vertical lines sit on the column they mark
    (data-x + data-dx, placed by sub.js) and run to the section's edges, or start at another element (data-from) */
-.opener, .faq--spruce { position: relative; }
+.opener, .faq--spruce, .lanes, .calc, .sopen, .exc, .feature { position: relative; }
+[data-morph-in] { border-radius: 20rem; overflow: hidden; } /* the resting shape (also with reduced motion) */
+.scene--spruce { background: var(--spruce); }
+.scene--spruce .obj { box-shadow: 0 1px 2px #0000002E, 0 24px 56px #00000047; }
 
 /* lines always end on something: the screen edge, a container edge or another line */
 .faq--spruce .faq__item + .faq__item { border-top: 0; position: relative; }

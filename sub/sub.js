@@ -9,7 +9,9 @@
                     square (and rounds a little as you leave); on .acc__stage each new scene grows out of a
                     circle over the last; on <body data-morph-doors> the close doors open from pills and
                     round their corners on hover
-     .gl            gridlines: hairlines that draw themselves in when their section enters
+     [data-morph-in] an image or panel that arrives as a pill and opens to its rounded frame (radius = value, default 20)
+     .gl            gridlines: hairlines that draw themselves in when their section enters; .gl--v[data-x] sits on a
+                    column's edge, .gl--h[data-y] under a block
      .acc / .faq    accordion and questions open on click
      .close         home's own close (home/sections/s9.js): doors, ink footer, wordmark band
    Built on shared/motion.js (GSAP + Lenis, eases, word split, glow, glider, glint). */
@@ -96,6 +98,11 @@
       l.style.top = from ? `${offsetIn(from, sec).y + from.offsetHeight}px` : '0px';
       l.style.bottom = '0px';
     });
+    // horizontal lines that mark the bottom of a block (data-y), screen edge to screen edge
+    $$('.gl--h[data-y]').forEach((l) => {
+      const sec = l.parentNode, el = $(l.dataset.y, sec);
+      if (el) l.style.top = `${offsetIn(el, sec).y + el.offsetHeight + (parseFloat(l.dataset.dy) || 0) * rem()}px`;
+    });
   }
   placeLines();
   addEventListener('resize', placeLines);
@@ -141,16 +148,19 @@
     const objs = $$('[data-object]', section).filter((el) => !el.closest('.scene:not(.is-on)'));
     const words = stand.flatMap((h) => h.__words || (h.__words = R.words(h)));
     if (R.reduce) return () => {};
-    if (!words.length && !rise.length && !photos.length && !objs.length && !$('.gl', section)) return () => {};
+    if (!words.length && !rise.length && !photos.length && !objs.length && !$('.gl', section) && !$('[data-morph-in]', section)) return () => {};
     if (words.length) gsap.set(words, { ...R.standFrom });
     if (rise.length) gsap.set(rise, { ...R.riseFrom });
     if (photos.length) gsap.set(photos, { autoAlpha: 0, scale: 1.06, filter: 'blur(10px)' });
     if (objs.length) gsap.set(objs, { autoAlpha: 0, y: 24 * rem() });
+    const morphs = $$('[data-morph-in]', section);
+    if (morphs.length) morphs.forEach((m) => setClip(m, [16, 22, 16, 22, 999]));
     const lines = $$('.gl', section);
     if (lines.length) gsap.set(lines, { scaleX: (i, el) => (el.classList.contains('gl--h') ? 0 : 1), scaleY: (i, el) => (el.classList.contains('gl--v') ? 0 : 1) });
     const play = () => {
       const tl = gsap.timeline();
       if (lines.length) tl.to(lines, { scaleX: 1, scaleY: 1, duration: 1.6, ease: 'expo.inOut', stagger: 0.12 }, 0);
+      morphs.forEach((m, i) => tl.add(clip(m, [0, 0, 0, 0, parseFloat(m.dataset.morphIn) || 20], { duration: 1.4, ease: 'expo.inOut' }), 0.05 + i * 0.1));
       if (photos.length) tl.to(photos, { autoAlpha: 1, scale: 1, filter: 'blur(0px)', duration: 1.6, ease: 'expo.out', stagger: 0.08 }, 0);
       if (words.length) tl.to(words, { ...R.standTo, duration: 1.2, ease: 'expo.out', stagger: 0.04 }, photos.length ? 0.2 : 0);
       if (rise.length) tl.to(rise, { ...R.riseTo, duration: 1.1, ease: 'expo.out', stagger: 0.08 }, words.length ? 0.38 : 0.1);
