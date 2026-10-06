@@ -76,6 +76,7 @@
      overflowing it. */
   function fitObjects() {
     $$('.scene__mid > .obj').forEach((o) => {
+      o.style.setProperty('--fit', 1);
       const mid = o.parentNode, room = mid.clientWidth - 48, w = o.offsetWidth;
       o.style.setProperty('--fit', w && room > 0 ? Math.min(1, room / w).toFixed(3) : 1);
     });
@@ -202,6 +203,22 @@
     return play;
   }
 
+  /* ---------------------------------------------------------------- no jumps: keep what you clicked where it was
+     When something opens or closes, content above the click can change height and shove the page. For the
+     length of the motion, the page scroll follows the clicked element so it stays put under the pointer;
+     ScrollTrigger re-measures once at the end, from the settled layout. */
+  function keepInPlace(el, dur = 0.8) {
+    const y0 = el.getBoundingClientRect().top;
+    const fix = () => {
+      const d = el.getBoundingClientRect().top - y0;
+      if (Math.abs(d) < 0.5) return;
+      if (R.lenis) R.lenis.scrollTo(R.lenis.scroll + d, { immediate: true, force: true });
+      else window.scrollBy(0, d);
+    };
+    gsap.ticker.add(fix);
+    gsap.delayedCall(dur, () => { gsap.ticker.remove(fix); fix(); ST.refresh(); });
+  }
+
   /* ---------------------------------------------------------------- accordion: one item open; the stage crossfades */
   function accordion(acc) {
     const items = $$('.acc__item', acc), scenes = $$('.scene', acc), stage = $('.acc__stage', acc), inner = $('.acc__inner', acc);
@@ -258,8 +275,7 @@
       }
       fitObjects();
       showScene(i, true, $('.acc__head', items[i]));
-      if (phone() && R.lenis) R.lenis.scrollTo(items[i], { offset: -60, duration: 1.1 });
-      ST.refresh();
+      if (phone()) keepInPlace($('.acc__head', items[i]), 0.9);
     };
     items.forEach((it, i) => $('.acc__head', it).addEventListener('click', () => open(i)));
     place(); showScene(current, false);
@@ -279,10 +295,10 @@
       it.classList.toggle('is-open', open); q.setAttribute('aria-expanded', String(open));
       if (R.reduce) return;
       if (open) {
-        gsap.fromTo(a, { height: 0 }, { height: 'auto', duration: 0.7, ease: 'expo.out', overwrite: true, onComplete: () => ST.refresh() });
+        gsap.fromTo(a, { height: 0 }, { height: 'auto', duration: 0.7, ease: 'expo.out', overwrite: true });
         gsap.fromTo(a.firstElementChild, { autoAlpha: 0, y: 8 }, { autoAlpha: 1, y: 0, duration: 0.7, delay: 0.08, ease: 'expo.out' });
       } else {
-        gsap.fromTo(a, { height: a.offsetHeight }, { height: 0, duration: 0.6, ease: 'expo.out', overwrite: true, onComplete: () => { a.style.height = ''; ST.refresh(); } });
+        gsap.fromTo(a, { height: a.offsetHeight }, { height: 0, duration: 0.6, ease: 'expo.out', overwrite: true, onComplete: () => { a.style.height = ''; } });
       }
     };
     items.forEach((it) => {
@@ -290,6 +306,7 @@
       q.setAttribute('aria-expanded', String(it.classList.contains('is-open')));
       q.addEventListener('click', () => {
         const opening = !it.classList.contains('is-open');
+        if (!R.reduce) keepInPlace(q, 0.75);
         items.forEach((o) => { if (o !== it) set(o, false); });
         set(it, opening);
         if (R.reduce) ST.refresh();
@@ -318,7 +335,16 @@
     if (!a) return;
     if (a.hasAttribute('data-soon')) { e.preventDefault(); return; }
     const url = new URL(a.href, location.href);
-    if (a.target || e.metaKey || e.ctrlKey || e.shiftKey || url.origin !== location.origin || (url.pathname === location.pathname && url.hash)) return;
+    if (url.origin === location.origin && url.pathname === location.pathname && url.hash) {
+      const t = document.getElementById(url.hash.slice(1)); if (!t) return;
+      e.preventDefault();
+      const head = t.classList.contains('acc__item') && $('.acc__head', t);
+      const sec = head ? t.closest('section') : t;
+      R.scrollTo(sec.getBoundingClientRect().top + R.scrollY() - (head ? 0 : 48));
+      if (head && !t.classList.contains('is-open')) gsap.delayedCall(0.5, () => head.click());
+      return;
+    }
+    if (a.target || e.metaKey || e.ctrlKey || e.shiftKey || url.origin !== location.origin) return;
     e.preventDefault();
     if (R.reduce) { location.href = url.href; return; }
     gsap.to($('main'), { y: -16 * rem(), duration: 0.45, ease: 'power2.in' });
@@ -359,6 +385,9 @@
     });
     $$('.acc').forEach(accordion);
     homeSections();
+    // modules with their own behaviour (sub/modules/*.js) register here: { name, init(K) }
+    const K = { gsap, ST, R, $, $$, rem, phone, keepInPlace, tick, tilt };
+    (window.RovnSubModules || []).forEach((m) => { try { m.init(K); } catch (err) { console.error('[sub] module ' + m.name, err); } });
     morphDoors();
     $$('.faq__list').forEach(faq);
 

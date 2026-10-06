@@ -29,8 +29,9 @@ body.sub { background: var(--P); color: var(--K); font-size: max(13px, 16rem); o
 .sub img { user-select: none; -webkit-user-drag: none; }
 .sub main { padding-top: max(44px, 48rem); font-size: var(--s); }
 /* past --maxw the page stops growing: modules centre with equal margins (the close and colour fields still run edge to edge) */
-.sub main > section:not(.close) { padding-inline: max(0px, (100% - var(--maxw)) / 2); }
-.sub main > section.faq { padding-inline: max(8rem, (100% - var(--maxw)) / 2 + 8rem); } /* home's components size in em of --s */
+.sub main > section:not(.close) { padding-inline: calc(var(--gutter, 0px) + var(--bleed)); }
+/* modules with the frames' 8px gutter keep it at every width (the opener's strip has its own) */
+.acc, .feature, .faq { --gutter: 8rem; } /* home's components size in em of --s */
 .sub [data-soon] { cursor: default; }
 
 /* ---------------------------------------------------------------- type atoms */
@@ -117,7 +118,7 @@ body.sub { background: var(--P); color: var(--K); font-size: max(13px, 16rem); o
 .scene--tone { background: var(--tone); }
 .scene__top { position: relative; display: flex; align-items: center; gap: 8rem; min-height: 28rem; }
 .scene__mid { position: relative; flex: 1; align-self: stretch; display: flex; align-items: center; justify-content: center; min-width: 0; }
-.scene__mid > .obj { scale: var(--fit, 1); flex-shrink: 0; }
+.scene__mid > .obj { zoom: var(--fit, 1); flex-shrink: 0; } /* zoom, not scale: GSAP owns transforms (it writes scale: none) */
 
 /* ---------------------------------------------------------------- objects (white lifted sheets) */
 .obj { position: relative; background: #fff; border-radius: 20rem; box-shadow: var(--lift); transform-style: preserve-3d; will-change: transform; }
@@ -216,6 +217,8 @@ body.sub { background: var(--P); color: var(--K); font-size: max(13px, 16rem); o
 
 /* lines always end on something: the screen edge, a container edge or another line */
 .faq--spruce .faq__item + .faq__item { border-top: 0; position: relative; }
+/* the questions sit well clear of the vertical line: the same 32 the rows breathe with */
+.faq--spruce .faq__q, .faq--spruce .faq__a { padding-left: 32rem; }
 .faq--spruce .faq__item + .faq__item::before { content: ""; position: absolute; top: 0; left: -8rem; right: 0; height: 1px; background: var(--gl); } /* from the vertical line to the list's edge */
 .acc--lines .acc__item + .acc__item { border-top: 0; position: relative; }
 .acc--lines .acc__item + .acc__item::before { content: ""; position: absolute; top: 0; left: calc(-8rem - var(--bleed)); right: -8rem; height: 1px; background: var(--line); } /* from the screen edge to the photo panel */
@@ -239,6 +242,7 @@ body.sub { background: var(--P); color: var(--K); font-size: max(13px, 16rem); o
 
 /* ================================================================ phone (390 frames) */
 @media (max-width: 767px) {
+  .faq--spruce .faq__q, .faq--spruce .faq__a { padding-left: 0; }
   .gl--v { display: none; }
   .faq--spruce { padding: 64rem 8rem 80rem; }
   .sub main > section + section:not(.close) { margin-top: 88rem; }

@@ -8,17 +8,33 @@
 
 const SIGNED_IN_KEY = 'rovn-proto-signed-in';
 const APPS_KEY = 'rovn-proto-applications';
+const ADDED_KEY = 'rovn-proto-added';
+// Mock only: each role gets a different match so the list shows the range.
+const AUTO_MATCH = {
+  '11111111-1111-4111-8111-111111111111': 'one_left',
+  '22222222-aaaa-4aaa-8aaa-222222222222': 'all_met',
+  '33333333-bbbb-4bbb-8bbb-333333333333': 'missing',
+  '44444444-cccc-4ccc-8ccc-444444444444': 'all_met',
+  '55555555-dddd-4ddd-8ddd-555555555555': 'one_left',
+};
+// Mock only: "Add your BLS card" pretends the document was added to the record for that role.
+export function mockAddToRecord(id) {
+  const added = new Set(JSON.parse(sessionStorage.getItem(ADDED_KEY) || '[]'));
+  added.add(id);
+  sessionStorage.setItem(ADDED_KEY, JSON.stringify([...added]));
+}
 
 export const scenario = {
   list: 'filled',      // filled | empty | unreachable | malformed
   detail: 'ready',     // ready | slow | not_found | unavailable | malformed
   apply: 'success',    // success | role_not_open | scope_conflict | not_saved | malformed
+  match: 'auto',       // auto (varies by role) | one_left | all_met | missing
 };
 
 export const session = {
   get signedIn() { return sessionStorage.getItem(SIGNED_IN_KEY) === '1'; },
   signIn() { sessionStorage.setItem(SIGNED_IN_KEY, '1'); },
-  signOut() { sessionStorage.removeItem(SIGNED_IN_KEY); sessionStorage.removeItem(APPS_KEY); },
+  signOut() { sessionStorage.removeItem(SIGNED_IN_KEY); sessionStorage.removeItem(APPS_KEY); sessionStorage.removeItem(ADDED_KEY); },
 };
 
 let fixtures = null;
@@ -55,7 +71,7 @@ function synthDetail(a03, row) {
 
 async function mockGet(path) {
   const { a03, list } = await load();
-  await wait(scenario.detail === 'slow' && path !== '/job-postings' ? 2200 : 350);
+  await wait(scenario.detail === 'slow' && /^\/job-postings\/[^/]+$/.test(path) ? 2200 : path.endsWith('/match') ? 250 + Math.random() * 300 : 350);
 
   if (path === '/job-postings') {
     if (scenario.list === 'unreachable') return { status: 503, body: { detail: { code: 'role_service_unavailable', message: 'Roles are temporarily unavailable.', retryable: true } } };
@@ -71,6 +87,9 @@ async function mockGet(path) {
     if (scenario.detail === 'not_found' || !row) return clone(a03.role_detail.never_public_or_unknown);
     if (scenario.detail === 'unavailable') return clone(a03.role_detail.recoverable_failure);
     const body = row.id === a03.role_detail.success.body.role_id ? clone(a03.role_detail.success.body) : synthDetail(a03, row);
+    // Requested addition (not in A-03 v1): pay and shift, taken from the current public projection.
+    if (row.compensation_min || row.compensation_max) body.compensation = { min: row.compensation_min, max: row.compensation_max, period: row.compensation_period };
+    body.shift_type = row.shift_type;
     if (scenario.detail === 'malformed') delete body.reviewed_date;
     return { status: 200, body };
   }
@@ -80,6 +99,15 @@ async function mockGet(path) {
     if (!session.signedIn) return { status: 401, body: { detail: 'Not authenticated' } };
     const body = clone(a03.match.success.body);
     body.requisition_id = match[1];
+    const added = JSON.parse(sessionStorage.getItem(ADDED_KEY) || '[]');
+    const variant = added.includes(match[1]) ? 'all_met' : scenario.match === 'auto' ? (AUTO_MATCH[match[1]] ?? 'one_left') : scenario.match;
+    if (variant === 'all_met') {
+      body.lines = body.lines.map((l) => ({ ...l, status: 'satisfied', reason: 'source_confirmed', evidence_class: 'source_confirmed', would_change_if: null }));
+      body.met = body.total;
+    } else if (variant === 'missing') {
+      body.lines[0] = { ...body.lines[0], status: 'not_met', reason: 'no_source_on_record', evidence_class: 'none', source_receipt_id: null, would_change_if: 'An active Georgia license is added to your record.' };
+      body.lines[1] = { ...body.lines[1], status: 'satisfied', reason: 'source_confirmed', evidence_class: 'source_confirmed', would_change_if: null };
+    }
     return { status: 200, body };
   }
   return { status: 404, body: { detail: { code: 'not_found', message: 'Not found.' } } };

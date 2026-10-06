@@ -1,0 +1,14 @@
+/* Rōvn subpage module · feature: copy beside one product object on a photo, tone or colour field.
+   Mirrors with .feature--flip. Reuses the accordion stage (.acc__stage / .scene) so objects, morphs and fields match. */
+.feature { height: max(720rem, min(100svh, 1000rem)); padding: 8rem; }
+.feature__inner { height: 100%; display: flex; gap: 8rem; }
+.feature--flip .feature__inner { flex-direction: row-reverse; }
+.feature__copy { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; justify-content: center; gap: 32rem; padding: 24rem; }
+.feature__head { display: flex; flex-direction: column; gap: 8rem; }
+.feature .acc__stage { flex: 1 1 0; }
+@media (max-width: 767px) {
+  .feature { height: auto; }
+  .feature__inner, .feature--flip .feature__inner { flex-direction: column; }
+  .feature__copy { padding: 40rem 16rem 24rem; gap: 20rem; }
+  .feature .acc__stage { flex: none; height: 560rem; }
+}

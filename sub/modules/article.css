@@ -1,0 +1,82 @@
+/* Module: article (Paper P14 · 1 v2). 1rem = 1px. Wide layout (>=1200): rail 240 | column 720 | margin 240.
+   Below that the rail becomes a sticky contents disclosure and the margin a row above the column. */
+.article, .ledger { --a-body: #3A352E; --a-lede: #4A443B; --a-op: #7A7166; --a-bar: #CFC4B2; --a-row: #F3EEE5; --a-ink: #0F0F0F; }
+.article__grid { display: grid; grid-template-columns: minmax(0, 1fr) min(720rem, 100%) minmax(0, 1fr); align-items: start; }
+
+/* ---------------------------------------------------------------- contents rail */
+.article__rail { grid-column: 1; position: sticky; top: 48rem; width: min(240rem, 100%); padding: 40rem 0 40rem 24rem; display: flex; flex-direction: column; gap: 12rem; }
+.article__back { display: flex; align-items: center; gap: 6rem; padding-bottom: 16rem; font-family: var(--sans); font-weight: 500; font-size: max(13px, 14rem); line-height: 20rem; color: var(--ink); }
+.article__back svg { width: 14rem; height: 14rem; flex-shrink: 0; transition: transform .3s var(--ease); }
+@media (hover: hover) and (pointer: fine) { .article__back:hover svg { transform: translateX(-3rem); } }
+.article__rail-k { font-family: var(--sans); font-size: max(12px, 12rem); line-height: 16rem; color: var(--muted); }
+.article__list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 12rem; }
+.article__list a { display: block; font-family: var(--sans); font-size: max(13px, 14rem); line-height: 20rem; color: var(--muted); transition: color .18s var(--ease); }
+/* the active item is medium weight; the bold twin reserves its width so nothing shifts when it changes */
+.article__list a::after { content: attr(data-t); display: block; height: 0; overflow: hidden; visibility: hidden; font-weight: 500; }
+.article__list a.is-active { color: var(--a-ink); font-weight: 500; }
+@media (hover: hover) and (pointer: fine) { .article__list a:hover { color: var(--a-ink); } }
+.article__toc { display: none; }
+
+/* ---------------------------------------------------------------- reading column */
+.article__col { grid-column: 2; width: min(720rem, 100%); box-sizing: border-box; padding: 40rem 24rem 72rem; display: flex; flex-direction: column; gap: 24rem; min-width: 0; }
+.article__eyebrow { font-family: var(--serif); font-weight: 400; font-size: max(14px, 20rem); line-height: 1; letter-spacing: -0.03em; color: var(--ink-68); }
+.article__title { padding-top: 20rem; font-family: var(--serif); font-weight: 300; font-size: 76rem; line-height: .94; letter-spacing: -0.05em; color: var(--a-ink); overflow-wrap: break-word; }
+.article__lede { padding-bottom: 24rem; font-family: var(--sans); font-size: max(14px, 20rem); line-height: 1.5; color: var(--a-lede); }
+.article__h { padding-top: 16rem; font-family: var(--serif); font-weight: 400; font-size: 34rem; line-height: 1.1; letter-spacing: -0.035em; color: var(--a-ink); scroll-margin-top: 72rem; }
+.article__p { font-family: var(--sans); font-size: max(14px, 17rem); line-height: 1.65; color: var(--a-body); }
+
+/* formula tiles */
+.formula { container-type: inline-size; align-self: stretch; box-sizing: border-box; padding: 30rem 32rem; border-radius: 20rem; background: var(--tone); }
+.formula__row { display: flex; align-items: flex-end; gap: 22rem; }
+.formula__term { display: flex; flex-direction: column; gap: 10rem; }
+.formula__n { width: max-content; font-family: var(--serif); font-weight: 300; font-size: 56rem; line-height: 1; letter-spacing: -0.045em; color: var(--a-ink); }
+.formula__l { width: 150rem; font-family: var(--sans); font-size: max(12px, 13rem); line-height: 18rem; color: var(--muted); }
+.formula__op { padding-bottom: 28rem; font-family: var(--serif); font-weight: 300; font-size: 39rem; line-height: 1; color: var(--a-op); }
+.formula--sm .formula__n { font-size: 44rem; }
+.formula--sm .formula__op { font-size: 31rem; }
+@container (max-width: 599px) {
+  .formula__row { flex-direction: column; align-items: flex-start; gap: 10rem; }
+  .formula__op { padding-bottom: 0; }
+}
+
+/* ---------------------------------------------------------------- metadata margin */
+.article__meta { grid-column: 3; justify-self: end; width: min(240rem, 100%); box-sizing: border-box; padding: 200rem 24rem 0 0; display: flex; flex-direction: column; gap: 18rem; }
+.meta { display: flex; flex-direction: column; gap: 2rem; }
+.meta__k { font-family: var(--sans); font-size: max(12px, 12rem); line-height: 16rem; color: var(--muted); }
+.meta__v { font-family: var(--sans); font-size: max(13px, 14rem); line-height: 20rem; color: var(--a-ink); }
+.meta__v--m { font-weight: 500; }
+.meta__cta { display: flex; padding-top: 8rem; }
+
+/* ---------------------------------------------------------------- narrower than the three columns: contents disclosure */
+@media (max-width: 1199px) {
+  .article__grid { grid-template-columns: minmax(0, 1fr); justify-items: center; }
+  .article__rail { display: none; }
+  .article__toc { display: block; grid-row: 1; grid-column: 1; position: sticky; top: 48rem; z-index: 6; width: min(720rem, 100%); box-sizing: border-box; padding: 8rem 24rem; background: var(--P); }
+  .article__toc::before { content: ""; position: absolute; left: 0; right: 0; bottom: 100%; height: 48rem; background: var(--P); } /* fills the gap while the nav is tucked away */
+  .article__toc summary { list-style: none; cursor: pointer; display: flex; align-items: center; gap: 12rem; padding: 12rem 16rem; border-radius: 12rem; background: var(--tone);
+    font-family: var(--sans); font-size: max(13px, 14rem); line-height: 20rem; color: var(--ink); transition: background-color .12s var(--ease); }
+  .article__toc summary::-webkit-details-marker { display: none; }
+  .article__toc-k { color: var(--muted); font-size: max(12px, 12rem); flex-shrink: 0; }
+  .article__now { flex: 1; min-width: 0; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .article__toc summary::after { content: ""; width: 12rem; height: 12rem; flex-shrink: 0; color: var(--ink-68); transition: transform .4s var(--ease);
+    background: linear-gradient(currentColor, currentColor) 50% 50% / 100% 1.4px no-repeat, linear-gradient(currentColor, currentColor) 50% 50% / 1.4px 100% no-repeat; }
+  .article__toc[open] summary::after { transform: rotate(90deg); }
+  @media (hover: hover) and (pointer: fine) { .article__toc summary:hover { background: #E8DFCD; } }
+  /* the list drops over the page (absolute), so opening and closing never moves the text */
+  .article__toc .article__list { position: absolute; left: 24rem; right: 24rem; top: calc(100% - 4rem); padding: 16rem; border-radius: 12rem; background: var(--tone); box-shadow: var(--lift); }
+  .article__meta { grid-row: 2; grid-column: 1; justify-self: center; width: min(720rem, 100%); padding: 16rem 24rem 0; flex-direction: row; flex-wrap: wrap; gap: 14rem 40rem; }
+  .meta__cta { width: 100%; padding-top: 6rem; }
+  .article__col { grid-row: 3; grid-column: 1; padding-top: 32rem; }
+}
+@media (max-width: 767px) {
+  .article__toc { padding: 8rem 8rem; }
+  .article__toc .article__list { left: 8rem; right: 8rem; }
+  .article__meta { padding: 16rem 16rem 0; gap: 14rem 28rem; }
+  .article__col { padding: 24rem 16rem 56rem; }
+  .article__title { font-size: 44rem; padding-top: 8rem; }
+  .article__lede { font-size: max(14px, 18rem); padding-bottom: 8rem; }
+  .article__h { font-size: 30rem; }
+  .formula { padding: 24rem 20rem; }
+  .formula__n { font-size: 44rem; }
+  .formula--sm .formula__n { font-size: 40rem; }
+}

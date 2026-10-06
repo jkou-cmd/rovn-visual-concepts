@@ -1,0 +1,179 @@
+<!-- ============================== module: calculator ("one question at a time" ROI calculator) ============================== -->
+    <section class="calc" id="economics" aria-labelledby="calc-title">
+      <div class="calc__head">
+        <div class="calc__headl">
+          <div class="calc__label" data-rise>ROI calculator</div>
+          <h2 class="calc__title" id="calc-title" data-stand><span>Find the cost</span><span>of the gaps.</span></h2>
+        </div>
+        <div class="calc__headr">
+          <p class="calc__sub" data-rise>Use your own numbers. Cash, capacity and contribution stay separate, so you can check each one.</p>
+          <a class="tlink" href="#method" data-soon data-rise><span>Read the method</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="m12 5 7 7-7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+        </div>
+      </div>
+      <div class="calc__stage">
+        <div class="calc__main" data-rise>
+        <div class="cp cq is-on" data-step="0" role="group" aria-label="Step 1 of 5">
+          <div class="cpro"><div class="cpro__pills" role="group" aria-label="Progress"></div><div class="cpro__txt"></div></div>
+          <div class="cq__text">
+            <h3 class="cq__q" id="calc-q0">How many agency hours could your own staff cover each month?</h3>
+            <p class="cq__hint" id="calc-h0">Count the hours you pay an agency for today that a hired clinician would work instead.</p>
+          </div>
+          <label class="cin">
+            <span class="cin__l"><input class="cin__i" data-key="hours" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" placeholder="300" value="300" aria-labelledby="calc-q0" aria-describedby="calc-h0 calc-m0"><span class="cin__caret" aria-hidden="true"></span></span>
+            <span class="cin__unit">hours a month</span>
+            <span class="cin__msg" id="calc-m0" role="status" aria-live="polite"></span>
+          </label>
+          <div class="cact">
+            <button class="pbtn pbtn--ink" type="button" data-next><span class="pbtn__label">Next</span><span class="pbtn__chip"><svg class="arrow" aria-hidden="true"><use href="#arrow"/></svg></span></button>
+            <button class="cback" type="button" data-back hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 6-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Back</span></button>
+            <span class="cact__hint">or press Enter</span>
+          </div>
+        </div>
+        <div class="cp cq" data-step="1" role="group" aria-label="Step 2 of 5">
+          <div class="cpro"><div class="cpro__pills" role="group" aria-label="Progress"></div><div class="cpro__txt"></div></div>
+          <div class="cq__text">
+            <h3 class="cq__q" id="calc-q1">What do you pay over your own staff rate for those hours?</h3>
+            <p class="cq__hint" id="calc-h1">The agency hourly rate, minus what the same hour costs you with your own staff.</p>
+          </div>
+          <label class="cin">
+            <span class="cin__l"><span class="cin__pre">$</span><input class="cin__i" data-key="premium" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" placeholder="38" value="38" aria-labelledby="calc-q1" aria-describedby="calc-h1 calc-m1"><span class="cin__caret" aria-hidden="true"></span></span>
+            <span class="cin__unit">an hour</span>
+            <span class="cin__msg" id="calc-m1" role="status" aria-live="polite"></span>
+          </label>
+          <div class="cact">
+            <button class="pbtn pbtn--ink" type="button" data-next><span class="pbtn__label">Next</span><span class="pbtn__chip"><svg class="arrow" aria-hidden="true"><use href="#arrow"/></svg></span></button>
+            <button class="cback" type="button" data-back><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 6-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Back</span></button>
+            <span class="cact__hint">or press Enter</span>
+          </div>
+        </div>
+        <div class="cp cq" data-step="2" role="group" aria-label="Step 3 of 5">
+          <div class="cpro"><div class="cpro__pills" role="group" aria-label="Progress"></div><div class="cpro__txt"></div></div>
+          <div class="cq__text">
+            <h3 class="cq__q" id="calc-q2">How many people do you hire in a typical month?</h3>
+            <p class="cq__hint" id="calc-h2">Every hire needs licenses checked, references collected and a file prepared. That time comes back to your team as capacity.</p>
+          </div>
+          <label class="cin">
+            <span class="cin__l"><input class="cin__i" data-key="hires" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" placeholder="10" value="10" aria-labelledby="calc-q2" aria-describedby="calc-h2 calc-m2"><span class="cin__caret" aria-hidden="true"></span></span>
+            <span class="cin__unit">hires a month</span>
+            <span class="cin__msg" id="calc-m2" role="status" aria-live="polite"></span>
+          </label>
+          <p class="as" data-akey="hpHire"><span class="as__t">We assume each hire takes <span class="as__v" data-pre="">6</span> fewer hours to credential.</span> <button class="as__chg" type="button">Change</button></p>
+          <div class="cact">
+            <button class="pbtn pbtn--ink" type="button" data-next><span class="pbtn__label">Next</span><span class="pbtn__chip"><svg class="arrow" aria-hidden="true"><use href="#arrow"/></svg></span></button>
+            <button class="cback" type="button" data-back><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 6-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Back</span></button>
+            <span class="cact__hint">or press Enter</span>
+          </div>
+        </div>
+        <div class="cp cq" data-step="3" role="group" aria-label="Step 4 of 5">
+          <div class="cpro"><div class="cpro__pills" role="group" aria-label="Progress"></div><div class="cpro__txt"></div></div>
+          <div class="cq__text">
+            <h3 class="cq__q" id="calc-q3">How many uncovered shifts could you fill each month?</h3>
+            <p class="cq__hint" id="calc-h3">Count the shifts that go unstaffed today and that a new hire would work.</p>
+          </div>
+          <label class="cin">
+            <span class="cin__l"><input class="cin__i" data-key="shifts" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" placeholder="8" value="8" aria-labelledby="calc-q3" aria-describedby="calc-h3 calc-m3"><span class="cin__caret" aria-hidden="true"></span></span>
+            <span class="cin__unit">shifts a month</span>
+            <span class="cin__msg" id="calc-m3" role="status" aria-live="polite"></span>
+          </label>
+          <p class="as" data-akey="perShift"><span class="as__t">We assume each filled shift contributes <span class="as__v" data-pre="$">$650</span>.</span> <button class="as__chg" type="button">Change</button></p>
+          <div class="cact">
+            <button class="pbtn pbtn--ink" type="button" data-next><span class="pbtn__label">Next</span><span class="pbtn__chip"><svg class="arrow" aria-hidden="true"><use href="#arrow"/></svg></span></button>
+            <button class="cback" type="button" data-back><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 6-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Back</span></button>
+            <span class="cact__hint">or press Enter</span>
+          </div>
+        </div>
+        <div class="cp cq" data-step="4" role="group" aria-label="Step 5 of 5">
+          <div class="cpro"><div class="cpro__pills" role="group" aria-label="Progress"></div><div class="cpro__txt"></div></div>
+          <div class="cq__text">
+            <h3 class="cq__q" id="calc-q4">How many months until your new hires are at full ramp?</h3>
+            <p class="cq__hint" id="calc-h4">Output builds in even steps, so a new hire is not at full value on day one. Zero means no ramp.</p>
+          </div>
+          <label class="cin">
+            <span class="cin__l"><input class="cin__i" data-key="ramp" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" placeholder="3" value="3" aria-labelledby="calc-q4" aria-describedby="calc-h4 calc-m4"><span class="cin__caret" aria-hidden="true"></span></span>
+            <span class="cin__unit">months to full ramp</span>
+            <span class="cin__msg" id="calc-m4" role="status" aria-live="polite"></span>
+          </label>
+          <p class="as" data-akey="period"><span class="as__t">We measure the result over <span class="as__v" data-pre="">6</span> months.</span> <button class="as__chg" type="button">Change</button></p>
+          <div class="cact">
+            <button class="pbtn pbtn--ink" type="button" data-next><span class="pbtn__label">Next</span><span class="pbtn__chip"><svg class="arrow" aria-hidden="true"><use href="#arrow"/></svg></span></button>
+            <button class="cback" type="button" data-back><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 6-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Back</span></button>
+            <span class="cact__hint">or press Enter</span>
+          </div>
+        </div>
+        <div class="cp cres" data-step="5" role="group" aria-label="Results" inert>
+          <div class="cpro"><div class="cpro__pills" role="group" aria-label="Progress"></div><div class="cpro__txt"></div></div>
+          <h3 class="cres__title" tabindex="-1">Your month, at full ramp.</h3>
+          <div class="cres__list">
+            <div class="cres__row">
+              <div class="cres__l"><div class="cres__name">Cash</div><div class="cres__desc">Agency premium avoided</div><div class="cres__f" data-f="cash"></div></div>
+              <div class="cres__n" data-n="cash"></div>
+            </div>
+            <div class="cres__row">
+              <div class="cres__l"><div class="cres__name">Capacity</div><div class="cres__desc">Credentialing time returned</div><div class="cres__f" data-f="cap"></div></div>
+              <div class="cres__n" data-n="cap"></div>
+            </div>
+            <div class="cres__row">
+              <div class="cres__l"><div class="cres__name">Contribution</div><div class="cres__desc">From shifts that would otherwise go uncovered</div><div class="cres__f" data-f="con"></div></div>
+              <div class="cres__n" data-n="con"></div>
+            </div>
+          </div>
+        </div>
+        </div>
+        <div class="calc__side">
+          <div class="sf obj" data-object>
+            <div class="sf__t">So far, at full ramp, a month</div>
+          <div class="sfr" data-row="cash" data-step="1">
+            <div class="sfr__h"><span class="sfr__name">Cash</span><span class="sfr__live"><i></i>Updating as you type</span></div>
+            <div class="sfr__empty">Appears after step 2</div>
+            <div class="sfr__val"><span class="sfr__n"></span><span class="sfr__d"></span></div>
+          </div>
+          <div class="sfr" data-row="cap" data-step="2">
+            <div class="sfr__h"><span class="sfr__name">Capacity</span><span class="sfr__live"><i></i>Updating as you type</span></div>
+            <div class="sfr__empty">Appears after step 3</div>
+            <div class="sfr__val"><span class="sfr__n"></span><span class="sfr__d"></span></div>
+          </div>
+          <div class="sfr" data-row="con" data-step="3">
+            <div class="sfr__h"><span class="sfr__name">Contribution</span><span class="sfr__live"><i></i>Updating as you type</span></div>
+            <div class="sfr__empty">Appears after step 4</div>
+            <div class="sfr__val"><span class="sfr__n"></span><span class="sfr__d"></span></div>
+          </div>
+            <div class="sf__foot">Three results, never added together.</div>
+          </div>
+          <div class="cside" inert>
+            <div class="net" data-state="unknown">
+              <div class="net__s net__s--unknown">
+                <div class="net__top"><span class="net__name">Net cash</span><button class="net__link" type="button" data-net="edit">Add costs</button></div>
+                <div class="net__text">Add your Rōvn quote and setup cost to see net cash and payback.</div>
+                <div class="net__note">We won’t treat an unknown cost as zero.</div>
+              </div>
+              <div class="net__s net__s--edit">
+                <div class="net__top"><span class="net__name">Net cash</span><button class="net__link" type="button" data-net="cancel">Cancel</button></div>
+                <div class="net__fields">
+                  <label class="nf"><span class="nf__k">Setup cost</span><span class="nf__box"><span>$</span><input class="nf__i" data-ckey="setup" type="text" inputmode="decimal" autocomplete="off" placeholder="10,000"></span></label>
+                  <label class="nf"><span class="nf__k">Rōvn quote a month</span><span class="nf__box"><span>$</span><input class="nf__i" data-ckey="monthly" type="text" inputmode="decimal" autocomplete="off" placeholder="4,000"></span></label>
+                </div>
+                <div class="net__foot"><button class="net__link net__link--ink" type="button" data-net="save">Show net cash</button><span class="net__msg" role="status" aria-live="polite"></span></div>
+              </div>
+              <div class="net__s net__s--result">
+                <div class="net__top"><span class="net__name">Net cash</span><button class="net__link" type="button" data-net="edit">Change</button></div>
+                <div class="net__val"><span class="net__n"></span><span class="net__d"></span></div>
+                <div class="net__pay"></div>
+                <div class="net__note"></div>
+              </div>
+            </div>
+            <div class="ans">
+              <div class="ans__t">Your answers</div>
+            <div class="ans__row"><div class="ans__k">Agency hours covered</div><div class="ans__r"><span class="ans__v" data-a="0"></span><button class="ans__edit" type="button" data-edit="0" aria-label="Edit: Agency hours covered">Edit</button></div></div>
+            <div class="ans__row"><div class="ans__k">Premium over staff rate</div><div class="ans__r"><span class="ans__v" data-a="1"></span><button class="ans__edit" type="button" data-edit="1" aria-label="Edit: Premium over staff rate">Edit</button></div></div>
+            <div class="ans__row"><div class="ans__k">Hires</div><div class="ans__r"><span class="ans__v" data-a="2"></span><button class="ans__edit" type="button" data-edit="2" aria-label="Edit: Hires">Edit</button></div></div>
+            <div class="ans__row"><div class="ans__k">Uncovered shifts filled</div><div class="ans__r"><span class="ans__v" data-a="3"></span><button class="ans__edit" type="button" data-edit="3" aria-label="Edit: Uncovered shifts filled">Edit</button></div></div>
+            <div class="ans__row"><div class="ans__k">Ramp and period</div><div class="ans__r"><span class="ans__v" data-a="4"></span><button class="ans__edit" type="button" data-edit="4" aria-label="Edit: Ramp and period">Edit</button></div></div>
+            </div>
+            <div class="cside__act">
+              <a class="pbtn pbtn--ink" href="#close"><span class="pbtn__label">Talk through a role</span><span class="pbtn__chip"><svg class="arrow" aria-hidden="true"><use href="#arrow"/></svg></span></a>
+              <button class="tlink" type="button" data-csv>Download CSV</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>

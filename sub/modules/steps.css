@@ -1,0 +1,16 @@
+/* module · steps (Paper P09 · 2): the kit's .acc, with a plain checklist card in the stage. */
+/* steps with no copy yet: plain labels, no plus, no hover fill, no click */
+.steps .acc__head--static { cursor: default; pointer-events: none; }
+.steps .acc__head--static::after { display: none; }
+.steps .acc__head--static::before { display: none; }
+.steplist { width: 420rem; flex-shrink: 0; padding: 20rem 28rem 22rem; border-radius: 20rem; display: flex; flex-direction: column; }
+.steplist__row { display: flex; align-items: center; gap: 12rem; padding: 9rem 0; }
+.steplist__box { width: 20rem; height: 20rem; border-radius: 6rem; background: #E9E2D5; display: grid; place-items: center; flex-shrink: 0; color: var(--P2); }
+.steplist__row--done .steplist__box { background: #0F0F0F; }
+.steplist__box svg { width: 12rem; height: 12rem; }
+.steplist__v { font-family: var(--sans); font-size: max(13px, 15rem); line-height: 20rem; color: #0F0F0F; }
+.steplist__row--done .steplist__v { color: var(--muted); }
+.steplist__foot { padding-top: 14rem; font-family: var(--sans); font-size: max(12px, 13rem); line-height: 18rem; color: var(--muted); }
+.steplist { box-sizing: border-box; }
+@media (max-width: 767px) { .steplist { width: calc(100% - 24rem); padding-inline: 20rem; } .steplist__foot { white-space: normal; } }
+.sub main > section.steps:not(.close) { padding-inline: max(8rem, (100% - var(--maxw)) / 2 + 8rem); } /* the frame's 8 gutter; sub.css's section padding would zero it */

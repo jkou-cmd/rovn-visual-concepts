@@ -1,0 +1,22 @@
+/* module · side opener (Paper P09 · 1): copy left, tall photo right. Values from the 1440 frame. */
+.sopen { display: flex; gap: 8rem; padding-bottom: 8rem; padding-right: 8rem;
+  height: calc(max(640rem, min(100svh, 1100rem)) - max(44px, 48rem)); min-height: 0; }
+.sub main > section.sopen:not(.close) { padding-inline: max(0px, (100% - var(--maxw)) / 2); padding-right: max(8rem, (100% - var(--maxw)) / 2 + 8rem); }
+.sopen__copy { flex: 0 0 calc((100% - 8rem) / 2); min-width: 0; display: flex; flex-direction: column; justify-content: space-between; padding: 24rem 16rem 32rem; }
+.sopen__label { font-family: var(--serif); font-size: max(14px, 20rem); line-height: 1; letter-spacing: -0.03em; color: var(--ink-68); }
+.sopen__block { display: flex; flex-direction: column; gap: 24rem; }
+.sopen__title { width: min(600rem, 100%); font-family: var(--serif); font-weight: 300; font-size: 68rem; line-height: .92; letter-spacing: -0.05em; color: var(--K); }
+.sopen__sub { width: min(440rem, 100%); font-family: var(--sans); font-size: max(13px, 15rem); line-height: 1.5; color: var(--body); }
+.sopen__actions { display: flex; align-items: center; gap: 16rem; }
+.sopen__side { flex: 1 1 0; min-width: 0; display: flex; padding-top: 8rem; }
+.sopen__photo { flex: 1; background-size: cover; background-position: var(--pos, 50%); background-color: #2A2723; }
+
+@media (max-width: 767px) {
+  .sopen { flex-direction: column-reverse; height: auto; padding: 0 8rem 8rem; }
+  .sub main > section.sopen:not(.close) { padding-inline: 8rem; }
+  .sopen__copy { flex: none; width: auto; gap: 40rem; padding: 24rem 8rem 24rem; }
+  .sopen__title { font-size: 48rem; }
+  .sopen__side { flex: none; height: 380rem; padding-top: 8rem; }
+}
+
+.sopen, .sopen__copy, .sopen__side { box-sizing: border-box; }

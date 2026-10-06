@@ -1,0 +1,25 @@
+/* Section library chrome: the labels between modules. Deliberately quiet and outside the design (no motion),
+   so the modules read exactly as they will on a page. Not used on real pages. */
+.lib-intro { padding: 120rem 24rem 64rem; max-width: var(--maxw); margin: 0 auto; }
+.lib-intro__title { font-family: var(--serif); font-weight: 300; font-size: 68rem; line-height: .92; letter-spacing: -0.05em; color: var(--K); }
+.lib-intro__sub { margin-top: 24rem; max-width: 560rem; font-family: var(--sans); font-size: max(13px, 16rem); line-height: 1.45; color: var(--ink-68); }
+.lib-index { margin-top: 48rem; display: grid; grid-template-columns: repeat(auto-fill, minmax(220rem, 1fr)); gap: 4rem 24rem; }
+.lib-index a { display: flex; gap: 12rem; padding: 10rem 0; font-family: var(--sans); font-size: max(13px, 15rem); line-height: 20rem; color: var(--K); border-top: 1px solid var(--line); }
+.lib-index a span { width: 28rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+@media (hover: hover) and (pointer: fine) { .lib-index a:hover { color: var(--ink-68); } }
+
+.sub main > .lib-tag + section:not(.close) { margin-top: 0; }
+.sub main > section + .lib-tag { margin-top: 140rem; }
+.lib-tag { display: flex; align-items: baseline; gap: 24rem; flex-wrap: wrap; max-width: var(--maxw); margin: 0 auto 40rem; padding: 18rem 24rem; border-top: 1px solid var(--K); }
+.lib-tag__n { width: 40rem; font-family: var(--sans); font-size: max(12px, 13rem); color: var(--muted); font-variant-numeric: tabular-nums; }
+.lib-tag__name { font-family: var(--serif); font-size: 28rem; line-height: 1; letter-spacing: -0.03em; color: var(--K); }
+.lib-tag__use { flex: 1 1 360rem; font-family: var(--sans); font-size: max(13px, 14rem); line-height: 20rem; color: var(--ink-68); }
+.lib-tag__code { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: max(11px, 12rem); line-height: 18rem; color: var(--muted); }
+.lib-todo { max-width: var(--maxw); margin: 0 auto; padding: 120rem 24rem; text-align: center; font-family: var(--sans); font-size: max(13px, 15rem); color: var(--muted); background: var(--tone); }
+@media (max-width: 767px) {
+  .lib-intro { padding: 72rem 16rem 40rem; }
+  .lib-intro__title { font-size: 44rem; }
+  .lib-tag { padding: 16rem; gap: 8rem 16rem; }
+  .sub main > section + .lib-tag { margin-top: 88rem; }
+}
+

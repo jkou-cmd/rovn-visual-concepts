@@ -82,6 +82,11 @@ export function readRoleDetail(body) {
       state: need(fresh, 'state', 'string', `${where}.freshness`),
       label: need(fresh, 'display_label', 'string', `${where}.freshness`),
     },
+    // Not in A-03 v1: requested so the page can show pay and shift at a glance. Optional until added.
+    payMin: maybe(body.compensation, 'min', 'string', `${where}.compensation`),
+    payMax: maybe(body.compensation, 'max', 'string', `${where}.compensation`),
+    payPeriod: maybe(body.compensation, 'period', 'string', `${where}.compensation`),
+    shift: maybe(body, 'shift_type', 'string', where),
     apply: {
       mode: need(apply, 'mode', 'string', `${where}.apply`),
       available: need(apply, 'available', 'boolean', `${where}.apply`),

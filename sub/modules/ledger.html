@@ -1,0 +1,36 @@
+<!-- Module: ledger (Paper P14 · 2 v2). Running-total bars above a five-column table, "Pays back" chip inline.
+     Standalone it centres a 720 column; inside .article__col (after the last block) it takes the column's width. -->
+<section class="ledger" aria-labelledby="ledger-title">
+  <div class="ledger__col">
+    <h2 class="article__h" id="sec-timing" data-toc data-stand-view><span id="ledger-title">Timing and precision are part of the method.</span></h2>
+    <p class="article__p">Month by month, setup lands in month zero, use ramps up, and costs fall in the month they’re paid. Payback is the first month after which the running total stays at or above zero.</p>
+
+    <div class="chartwrap">
+      <div class="chart" role="img" aria-label="Running total by month: setup −$10,000, month 1 −$11,150, month 2 −$9,450, month 3 −$4,900, month 4 $2,500 (pays back), month 5 $9,900, month 6 $17,300">
+        <span class="chart__axis"></span>
+        <div class="chart__col chart__col--neg" style="--h:90"><i class="chart__bar"></i><span class="chart__v">−$10,000</span><span class="chart__m">Setup</span></div>
+        <div class="chart__col chart__col--neg" style="--h:100"><i class="chart__bar"></i><span class="chart__v">−$11,150</span><span class="chart__m">Month 1</span></div>
+        <div class="chart__col chart__col--neg" style="--h:85"><i class="chart__bar"></i><span class="chart__v">−$9,450</span><span class="chart__m">Month 2</span></div>
+        <div class="chart__col chart__col--neg" style="--h:44"><i class="chart__bar"></i><span class="chart__v">−$4,900</span><span class="chart__m">Month 3</span></div>
+        <div class="chart__col chart__col--pos" style="--h:22"><i class="chart__bar"></i><span class="chart__v">$2,500</span><span class="chart__m">Month 4</span>
+          <span class="chart__chip">Pays back here</span></div>
+        <div class="chart__col chart__col--pos" style="--h:86"><i class="chart__bar"></i><span class="chart__v">$9,900</span><span class="chart__m">Month 5</span></div>
+        <div class="chart__col chart__col--pos" style="--h:150"><i class="chart__bar"></i><span class="chart__v">$17,300</span><span class="chart__m">Month 6</span></div>
+      </div>
+    </div>
+
+    <div class="ltable" role="table" aria-label="Month-by-month ledger">
+      <div class="lhead" role="row"><span role="columnheader">Month</span><span role="columnheader">Cash avoided</span><span role="columnheader">Your cost</span><span role="columnheader">Net</span><span role="columnheader">Running total</span></div>
+        <div class="lrow lrow--alt" role="row" data-tick><span class="lcell lcell--m" role="cell">Setup</span><span class="lcell" role="cell" data-l="Cash avoided">—</span><span class="lcell" role="cell" data-l="Your cost">$10,000</span><span class="lcell" role="cell" data-l="Net">−$10,000</span><span class="lcell lcell--tot" role="cell" data-l="Running total">−$10,000</span></div>
+        <div class="lrow" role="row" data-tick><span class="lcell lcell--m" role="cell">1 · 25%</span><span class="lcell" role="cell" data-l="Cash avoided">$2,850</span><span class="lcell" role="cell" data-l="Your cost">$4,000</span><span class="lcell" role="cell" data-l="Net">−$1,150</span><span class="lcell lcell--tot" role="cell" data-l="Running total">−$11,150</span></div>
+        <div class="lrow lrow--alt" role="row" data-tick><span class="lcell lcell--m" role="cell">2 · 50%</span><span class="lcell" role="cell" data-l="Cash avoided">$5,700</span><span class="lcell" role="cell" data-l="Your cost">$4,000</span><span class="lcell" role="cell" data-l="Net">$1,700</span><span class="lcell lcell--tot" role="cell" data-l="Running total">−$9,450</span></div>
+        <div class="lrow" role="row" data-tick><span class="lcell lcell--m" role="cell">3 · 75%</span><span class="lcell" role="cell" data-l="Cash avoided">$8,550</span><span class="lcell" role="cell" data-l="Your cost">$4,000</span><span class="lcell" role="cell" data-l="Net">$4,550</span><span class="lcell lcell--tot" role="cell" data-l="Running total">−$4,900</span></div>
+        <div class="lrow lrow--pay" role="row" data-tick><span class="lcell lcell--m" role="cell">4 · 100%</span><span class="lcell" role="cell" data-l="Cash avoided">$11,400</span><span class="lcell" role="cell" data-l="Your cost">$4,000</span><span class="lcell" role="cell" data-l="Net">$7,400</span><span class="lcell lcell--tot" role="cell" data-l="Running total"><span class="chip-pay">Pays back</span><b>$2,500</b></span></div>
+        <div class="lrow" role="row" data-tick><span class="lcell lcell--m" role="cell">5 · 100%</span><span class="lcell" role="cell" data-l="Cash avoided">$11,400</span><span class="lcell" role="cell" data-l="Your cost">$4,000</span><span class="lcell" role="cell" data-l="Net">$7,400</span><span class="lcell lcell--tot" role="cell" data-l="Running total">$9,900</span></div>
+        <div class="lrow lrow--alt" role="row" data-tick><span class="lcell lcell--m" role="cell">6 · 100%</span><span class="lcell" role="cell" data-l="Cash avoided">$11,400</span><span class="lcell" role="cell" data-l="Your cost">$4,000</span><span class="lcell" role="cell" data-l="Net">$7,400</span><span class="lcell lcell--tot" role="cell" data-l="Running total">$17,300</span></div>
+    </div>
+
+    <p class="ledger__note">Worked example with made-up inputs: 300 agency hours a month at $38, $10,000 setup, $4,000 a month.</p>
+    <div><a class="tlink" href="#" data-soon>Download this ledger as CSV <svg aria-hidden="true"><use href="#arrow"/></svg></a></div>
+  </div>
+</section>

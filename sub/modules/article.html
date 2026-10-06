@@ -1,0 +1,71 @@
+<!-- Module: article (Paper P14 · 1 v2). Contents rail (sticky, tracks the section you're reading), a 720 reading
+     column and a metadata margin. Headings carry data-toc (id) so the rail can follow them. A ledger section may
+     sit inside .article__col (after the last block) so the rail keeps tracking through it. -->
+<section class="article" aria-labelledby="art-title">
+  <div class="article__grid">
+    <aside class="article__rail" aria-label="Contents">
+      <a class="article__back" href="#" data-soon><svg aria-hidden="true" viewBox="0 0 24 24"><path d="m15 6-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>ROI calculator</span></a>
+      <p class="article__rail-k">Contents</p>
+      <ol class="article__list">
+        <li><a href="#sec-premium" data-toc-link data-t="Agency premium is a difference">Agency premium is a difference</a></li>
+        <li><a href="#sec-capacity" data-toc-link data-t="Capacity is a different result">Capacity is a different result</a></li>
+        <li><a href="#sec-contribution" data-toc-link data-t="Contribution is not revenue">Contribution is not revenue</a></li>
+        <li><a href="#sec-timing" data-toc-link data-t="Timing and precision">Timing and precision</a></li>
+      </ol>
+    </aside>
+
+    <details class="article__toc">
+      <summary><span class="article__toc-k">Contents</span><span class="article__now">Agency premium is a difference</span></summary>
+      <ol class="article__list">
+        <li><a href="#sec-premium" data-toc-link data-t="Agency premium is a difference">Agency premium is a difference</a></li>
+        <li><a href="#sec-capacity" data-toc-link data-t="Capacity is a different result">Capacity is a different result</a></li>
+        <li><a href="#sec-contribution" data-toc-link data-t="Contribution is not revenue">Contribution is not revenue</a></li>
+        <li><a href="#sec-timing" data-toc-link data-t="Timing and precision">Timing and precision</a></li>
+      </ol>
+    </details>
+
+    <div class="article__col">
+      <p class="article__eyebrow">Calculator method</p>
+      <h1 class="article__title" id="art-title" data-stand>Every result should<br>show its workings.</h1>
+      <p class="article__lede">Cash, capacity and contribution are calculated separately, and cost has to be stated. Here’s how to read the calculator, and how to challenge it.</p>
+
+      <h2 class="article__h" id="sec-premium" data-toc data-stand-view>Agency premium is a difference.</h2>
+      <p class="article__p">Cash avoided is the agency hours you actually replace, multiplied by the difference between the agency rate and your fully loaded staff rate. You can only replace hours you have people for.</p>
+      <div class="formula" role="group" aria-label="300 hours times $38 equals $11,400">
+        <div class="formula__row">
+          <div class="formula__term"><p class="formula__n">300 h</p><p class="formula__l">agency hours replaced, a month</p></div>
+          <p class="formula__op" aria-hidden="true">×</p>
+          <div class="formula__term"><p class="formula__n">$38</p><p class="formula__l">premium over staff rate, an hour</p></div>
+          <p class="formula__op" aria-hidden="true">=</p>
+          <div class="formula__term"><p class="formula__n">$11,400</p><p class="formula__l">cash avoided, a month at full ramp</p></div>
+        </div>
+      </div>
+
+      <h2 class="article__h" id="sec-capacity" data-toc data-stand-view>Capacity is a different result.</h2>
+      <p class="article__p">Time returned to your credentialing team is capacity. You can put a labor rate on it, but it isn’t money saved unless spending actually goes down, so the calculator never adds it to cash.</p>
+      <div class="formula formula--sm" role="group" aria-label="10 hires times 6 hours equals 60 hours">
+        <div class="formula__row">
+          <div class="formula__term"><p class="formula__n">10</p><p class="formula__l">hires a month</p></div>
+          <p class="formula__op" aria-hidden="true">×</p>
+          <div class="formula__term"><p class="formula__n">6 h</p><p class="formula__l">saved per hire</p></div>
+          <p class="formula__op" aria-hidden="true">=</p>
+          <div class="formula__term"><p class="formula__n">60 h</p><p class="formula__l">capacity, a month</p></div>
+        </div>
+      </div>
+
+      <!-- PLACEHOLDER: the frame lists this contents item but has no copy for it. -->
+      <h2 class="article__h" id="sec-contribution" data-toc data-stand-view>Contribution is not revenue.</h2>
+      <p class="article__p">Contribution is what the work adds once its costs are taken out. It is shown on its own line and never counted as cash.</p>
+
+      <!-- slot: <section class="ledger"> goes here (see ledger.html) -->
+    </div>
+
+    <aside class="article__meta" aria-label="About this page">
+      <div class="meta"><p class="meta__k">Category</p><p class="meta__v">Methodology</p></div>
+      <div class="meta"><p class="meta__k">Updated</p><p class="meta__v">Oct 3, 2026</p></div>
+      <div class="meta"><p class="meta__k">Reading time</p><p class="meta__v">6 minutes</p></div>
+      <div class="meta"><p class="meta__k">Applies to</p><p class="meta__v meta__v--m">ROI calculator</p></div>
+      <div class="meta__cta"><a class="pbtn pbtn--ink" href="#" data-soon><span class="pbtn__label">Open the calculator</span><span class="pbtn__chip"><svg class="arrow" aria-hidden="true"><use href="#arrow"/></svg></span></a></div>
+    </aside>
+  </div>
+</section>

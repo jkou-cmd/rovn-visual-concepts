@@ -1,5 +1,5 @@
 // Jobs pages: /jobs (P06) and /jobs/{slug} (P07), hash-routed for the prototype.
-import { api, scenario, session } from './api.js';
+import { api, scenario, session, mockAddToRecord } from './api.js';
 import { readRoleList, readRoleDetail, readMatch, readApplication, readError, ContractError } from './contract.js';
 
 const $main = document.getElementById('main');
@@ -56,8 +56,9 @@ window.addEventListener('hashchange', () => { route(); $main.focus({ preventScro
 let listCache = null;
 
 async function listPage(q) {
+  listView.matches = new Map();
   setTitle('Healthcare roles');
-  $main.innerHTML = `<div class="wrap"><div class="list-head">${skel(56, 60)}${skel(20, 70)}</div>${[1, 2, 3, 4].map(() => `<div style="padding:24px 0">${skel(20, 45)}<div style="height:8px"></div>${skel(16, 30)}</div>`).join('')}</div>`;
+  $main.innerHTML = `<div class="wrap"><div class="list-head">${skel(56, 60)}${skel(20, 70)}</div><ul class="cards">${[1, 2, 3, 4].map(() => `<li><div class="skel" style="height:188px;border-radius:24px"></div></li>`).join('')}</ul></div>`;
   const res = await api.listRoles();
   if (res.status !== 200) return listState('unreachable');
   try { listCache = readRoleList(res.body); } catch (e) { console.warn(e); return listState('malformed'); }
@@ -79,63 +80,125 @@ function listState(kind) {
   announce(copy[0]);
 }
 
+// The list mirrors the role page: tiles over text, and when signed in, a qualification chip per role.
+// Order stays newest first; matches never reorder or filter roles unless the person asks to.
+const listView = { q: '', f: '', matches: new Map(), loading: false };
+const FILTERS = [
+  ['ready', 'You qualify', (r) => listView.matches.get(r.id)?.met === listView.matches.get(r.id)?.total],
+  ['day', 'Days', (r) => r.shift === 'day'], ['night', 'Nights', (r) => r.shift === 'night'], ['evening', 'Evenings', (r) => r.shift === 'evening'],
+  ['full_time', 'Full time', (r) => r.employmentType === 'full_time'], ['part_time', 'Part time', (r) => r.employmentType === 'part_time'],
+];
+
 function renderList(q) {
-  const n = listCache.roles.length;
+  const params = new URLSearchParams(location.hash.split('?')[1] || '');
+  Object.assign(listView, { q, f: params.get('f') || '' });
+  const present = FILTERS.filter(([k, , fn]) => (k === 'ready' ? session.signedIn : listCache.roles.some(fn)));
   $main.innerHTML = `<div class="wrap">
-    <div class="list-head"><h1 class="display">Find work worth moving for.</h1>
-      <p>See the role, the organization, the requirements and the next step before you decide to apply.</p></div>
-    <div class="toolbar">
+    <div class="list-head"><h1 class="display">Find work worth moving for.</h1></div>
+    <div class="finder">
       <div class="search" role="search">
         <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="m16 16 4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
         <label class="sr-only" for="q">Search roles</label>
-        <input id="q" type="search" placeholder="Search by role, organization or city" value="${esc(q)}" autocomplete="off">
+        <input id="q" type="search" placeholder="Role, organization or city" value="${esc(q)}" autocomplete="off">
       </div>
-      <p class="count" id="count" aria-live="polite"></p>
+      <div class="chips" role="group" aria-label="Filter roles">${present.map(([k, label]) => `<button class="chip" data-f="${k}" aria-pressed="${listView.f === k}">${k === 'ready' ? `<i class="dot"></i>` : ''}${label}</button>`).join('')}</div>
     </div>
+    ${session.signedIn ? '' : `<div class="nudge"><div><b>See which roles you qualify for.</b><span>Sign in and every role shows where you stand.</span></div><button class="btn btn--secondary btn--sm" data-signin>Check my matches</button></div>`}
+    <p class="count" id="count" aria-live="polite"></p>
     <div id="results"></div>
-    <p class="note" style="margin-top:24px">Newest first. Roles are never ranked by who you are.</p>
+    <p class="note" style="margin-top:32px">Newest first. Roles are never ranked by who you are.</p>
   </div>`;
   const $q = $main.querySelector('#q');
   let t;
-  $q.addEventListener('input', () => {
-    clearTimeout(t);
-    t = setTimeout(() => {
-      const v = $q.value.trim();
-      history.replaceState(null, '', v ? `#/jobs?q=${encodeURIComponent(v)}` : '#/jobs');
-      renderRows(v);
-    }, 150);
-  });
-  renderRows(q);
-  void n;
+  $q.addEventListener('input', () => { clearTimeout(t); t = setTimeout(() => { listView.q = $q.value.trim(); syncListUrl(); renderRows(); }, 150); });
+  $main.querySelectorAll('.chip').forEach((c) => c.addEventListener('click', () => {
+    listView.f = listView.f === c.dataset.f ? '' : c.dataset.f;
+    $main.querySelectorAll('.chip').forEach((x) => x.setAttribute('aria-pressed', String(x.dataset.f === listView.f)));
+    syncListUrl(); renderRows();
+  }));
+  $main.querySelector('[data-signin]')?.addEventListener('click', () => { view.role = null; openSignIn(); });
+  renderRows();
+  if (session.signedIn) loadListMatches();
 }
 
-function renderRows(q) {
-  const needle = q.toLowerCase();
-  const rows = listCache.roles.filter((r) => !needle || [r.title, r.employer, r.city, r.state, r.profession].join(' ').toLowerCase().includes(needle));
+function syncListUrl() {
+  const p = new URLSearchParams();
+  if (listView.q) p.set('q', listView.q);
+  if (listView.f) p.set('f', listView.f);
+  history.replaceState(null, '', `#/jobs${p.toString() ? '?' + p : ''}`);
+}
+
+// One match call per role for now. A batch match endpoint would be needed at real list sizes (ask Anish).
+async function loadListMatches() {
+  listView.loading = true; renderRows();
+  await Promise.all(listCache.roles.map(async (r) => {
+    const res = await api.getMatch(r.id);
+    if (res.status === 200) { try { listView.matches.set(r.id, readMatch(res.body)); } catch { /* chip stays hidden */ } }
+  }));
+  listView.loading = false; renderRows();
+}
+
+function matchChip(r) {
+  if (!session.signedIn) return `<span class="posted">${day(r.publishedAt)}</span>`;
+  const m = listView.matches.get(r.id);
+  if (!m) return listView.loading ? `<span class="mchip skel" style="width:110px"></span>` : '';
+  const open = m.lines.filter((l) => l.status !== 'satisfied');
+  if (!open.length) return `<span class="mchip mchip--ready">${CHECK} You qualify</span>`;
+  const review = open.every((l) => l.status === 'human_review_required');
+  return `<span class="mchip"><i class="dot ${review ? 'dot--amber' : 'dot--grey'}"></i>${open.length} ${review ? (open.length === 1 ? 'thing' : 'things') + ' to add' : 'missing'}</span>`;
+}
+
+function renderRows() {
+  const needle = listView.q.toLowerCase();
+  const filter = FILTERS.find(([k]) => k === listView.f)?.[2];
+  const rows = listCache.roles.filter((r) => (!needle || [r.title, r.employer, r.city, r.state, r.profession].join(' ').toLowerCase().includes(needle)) && (!filter || filter(r)));
   const total = listCache.roles.length;
-  $main.querySelector('#count').textContent = q ? `${rows.length} of ${total} roles` : `${total} open roles`;
+  $main.querySelector('#count').textContent = rows.length === total ? `${total} open roles` : `${rows.length} of ${total} roles`;
   const $r = $main.querySelector('#results');
   if (!rows.length) {
-    $r.innerHTML = `<div class="state" style="padding:48px 0"><h2 class="section">No roles match “${esc(q)}”.</h2><p class="muted">Try a role, organization or city.</p><div class="btn-row"><button class="btn btn--secondary" data-clear>Clear search</button></div></div>`;
-    $r.querySelector('[data-clear]').addEventListener('click', () => { const i = $main.querySelector('#q'); i.value = ''; i.dispatchEvent(new Event('input')); i.focus(); });
+    $r.innerHTML = `<div class="state" style="padding:48px 0"><h2 class="section">No roles match.</h2><p class="muted">Try another search or filter.</p><div class="btn-row"><button class="btn btn--secondary" data-clear>Clear all</button></div></div>`;
+    $r.querySelector('[data-clear]').addEventListener('click', () => { listView.q = ''; listView.f = ''; syncListUrl(); renderList(''); });
     return;
   }
-  $r.innerHTML = `<ul class="rows">${rows.map((r) => {
+  $r.innerHTML = `<ul class="cards">${rows.map((r) => {
     const p = pay(r);
-    return `<li><a class="row" href="#/jobs/${encodeURIComponent(r.id)}">
-      <div><div class="row__title">${esc(r.title)}</div><div class="row__sub">${esc(r.employer)} · ${esc([r.city, r.state].filter(Boolean).join(', '))}</div></div>
-      <div class="row__meta"><b>${esc(human(EMPLOYMENT, r.employmentType))}${r.shift ? ' · ' + esc(human(SHIFT, r.shift)) : ''}</b>${p ? `<span>${esc(p)}</span>` : ''}<span>Posted ${day(r.publishedAt)}</span></div>
+    const facts = [
+      p ? `<span class="fact fact--pay">${icon('pay')}<b>${esc(p.replace(' an hour', ''))}</b>${r.payPeriod === 'hour' ? '<span>/hr</span>' : ''}</span>` : '',
+      r.shift ? `<span class="fact">${icon(shiftIcon(r.shift))}${esc(human(SHIFT, r.shift))}</span>` : '',
+      `<span class="fact">${icon('type')}${esc(human(EMPLOYMENT, r.employmentType))}</span>`,
+    ].join('');
+    return `<li><a class="jcard" href="#/jobs/${encodeURIComponent(r.id)}">
+      <div class="jcard__top"><span class="mono-tile">${esc(initials(r.employer))}</span>
+        <div class="jcard__who"><b>${esc(r.employer)}</b><span>${esc([r.city, r.state].filter(Boolean).join(', '))}</span></div>${matchChip(r)}</div>
+      <h2 class="jcard__title">${esc(r.title)}</h2>
+      <div class="facts-row">${facts}</div>
     </a></li>`;
   }).join('')}</ul>`;
 }
 
 // ---------------------------------------------------------------- role (P07)
+// At a glance: what the job is (fact tiles), then one answer, "can I apply?", with one next step.
+// Requirements and details fold away; nothing on the page ranks the person.
 const view = { role: null, match: null, matchState: 'idle', applyState: 'idle', receipt: null, error: null };
+
+const ICON = {
+  pay: '<path d="M12 3v18M16.5 7.5c-.8-1.2-2.4-2-4.5-2-2.6 0-4.5 1.3-4.5 3.2 0 4.3 9 2.3 9 6.6 0 1.9-1.9 3.2-4.5 3.2-2.2 0-3.9-.9-4.7-2.3" />',
+  shift: '<path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5Z" />',
+  day: '<circle cx="12" cy="12" r="4" /><path d="M12 2.5v2M12 19.5v2M4.6 4.6 6 6M18 18l1.4 1.4M2.5 12h2M19.5 12h2M4.6 19.4 6 18M18 6l1.4-1.4" />',
+  evening: '<path d="M4 18h16M7 18a5 5 0 0 1 10 0M12 4.5v3M5.2 9.2l2 1.6M18.8 9.2l-2 1.6" />',
+  place: '<path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21Z" /><circle cx="12" cy="9.5" r="2.5" />',
+  type: '<rect x="3.5" y="7" width="17" height="12.5" rx="2.5" /><path d="M8.5 7V5.5a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2V7" />',
+  date: '<rect x="3.5" y="5" width="17" height="15" rx="2.5" /><path d="M3.5 10h17M8 3v4M16 3v4" />',
+};
+const shiftIcon = (v) => ({ day: 'day', evening: 'evening' }[v] ?? 'shift');
+const icon = (k) => `<svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${ICON[k]}</svg>`;
+const NEXT = { state_license: 'Add your license', bls: 'Add your BLS card' };
 
 async function rolePage(id) {
   Object.assign(view, { role: null, match: null, matchState: 'idle', applyState: 'idle', receipt: null, error: null });
-  $main.innerHTML = `<div class="wrap"><div class="role"><div class="role__head">${skel(16, 20)}<div style="height:12px"></div>${skel(52, 60)}${skel(22, 45)}</div>
-    <div class="role__aside"><div class="card">${skel(120, 100)}${skel(48, 100)}</div></div><div class="role__body">${skel(18, 90)}${skel(18, 80)}${skel(18, 85)}</div></div></div>`;
+  $main.innerHTML = `<div class="wrap narrow">${skel(16, 15)}<div style="height:24px"></div>${skel(20, 40)}<div style="height:12px"></div>${skel(52, 75)}
+    <div style="height:24px"></div><div class="tiles">${[1, 2, 3, 4].map(() => `<div class="skel" style="height:76px;border-radius:14px"></div>`).join('')}</div>
+    <div style="height:24px"></div><div class="skel" style="height:150px;border-radius:24px"></div></div>`;
   setTitle('Loading role');
   const res = await api.getRole(id);
   if (res.status === 404) return roleState('not_found');
@@ -152,145 +215,166 @@ function roleState(kind, id) {
     malformed: ['This role couldn’t be shown.', 'The details we received were incomplete, so we’re not showing them.', `<a class="btn btn--primary" href="#/jobs">Back to roles ${ARROW}</a>`],
   }[kind];
   setTitle(c[0]);
-  $main.innerHTML = `<div class="wrap"><a class="back" href="#/jobs">${BACK} All roles</a><section class="state"><h1 class="display">${c[0]}</h1><p>${c[1]}</p><div class="btn-row">${c[2]}</div></section></div>`;
+  $main.innerHTML = `<div class="wrap narrow"><a class="back" href="#/jobs">${BACK} All roles</a><section class="state"><h1 class="display">${c[0]}</h1><p>${c[1]}</p><div class="btn-row">${c[2]}</div></section></div>`;
   $main.querySelector('[data-retry]')?.addEventListener('click', () => rolePage(id));
   announce(c[0]);
+}
+
+const initials = (name) => name.split(' ').map((w) => w[0]).slice(0, 2).join('');
+
+function tiles(r) {
+  const t = [];
+  const p = pay(r);
+  if (p) t.push(['pay', p.replace(' an hour', ''), PERIOD[r.payPeriod] === 'an hour' ? 'an hour' : PERIOD[r.payPeriod] ?? 'Pay']);
+  if (r.shift) t.push([shiftIcon(r.shift), human(SHIFT, r.shift), 'Shift']);
+  t.push(['type', human(EMPLOYMENT, r.employmentType), 'Employment']);
+  t.push(['place', r.location, 'Location']);
+  if (t.length < 4 && r.validThrough) t.push(['date', day(r.validThrough), 'Open until']);
+  return `<ul class="tiles" aria-label="Role at a glance">${t.slice(0, 4).map(([k, v, l]) => `<li class="tile">${icon(k)}<b>${esc(v)}</b><span>${esc(l)}</span></li>`).join('')}</ul>`;
 }
 
 function renderRole() {
   const r = view.role;
   setTitle(`${r.title} at ${r.employer}`);
   const reqLabel = { true: 'Needed to apply', false: 'Preferred' };
-  $main.innerHTML = `<div class="wrap"><article class="role">
-    <header class="role__head">
-      <a class="back" href="#/jobs">${BACK} All roles</a>
-      <h1 class="display">${esc(r.title)}</h1>
-      <p class="role__meta">${esc(r.employer)} · ${esc(r.location)} · ${esc(human(EMPLOYMENT, r.employmentType))}</p>
-      ${freshTag(r)}
-    </header>
-    <aside class="role__aside" aria-label="Apply"><div class="card" id="apply"></div></aside>
-    <div class="role__body">
-      <section><h2 class="section">The role at a glance.</h2><div class="prose">${safeHtml(r.summaryHtml)}</div>
-        <p class="source">Details supplied by ${esc(r.employer)}. Last reviewed ${day(r.reviewedDate, true)}.</p></section>
-      <section><h2 class="section">What you’ll need.</h2>
-        <ul class="reqs">${r.requirements.map((q) => `<li><b>${esc(q.label)}</b><span class="muted small">${reqLabel[q.required]}</span></li>`).join('')}</ul>
-        <p class="source">${esc(r.employer)} reviews requirements and makes its own hiring and start decisions.</p></section>
-      <section><h2 class="section">What happens after you apply.</h2>
-        <p class="prose">You see what’s shared and who receives it, send it, and keep the receipt. Interviews, offers and onboarding follow ${esc(r.employer)}’s process.</p></section>
-      <section><h2 class="section">Questions.</h2><dl class="faq">
-        <dt>Who will receive my application?</dt><dd>The ${esc(r.employer)} hiring team, named before you send anything.</dd>
-        <dt>Is my information sent when I view this page?</dt><dd>No. Viewing a role is separate from applying.</dd></dl></section>
+  $main.innerHTML = `<div class="wrap narrow"><article class="glance">
+    <a class="back" href="#/jobs">${BACK} All roles</a>
+    <div class="who"><span class="mono-tile">${esc(initials(r.employer))}</span><div><b>${esc(r.employer)}</b><span>${esc(r.freshness.label)}</span></div></div>
+    <h1 class="display">${esc(r.title)}</h1>
+    ${tiles(r)}
+    <section class="verdict" id="verdict" aria-live="polite"></section>
+    <div class="more">
+      <details id="reqs"><summary><span>What’s required</span><span class="muted">${r.requirements.length}</span></summary>
+        <ul class="reqs">${r.requirements.map((q) => `<li data-field="${esc(q.field)}"><b>${esc(q.label)}</b><span class="muted small">${reqLabel[q.required]}</span></li>`).join('')}</ul>
+        <p class="source">${esc(r.employer)} reviews requirements and makes its own hiring decisions.</p></details>
+      <details><summary><span>About the role</span></summary><div class="prose">${safeHtml(r.summaryHtml)}</div>
+        <p class="source">Supplied by ${esc(r.employer)}. Last reviewed ${day(r.reviewedDate, true)}.${r.validThrough ? ` Open until ${day(r.validThrough)}.` : ''}</p></details>
     </div></article></div>`;
-  renderApply();
+  renderVerdict();
 }
 
-function freshTag(r) {
-  if (r.freshness.state === 'confirmed_open') return `<span class="tag"><i></i>${esc(r.freshness.label)}</span>`;
-  return `<span class="tag tag--warn"><i></i>${esc(r.freshness.label)}</span>`;
+function segs(m) {
+  return `<div class="segs" aria-hidden="true">${m.lines.map((l) => `<i class="seg seg--${l.status === 'satisfied' ? 'ok' : l.status === 'human_review_required' ? 'review' : 'miss'}"></i>`).join('')}</div>`;
 }
 
-function factsHtml(r) {
-  const rows = [['Employment', human(EMPLOYMENT, r.employmentType)], ['Location', r.location]];
-  if (r.validThrough) rows.push(['Open until', day(r.validThrough)]);
-  rows.push(['Last reviewed', day(r.reviewedDate, true)]);
-  return `<dl class="facts">${rows.map(([k, v]) => `<div><dt>${k}</dt><dd>${esc(v)}</dd></div>`).join('')}</dl>`;
-}
-
-function renderApply() {
+function renderVerdict() {
   const r = view.role;
-  const $c = $main.querySelector('#apply');
-  if (!$c) return;
-  const facts = factsHtml(r);
+  const $v = $main.querySelector('#verdict');
+  if (!$v) return;
+  $v.className = 'verdict';
 
   if (!r.apply.available) {
-    $c.innerHTML = `${facts}<div class="alert alert--neutral"><b>Applications aren’t open on Rōvn for this role.</b><span class="small">Nothing can be sent from this page.</span></div>`;
+    $v.innerHTML = `<div class="v-text"><h2>Applications aren’t open on Rōvn.</h2><p>Nothing can be sent from this page.</p></div>`;
     return;
   }
-  if (view.applyState === 'done') return renderReceipt($c);
+  if (view.applyState === 'done') return renderReceipt($v);
 
   if (!session.signedIn) {
-    $c.innerHTML = `${facts}<div class="split"></div>
-      <button class="btn btn--primary" data-signin>Sign in to apply ${ARROW}</button>
-      <p class="note">After you sign in you’ll see which of this role’s requirements you meet. It explains the requirements and never ranks people.</p>`;
-    $c.querySelector('[data-signin]').addEventListener('click', openSignIn);
+    $v.innerHTML = `<div class="v-text"><h2>Do you qualify?</h2><p>We’ll check this role’s ${r.requirements.length} requirements against your record. Nothing is sent to ${esc(r.employer)}.</p></div>
+      <div class="v-act"><button class="btn btn--primary" data-signin>Check if I qualify ${ARROW}</button></div>`;
+    $v.querySelector('[data-signin]').addEventListener('click', openSignIn);
+    return;
+  }
+  if (view.matchState === 'loading' || view.matchState === 'idle') {
+    $v.innerHTML = `<div class="v-text">${skel(30, 60)}<div style="height:10px"></div>${skel(16, 80)}</div><div class="v-act">${skel(48, 100)}</div>`;
+    return;
+  }
+  if (view.matchState === 'error') {
+    $v.innerHTML = `<div class="v-text"><h2>We couldn’t check your record.</h2><p>You can still apply, or try again.</p></div>
+      <div class="v-act"><button class="btn btn--primary" data-apply>Apply for this role ${ARROW}</button><button class="btn btn--quiet" data-rematch>Try again</button></div>`;
+    wireVerdict($v);
     return;
   }
 
-  let match = '';
-  if (view.matchState === 'loading') match = `${skel(32, 50)}${skel(40, 100)}${skel(40, 100)}`;
-  else if (view.matchState === 'error') match = `<div class="alert alert--neutral"><b>Your match couldn’t load.</b><span class="small">You can still apply. <button class="btn btn--quiet btn--sm" data-rematch>Try again</button></span></div>`;
-  else if (view.match) match = matchHtml(view.match, r);
-
-  const err = applyErrorHtml();
+  const m = view.match;
+  const labels = Object.fromEntries(r.requirements.map((q) => [q.field, q.label]));
+  const open = m.lines.filter((l) => l.status !== 'satisfied');
   const sending = view.applyState === 'submitting';
+  const err = applyErrorHtml();
   const blocked = view.error?.code === 'role_not_open' || view.error?.code === 'application_scope_conflict';
-  const button = blocked ? '' : `<button class="btn btn--primary" data-apply ${sending ? 'aria-disabled="true"' : ''}>${sending ? 'Sending…<span class="spin" aria-hidden="true"></span>' : view.error ? `Try again ${ARROW}` : `Apply for this role ${ARROW}`}</button>`;
-  $c.innerHTML = `${facts}<div class="split"></div>${match}${err}${button}
-    ${blocked ? '' : `<p class="note">Applying shares your identity, how you fit this role and your application status with the ${esc(r.employer)} hiring team.</p>`}`;
-  $c.querySelector('[data-apply]')?.addEventListener('click', () => { if (!sending) submit(); });
-  $c.querySelector('[data-rematch]')?.addEventListener('click', loadMatch);
+  const applyLabel = sending ? 'Sending…<span class="spin" aria-hidden="true"></span>' : view.error ? `Try again ${ARROW}` : `Apply for this role ${ARROW}`;
+  const meta = `<div class="v-meta">${segs(m)}<span>${m.met} of ${m.total} requirements met</span></div>`;
+
+  if (!open.length) {
+    $v.classList.add('verdict--ready');
+    $v.innerHTML = `<div class="v-text">${meta}<h2>You meet every requirement.</h2><p>A person at ${esc(r.employer)} reviews your application and decides.</p>${err}</div>
+      <div class="v-act">${blocked ? '' : `<button class="btn btn--primary" data-apply ${sending ? 'aria-disabled="true"' : ''}>${applyLabel}</button>`}</div>`;
+  } else {
+    const first = open[0];
+    const review = first.status === 'human_review_required';
+    const head = open.length === 1 ? (review ? 'Almost. One thing to add.' : 'Not yet. One thing missing.') : `Not yet. ${open.length} things missing.`;
+    const why = first.wouldChangeIf ? `Changes if ${first.wouldChangeIf.charAt(0).toLowerCase()}${first.wouldChangeIf.slice(1)}` : 'Add it to your record to change this.';
+    $v.innerHTML = `<div class="v-text">${meta}<h2>${head}</h2>
+        <div class="gap"><span class="ico ${review ? 'ico--review' : 'ico--miss'}">${review ? EYE : DASH}</span><div><b>${esc(labels[first.field] ?? human({}, first.field))}</b><span>${esc(why)}</span></div></div>${err}</div>
+      <div class="v-act"><button class="btn btn--primary" data-fix>${esc(NEXT[first.field] ?? 'Add it to your record')} ${ARROW}</button>
+        ${blocked ? '' : `<button class="btn btn--secondary" data-apply ${sending ? 'aria-disabled="true"' : ''}>${sending ? applyLabel : view.error ? 'Try again' : 'Apply now'}</button>
+        <p class="note">${review ? `${esc(r.employer)} can review it with your application.` : `You can still apply. ${esc(r.employer)} decides.`}</p>`}</div>`;
+  }
+  wireVerdict($v);
 }
 
-function matchHtml(m, r) {
-  const labels = Object.fromEntries(r.requirements.map((q) => [q.field, q.label]));
-  const line = (l) => {
-    const ok = l.status === 'satisfied';
-    const review = l.status === 'human_review_required';
-    const ico = ok ? `<span class="ico ico--ok">${CHECK}</span>` : review ? `<span class="ico ico--review">${EYE}</span>` : `<span class="ico ico--miss">${DASH}</span>`;
-    const status = ok ? (l.evidence === 'source_confirmed' ? 'Confirmed at the source' : 'Met') : review ? `A person at ${r.employer} will review it` : 'Not shown yet';
-    return `<li>${ico}<div><b>${esc(labels[l.field] ?? human({}, l.field))}</b><span>${status}</span>${l.wouldChangeIf ? `<div class="change">Changes if ${esc(l.wouldChangeIf.charAt(0).toLowerCase() + l.wouldChangeIf.slice(1))}</div>` : ''}</div></li>`;
-  };
-  return `<div class="met"><strong>${m.met} of ${m.total}</strong><span class="muted small">requirements met</span></div>
-    <ul class="lines">${m.lines.map(line).join('')}</ul>`;
+function wireVerdict($v) {
+  $v.querySelector('[data-apply]')?.addEventListener('click', () => { if (view.applyState !== 'submitting') submit(); });
+  $v.querySelector('[data-rematch]')?.addEventListener('click', loadMatch);
+  $v.querySelector('[data-fix]')?.addEventListener('click', () => {
+    // Real: opens the worker record to add the document (where that lives is B06). Prototype: simulate it being added.
+    mockAddToRecord(view.role.id);
+    announce('Prototype: added to your record. Checking again.');
+    loadMatch();
+  });
 }
 
 function applyErrorHtml() {
   const e = view.error;
   if (!e) return '';
-  if (e.code === 'role_not_open') return `<div class="alert alert--attention"><b>This role is no longer accepting applications.</b><span class="small">Your details weren’t sent.</span><a class="link small" href="#/jobs">See current roles</a></div>`;
+  const r = view.role;
+  if (e.code === 'role_not_open') return `<div class="alert alert--attention"><b>This role is no longer accepting applications.</b><span class="small">Your details weren’t sent. <a class="link" href="#/jobs">See current roles</a></span></div>`;
   if (e.code === 'application_scope_conflict') return `<div class="alert alert--attention"><b>You already have an application for this role.</b><span class="small">It was sent with different sharing settings, so nothing new was sent.</span></div>`;
   if (e.code === 'unconfirmed') return `<div class="alert alert--critical"><b>We couldn’t confirm your application.</b><span class="small">Don’t assume it was sent. Trying again won’t send it twice.</span></div>`;
-  return `<div class="alert alert--critical"><b>Your application was not saved.</b><span class="small">Nothing was sent to ${esc(view.role.employer)}. Trying again won’t send it twice.</span></div>`;
+  return `<div class="alert alert--critical"><b>Your application was not saved.</b><span class="small">Nothing was sent to ${esc(r.employer)}. Trying again won’t send it twice.</span></div>`;
 }
 
-function renderReceipt($c) {
+function renderReceipt($v) {
   const a = view.receipt;
-  $c.innerHTML = `<span class="done-ico">${CHECK}</span>
-    <h2>Sent to the ${esc(a.destination)}.</h2>
-    ${a.replayed ? '<p class="small muted">You’d already applied. This is the same application, not a new one.</p>' : ''}
-    <dl class="receipt"><div><dt>Receipt</dt><dd class="mono">${esc(a.receiptId.slice(0, 8))}</dd></div>
-      <div><dt>Sent</dt><dd>${time(a.submittedAt)}</dd></div><div><dt>Your match when sent</dt><dd>${a.match.met} of ${a.match.total}</dd></div></dl>
-    <p class="small">A person on the hiring team reviews it and decides. This isn’t an offer or a hiring decision.</p>
-    <a class="btn btn--secondary" href="#/jobs">Back to roles</a>`;
+  $v.classList.add('verdict--sent');
+  $v.innerHTML = `<div class="v-text"><span class="done-ico">${CHECK}</span><h2>Sent to the ${esc(a.destination)}.</h2>
+      <p>${a.replayed ? 'You’d already applied, so this is the same application. ' : ''}A person on the hiring team reviews it and decides. This isn’t an offer.</p></div>
+    <div class="v-act"><dl class="receipt"><div><dt>Receipt</dt><dd class="mono">${esc(a.receiptId.slice(0, 8))}</dd></div><div><dt>Sent</dt><dd>${time(a.submittedAt)}</dd></div></dl>
+      <a class="btn btn--secondary" href="#/jobs">Back to roles</a></div>`;
   announce(`Application sent to the ${a.destination}. Receipt ${a.receiptId.slice(0, 8)}.`);
 }
 
 async function loadMatch() {
-  view.matchState = 'loading'; renderApply();
+  view.matchState = 'loading'; renderVerdict();
   const res = await api.getMatch(view.role.id);
-  if (res.status === 401) { session.signOut(); view.matchState = 'idle'; return renderApply(); }
-  if (res.status !== 200) { view.matchState = 'error'; return renderApply(); }
+  if (res.status === 401) { session.signOut(); view.matchState = 'idle'; return renderVerdict(); }
+  if (res.status !== 200) { view.matchState = 'error'; return renderVerdict(); }
   try { view.match = readMatch(res.body); view.matchState = 'ready'; } catch (e) { console.warn(e); view.matchState = 'error'; }
-  renderApply();
+  markReqs();
+  renderVerdict();
+}
+
+// Once signed in, the folded requirement list shows status per line.
+function markReqs() {
+  if (!view.match) return;
+  for (const l of view.match.lines) {
+    const li = $main.querySelector(`#reqs li[data-field="${CSS.escape(l.field)}"] .muted`);
+    if (li) li.textContent = l.status === 'satisfied' ? 'Met' : l.status === 'human_review_required' ? 'To be reviewed' : 'Missing';
+  }
 }
 
 async function submit() {
-  view.applyState = 'submitting'; view.error = null; renderApply();
+  view.applyState = 'submitting'; view.error = null; renderVerdict();
   const res = await api.apply(view.role.id);
   if (res.status === 200) {
-    try {
-      view.receipt = readApplication(res.body);
-      view.applyState = 'done';
-    } catch (e) {
-      console.warn(e);
-      view.applyState = 'error'; view.error = { code: 'unconfirmed' };
-    }
-    return renderApply();
+    try { view.receipt = readApplication(res.body); view.applyState = 'done'; }
+    catch (e) { console.warn(e); view.applyState = 'error'; view.error = { code: 'unconfirmed' }; }
+    return renderVerdict();
   }
-  if (res.status === 401) { session.signOut(); view.applyState = 'idle'; renderApply(); return openSignIn(); }
+  if (res.status === 401) { session.signOut(); view.applyState = 'idle'; renderVerdict(); return openSignIn(); }
   view.applyState = 'error';
   view.error = res.status === 0 ? { code: 'unconfirmed' } : readError(res.status, res.body);
-  renderApply();
+  renderVerdict();
   announce(view.error.code === 'role_not_open' ? 'This role is no longer accepting applications.' : 'Your application was not saved.');
 }
 
@@ -300,6 +384,8 @@ function openSignIn() {
   const r = view.role;
   $dialog.querySelector('[data-ctx]').innerHTML = r
     ? `<span class="mono-tile">${esc(r.employer.split(' ').map((w) => w[0]).slice(0, 2).join(''))}</span><div><b class="small" style="display:block">${esc(r.title)}</b><span class="xs muted">${esc(r.employer)}</span></div>` : '';
+  $dialog.querySelector('#signin-h').textContent = r ? 'Sign in to apply.' : 'Sign in to see your matches.';
+  $dialog.querySelector('#signin-h + p').textContent = r ? 'You’ll come straight back to this role.' : 'You’ll come straight back to the list.';
   $dialog.showModal();
 }
 $dialog.addEventListener('click', (e) => {
@@ -309,7 +395,7 @@ $dialog.addEventListener('click', (e) => {
     $dialog.close();
     syncPanel();
     announce('Signed in. Back on the role.');
-    if (view.role) loadMatch();
+    if (view.role) loadMatch(); else route();
   }
 });
 
@@ -321,6 +407,7 @@ function syncPanel() {
   $panel.querySelector('[name=list]').value = scenario.list;
   $panel.querySelector('[name=detail]').value = scenario.detail;
   $panel.querySelector('[name=apply]').value = scenario.apply;
+  $panel.querySelector('[name=match]').value = scenario.match;
   $panel.querySelector('[name=signedin]').checked = session.signedIn;
 }
 $panel.addEventListener('change', (e) => {
