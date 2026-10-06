@@ -20,7 +20,8 @@
   --lift: 0 1px 2px #28190A14, 0 18px 44px #28190A29;
   --ease: cubic-bezier(.22, 1, .36, 1);
   --maxw: 1680px;
-  --bleed: max(0px, (100vw - var(--maxw)) / 2); /* the margin outside the max width, so lines can still reach the screen edge */
+  --bleed: max(0px, (100vw - var(--maxw)) / 2);
+  --col: min(704rem, 0.56 * (100vw - 32rem - 2 * var(--bleed))); /* the right-hand column (opener copy, questions list): one width, so their edges line up */ /* the margin outside the max width, so lines can still reach the screen edge */
 }
 
 html { font-size: calc(var(--k) * 1px); background: var(--P); }
@@ -74,7 +75,7 @@ body.sub { background: var(--P); color: var(--K); font-size: max(13px, 16rem); o
 .opener__img { position: absolute; inset: -6% 0; background-size: cover; background-position: var(--pos, 50%); will-change: transform; }
 .opener__body { flex-shrink: 0; min-height: 338rem; display: flex; padding: 24rem 16rem 32rem; }
 .opener__label { flex: 1; font-family: var(--serif); font-size: max(14px, 20rem); line-height: 1; letter-spacing: -0.03em; color: var(--ink-68); }
-.opener__copy { width: min(704rem, 56%); flex-shrink: 0; display: flex; flex-direction: column; gap: 24rem; }
+.opener__copy { width: var(--col); flex-shrink: 0; display: flex; flex-direction: column; gap: 24rem; }
 .opener__title { font-family: var(--serif); font-weight: 300; font-size: 68rem; line-height: .92; letter-spacing: -0.05em; color: var(--K); }
 .opener__title > span { display: block; }
 .opener__sub { width: min(480rem, 100%); font-family: var(--sans); font-size: max(13px, 15rem); line-height: 1.5; color: var(--body); }
@@ -176,7 +177,7 @@ body.sub { background: var(--P); color: var(--K); font-size: max(13px, 16rem); o
 .faq { padding: 8rem 8rem 120rem; }
 .faq__inner { display: flex; padding: 24rem 16rem; }
 .faq__title { flex: 1; font-family: var(--serif); font-weight: 300; font-size: 54rem; line-height: 1; letter-spacing: -0.05em; color: var(--K); }
-.faq__list { width: min(704rem, 56%); flex-shrink: 0; display: flex; flex-direction: column; }
+.faq__list { width: var(--col); flex-shrink: 0; display: flex; flex-direction: column; }
 .faq__item + .faq__item { border-top: 1px solid var(--line); }
 .faq__q { display: flex; align-items: baseline; justify-content: space-between; gap: 24rem; width: 100%; padding: 28rem 0; text-align: left; transition: padding-bottom .6s var(--ease); }
 .faq__item.is-open .faq__q { padding-bottom: 14rem; }
@@ -198,14 +199,12 @@ body.sub { background: var(--P); color: var(--K); font-size: max(13px, 16rem); o
 .gl { position: absolute; z-index: 1; pointer-events: none; background: var(--gl); }
 .gl--h { left: 0; right: 0; height: 1px; transform-origin: 0 50%; }
 .gl--v { top: 0; bottom: 0; width: 1px; transform-origin: 50% 0; }
-.opener__body, .faq__inner, .opener__copy, .faq__list { position: relative; }
-.gl--h.gl--bleed { left: calc(-1 * var(--bleed)); right: calc(-1 * var(--bleed)); }
-/* vertical lines ride on the column they mark, so they stay on its edge as the columns reflow */
-.gl--copy { left: -16rem; top: -24rem; bottom: -32rem; }        /* opener: photo bottom → bottom line */
-.gl--faq { left: -8rem; top: -128rem; bottom: -152rem; }        /* questions: spruce top → spruce bottom */
+/* lines are children of their section (never of a block that rises or fades), so they stay joined while
+   things move: horizontal lines run screen edge to screen edge; vertical lines sit on the column they mark
+   (data-x + data-dx, placed by sub.js) and run to the section's edges, or start at another element (data-from) */
+.opener, .faq--spruce { position: relative; }
 
 /* lines always end on something: the screen edge, a container edge or another line */
-.faq--spruce { position: relative; }
 .faq--spruce .faq__item + .faq__item { border-top: 0; position: relative; }
 .faq--spruce .faq__item + .faq__item::before { content: ""; position: absolute; top: 0; left: -8rem; right: calc(-24rem - var(--bleed)); height: 1px; background: var(--gl); } /* from the vertical line to the screen edge */
 .acc--lines .acc__item + .acc__item { border-top: 0; position: relative; }

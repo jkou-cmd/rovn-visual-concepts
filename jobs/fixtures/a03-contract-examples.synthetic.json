@@ -1,0 +1,250 @@
+{
+  "contract": "c-a03-web-handoff-v1",
+  "status": "implementation_contract",
+  "data_origin": "synthetic_contract_example",
+  "role_detail": {
+    "request": {
+      "method": "GET",
+      "path": "/job-postings/11111111-1111-4111-8111-111111111111",
+      "authentication": "public"
+    },
+    "success": {
+      "status": 200,
+      "body": {
+        "contract": "c-a03-role-detail-v1",
+        "role_id": "11111111-1111-4111-8111-111111111111",
+        "slug": "11111111-1111-4111-8111-111111111111",
+        "role_title": "Registered Nurse \u2014 Night Shift",
+        "employer_name": "Peachtree Skilled Nursing",
+        "profession": "RN",
+        "location": {
+          "city": "Atlanta",
+          "state": "GA",
+          "display": "Atlanta, GA"
+        },
+        "employment_type": "full_time",
+        "employer_approved_summary": "<p>Join the night-shift nursing team.</p>",
+        "employer_approved_requirements": [
+          {
+            "field": "state_license",
+            "label": "Active Georgia RN license",
+            "required": true
+          },
+          {
+            "field": "bls",
+            "label": "Current BLS",
+            "required": true
+          }
+        ],
+        "reviewed_date": "2026-10-05",
+        "tested_application_route": "/demand/worker/jobs/11111111-1111-4111-8111-111111111111/applications",
+        "published_at": "2026-10-04T14:00:00Z",
+        "valid_through": "2026-10-31T23:59:59Z",
+        "freshness": {
+          "state": "confirmed_open",
+          "confirmed_open_at": "2026-10-05T16:20:00Z",
+          "display_label": "Confirmed open 1 hour ago"
+        },
+        "apply": {
+          "mode": "on_rovn",
+          "available": true,
+          "requires_authentication": true
+        }
+      }
+    },
+    "never_public_or_unknown": {
+      "status": 404,
+      "body": {
+        "detail": {
+          "code": "role_not_found",
+          "message": "Role not found."
+        }
+      }
+    },
+    "recoverable_failure": {
+      "status": 503,
+      "headers": {
+        "Retry-After": "30"
+      },
+      "body": {
+        "detail": {
+          "code": "role_service_unavailable",
+          "message": "Roles are temporarily unavailable.",
+          "retryable": true
+        }
+      }
+    }
+  },
+  "match": {
+    "request": {
+      "method": "GET",
+      "path": "/demand/worker/jobs/11111111-1111-4111-8111-111111111111/match",
+      "authentication": "worker session"
+    },
+    "success": {
+      "status": 200,
+      "body": {
+        "contract": "c-match-v1",
+        "requisition_id": "11111111-1111-4111-8111-111111111111",
+        "requirement_group_id": "66666666-6666-4666-8666-666666666666",
+        "version": 3,
+        "content_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "lines": [
+          {
+            "field": "state_license",
+            "required": true,
+            "status": "satisfied",
+            "reason": "source_confirmed",
+            "evidence_class": "source_confirmed",
+            "source_receipt_id": "77777777-7777-4777-8777-777777777777",
+            "would_change_if": null
+          },
+          {
+            "field": "bls",
+            "required": true,
+            "status": "human_review_required",
+            "reason": "source_scope_unconfirmed",
+            "evidence_class": "human_review_required",
+            "source_receipt_id": null,
+            "would_change_if": "A current BLS source receipt is shared with this application."
+          }
+        ],
+        "met": 1,
+        "total": 2,
+        "engine_version": "role-requirement-v1",
+        "decision_note": "This explains job-relevant criteria. It does not rank people or make a hiring decision."
+      }
+    }
+  },
+  "apply": {
+    "request": {
+      "method": "POST",
+      "path": "/demand/worker/jobs/11111111-1111-4111-8111-111111111111/applications",
+      "query": {
+        "consent_scope": "identity_opportunity_fit_application_status"
+      },
+      "headers": {
+        "Authorization": "Bearer <worker-session>",
+        "Accept": "application/json"
+      },
+      "body": null,
+      "idempotency": {
+        "key": "authenticated worker + requisition_id + consent_scope",
+        "rule": "An exact retry returns the same application_id, submission_id, and audit_receipt_id."
+      }
+    },
+    "success": {
+      "status": 200,
+      "body": {
+        "contract": "c-apply-v1",
+        "application_id": "22222222-2222-4222-8222-222222222222",
+        "submission_id": "33333333-3333-4333-8333-333333333333",
+        "audit_receipt_id": "44444444-4444-4444-8444-444444444444",
+        "requisition_id": "11111111-1111-4111-8111-111111111111",
+        "facility_name": "Peachtree Skilled Nursing",
+        "status": "submitted",
+        "submitted_at": "2026-10-05T17:30:00Z",
+        "changed": true,
+        "replayed": false,
+        "consent_grant_id": "55555555-5555-4555-8555-555555555555",
+        "consent_scope": "identity_opportunity_fit_application_status",
+        "contact_disclosed": false,
+        "match": {
+          "requirement_group_id": "66666666-6666-4666-8666-666666666666",
+          "version": 3,
+          "content_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "met": 1,
+          "total": 2,
+          "lines": [
+            {
+              "field": "state_license",
+              "required": true,
+              "status": "satisfied",
+              "reason": "source_confirmed",
+              "evidence_class": "source_confirmed",
+              "source_receipt_id": "77777777-7777-4777-8777-777777777777",
+              "would_change_if": null
+            },
+            {
+              "field": "bls",
+              "required": true,
+              "status": "human_review_required",
+              "reason": "source_scope_unconfirmed",
+              "evidence_class": "human_review_required",
+              "source_receipt_id": null,
+              "would_change_if": "A current BLS source receipt is shared with this application."
+            }
+          ],
+          "engine_version": "role-requirement-v1"
+        },
+        "verification_link": null,
+        "receipt": {
+          "receipt_id": "44444444-4444-4444-8444-444444444444",
+          "named_destination": "Peachtree Skilled Nursing hiring team",
+          "recorded_at": "2026-10-05T17:30:00Z"
+        },
+        "human_gate": "A named facility human reviews and decides. Submission is not an offer, START, or hiring decision."
+      }
+    },
+    "exact_retry": {
+      "status": 200,
+      "body_delta_from_success": {
+        "changed": false,
+        "replayed": true
+      },
+      "must_remain_identical": [
+        "application_id",
+        "submission_id",
+        "audit_receipt_id",
+        "receipt.receipt_id",
+        "match.content_hash"
+      ]
+    },
+    "never_public_or_unknown": {
+      "status": 404,
+      "body": {
+        "detail": {
+          "code": "role_not_found",
+          "message": "Role not found."
+        }
+      }
+    },
+    "role_no_longer_open": {
+      "status": 409,
+      "body": {
+        "detail": {
+          "code": "role_not_open",
+          "message": "This role is no longer accepting applications.",
+          "requisition_id": "11111111-1111-4111-8111-111111111111",
+          "valid_through": "2026-10-05T17:00:00Z",
+          "retryable": false
+        }
+      }
+    },
+    "different_consent_scope_on_retry": {
+      "status": 409,
+      "body": {
+        "detail": {
+          "code": "application_scope_conflict",
+          "message": "An active application exists with a different consent scope.",
+          "retryable": false
+        }
+      }
+    },
+    "recoverable_failure": {
+      "status": 503,
+      "headers": {
+        "Retry-After": "30"
+      },
+      "body": {
+        "detail": {
+          "code": "application_temporarily_unavailable",
+          "message": "Your application was not saved. Try again.",
+          "retryable": true,
+          "application_id": null,
+          "receipt_id": null
+        }
+      }
+    }
+  }
+}

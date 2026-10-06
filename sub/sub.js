@@ -83,6 +83,23 @@
   fitObjects();
   addEventListener('resize', fitObjects);
 
+  /* ---------------------------------------------------------------- gridlines: vertical lines follow their column */
+  // layout position inside the section (offsets ignore transforms, so motion never moves a line)
+  const offsetIn = (el, sec) => { let x = 0, y = 0; while (el && el !== sec) { x += el.offsetLeft; y += el.offsetTop; el = el.offsetParent; } return { x, y }; };
+  function placeLines() {
+    $$('.gl--v[data-x]').forEach((l) => {
+      const sec = l.parentNode, col = $(l.dataset.x, sec);
+      if (!col) return;
+      l.style.left = `${offsetIn(col, sec).x + (parseFloat(l.dataset.dx) || 0) * rem()}px`;
+      const from = l.dataset.from && $(l.dataset.from, sec);
+      l.style.top = from ? `${offsetIn(from, sec).y + from.offsetHeight}px` : '0px';
+      l.style.bottom = '0px';
+    });
+  }
+  placeLines();
+  addEventListener('resize', placeLines);
+  if (document.fonts) document.fonts.ready.then(placeLines);
+
   /* ---------------------------------------------------------------- statuses tick forward once, then rest */
   const played = new WeakSet();
   function tick(obj) {
@@ -172,7 +189,7 @@
         tl.add(() => {
           const o = { p: 0 };
           gsap.to(o, { p: 1, ease: 'none', scrollTrigger: { trigger: section, start: 'top top', end: 'bottom top', scrub: 0.4 },
-            onUpdate: () => { const p = o.p; photo.style.clipPath = p ? shape([0, 2 * p, 6 * p, 2 * p, 120 * p]) : ''; } });
+            onUpdate: () => { const p = o.p, r = 120 * p * rem(); photo.style.clipPath = p ? `inset(0% ${2 * p}% 0% ${2 * p}% round ${r}px ${r}px 0px 0px)` : ''; } });
         }, 1.6);
         return tl;
       };
