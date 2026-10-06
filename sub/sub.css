@@ -194,6 +194,14 @@ body.sub { background: var(--P); color: var(--K); font-size: max(13px, 16rem); o
 .gl--v { top: 0; bottom: 0; width: 1px; transform-origin: 50% 0; }
 .opener__body, .faq__inner { position: relative; }
 
+/* lines always end on something: the screen edge, a container edge or another line */
+.faq--spruce { position: relative; }
+.faq--spruce > .gl--v { top: 0; bottom: 0; } /* runs the full height of the spruce block */
+.faq--spruce .faq__item + .faq__item { border-top: 0; position: relative; }
+.faq--spruce .faq__item + .faq__item::before { content: ""; position: absolute; top: 0; left: -8rem; right: -24rem; height: 1px; background: var(--gl); } /* from the vertical line to the screen edge */
+.acc--lines .acc__item + .acc__item { border-top: 0; position: relative; }
+.acc--lines .acc__item + .acc__item::before { content: ""; position: absolute; top: 0; left: -8rem; right: -8rem; height: 1px; background: var(--line); } /* from the screen edge to the photo panel */
+
 /* the amber field: a scene in the accordion stage (amber as light, the white card on it) */
 .scene--amber { background-image: linear-gradient(in oklab 180deg, oklab(69.6% 0.088 0.141) 0%, oklab(64.4% 0.121 0.130) 100%); }
 .scene--amber .obj { box-shadow: 0 1px 2px #5A2A0A1F, 0 24px 56px #5A2A0A3D; }
