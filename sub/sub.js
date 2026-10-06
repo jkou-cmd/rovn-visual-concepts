@@ -5,6 +5,11 @@
      [data-photo]   photo: fades in from a soft focus pull
      [data-object]  product object: rises 24px; on hover it tilts toward the pointer with an amber glint
      [data-exit]    section content lifts and fades as it leaves the top of the screen
+     [data-morph]   a mask that morphs round ⇄ square: on the opener photo it arrives as a pill and opens
+                    square (and rounds a little as you leave); on .acc__stage each new scene grows out of a
+                    circle over the last; on <body data-morph-doors> the close doors open from pills and
+                    round their corners on hover
+     .gl            gridlines: hairlines that draw themselves in when their section enters
      .acc / .faq    accordion and questions open on click
      .close         home's own close (home/sections/s9.js): doors, ink footer, wordmark band
    Built on shared/motion.js (GSAP + Lenis, eases, word split, glow, glider, glint). */
@@ -81,6 +86,23 @@
     });
   }
 
+  /* ---------------------------------------------------------------- mask morphs
+     clip-path strings can't be tweened reliably (browsers shorten them, so numbers pair up wrong), so the
+     shape is a set of numbers we tween and write out ourselves: [top, right, bottom, left] in %, radius in rem. */
+  const ROUND = [30, 33, 30, 33, 999], SQUARE = [0, 0, 0, 0, 0];
+  // 999 means "fully round": resolve it to half the shape's short side, so the corners straighten evenly through the morph
+  const fit = (el, v) => (v[4] < 999 ? v : [...v.slice(0, 4), Math.min(el.offsetWidth * (1 - (v[1] + v[3]) / 100), el.offsetHeight * (1 - (v[0] + v[2]) / 100)) / 2 / rem()]);
+  const shape = (v) => `inset(${v[0]}% ${v[1]}% ${v[2]}% ${v[3]}% round ${v[4] * rem()}px)`;
+  function clip(el, to, vars = {}) {
+    const st = el.__clip || (el.__clip = { v: SQUARE.slice() });
+    if (vars.from) { st.v = fit(el, vars.from); el.style.clipPath = shape(st.v); }
+    const { from, ...rest } = vars;
+    const o = { p: 0 }, a = st.v.slice();
+    return gsap.to(o, { p: 1, ...rest, onUpdate: () => { st.v = a.map((x, i) => x + (to[i] - x) * o.p); el.style.clipPath = shape(st.v); },
+      onComplete: () => { if (to.every((x) => x === 0)) el.style.clipPath = ''; if (rest.onComplete) rest.onComplete(); } });
+  }
+  const setClip = (el, v) => { el.__clip = { v: fit(el, v) }; el.style.clipPath = shape(el.__clip.v); };
+
   /* ---------------------------------------------------------------- entrances */
   function enter(section, now) {
     const stand = $$('[data-stand]', section).filter((el) => !el.closest('.scene'));
@@ -89,12 +111,16 @@
     const objs = $$('[data-object]', section).filter((el) => !el.closest('.scene:not(.is-on)'));
     const words = stand.flatMap((h) => h.__words || (h.__words = R.words(h)));
     if (R.reduce) return () => {};
-    gsap.set(words, { ...R.standFrom });
-    gsap.set(rise, { ...R.riseFrom });
-    gsap.set(photos, { autoAlpha: 0, scale: 1.06, filter: 'blur(10px)' });
-    gsap.set(objs, { autoAlpha: 0, y: 24 * rem() });
+    if (!words.length && !rise.length && !photos.length && !objs.length && !$('.gl', section)) return () => {};
+    if (words.length) gsap.set(words, { ...R.standFrom });
+    if (rise.length) gsap.set(rise, { ...R.riseFrom });
+    if (photos.length) gsap.set(photos, { autoAlpha: 0, scale: 1.06, filter: 'blur(10px)' });
+    if (objs.length) gsap.set(objs, { autoAlpha: 0, y: 24 * rem() });
+    const lines = $$('.gl', section);
+    if (lines.length) gsap.set(lines, { scaleX: (i, el) => (el.classList.contains('gl--h') ? 0 : 1), scaleY: (i, el) => (el.classList.contains('gl--v') ? 0 : 1) });
     const play = () => {
       const tl = gsap.timeline();
+      if (lines.length) tl.to(lines, { scaleX: 1, scaleY: 1, duration: 1.6, ease: 'expo.inOut', stagger: 0.12 }, 0);
       if (photos.length) tl.to(photos, { autoAlpha: 1, scale: 1, filter: 'blur(0px)', duration: 1.6, ease: 'expo.out', stagger: 0.08 }, 0);
       if (words.length) tl.to(words, { ...R.standTo, duration: 1.2, ease: 'expo.out', stagger: 0.04 }, photos.length ? 0.2 : 0);
       if (rise.length) tl.to(rise, { ...R.riseTo, duration: 1.1, ease: 'expo.out', stagger: 0.08 }, words.length ? 0.38 : 0.1);
@@ -119,7 +145,26 @@
 
   /* ---------------------------------------------------------------- opener: arrives on load, photo drifts as you leave */
   function opener(section) {
-    const play = enter(section, true);
+    const play0 = enter(section, true);
+    const photo = $('.opener__photo[data-morph]', section);
+    let play = play0;
+    if (photo && !R.reduce) {
+      // arrives as a pill in the middle of the strip and opens out to the square frame
+      const img = $('.opener__img', photo);
+      setClip(photo, ROUND);
+      play = () => {
+        const tl = play0();
+        tl.add(clip(photo, SQUARE, { duration: 1.5, ease: 'expo.inOut' }), 0);
+        if (img) tl.fromTo(img, { scale: 1.18 }, { scale: 1, duration: 1.9, ease: 'expo.out' }, 0);
+        // leaving: the frame rounds a little and draws in, the way it arrived
+        tl.add(() => {
+          const o = { p: 0 };
+          gsap.to(o, { p: 1, ease: 'none', scrollTrigger: { trigger: section, start: 'top top', end: 'bottom top', scrub: 0.4 },
+            onUpdate: () => { const p = o.p; photo.style.clipPath = p ? shape([0, 2 * p, 6 * p, 2 * p, 120 * p]) : ''; } });
+        }, 1.6);
+        return tl;
+      };
+    }
     const img = $('.opener__img', section);
     if (img && !R.reduce) gsap.to(img, { yPercent: 5, ease: 'none', scrollTrigger: { trigger: section, start: 'top top', end: 'bottom top', scrub: 0.4 } });
     const copy = $('.opener__body', section);
@@ -146,10 +191,18 @@
       if (prev && prev !== s) {
         prev.classList.add('is-leaving'); prev.style.zIndex = 1;
         if (leaveCall) leaveCall.kill();
-        leaveCall = gsap.delayedCall(0.9, () => prev.classList.remove('is-leaving'));
+        leaveCall = gsap.delayedCall(stage.hasAttribute('data-morph') ? 1.15 : 0.9, () => prev.classList.remove('is-leaving'));
       }
-      if (bg !== s) gsap.set(s, { opacity: 1 });
-      gsap.fromTo(bg, { opacity: 0, scale: 1.04 }, { opacity: 1, scale: 1, duration: 0.9, ease: 'expo.out', overwrite: true });
+      if (stage.hasAttribute('data-morph')) {
+        // the new scene grows out of a circle over the last one, then squares off at the frame
+        gsap.set([s, bg], { opacity: 1 });
+        if (s.__clipTw) s.__clipTw.kill();
+        s.__clipTw = clip(s, SQUARE, { from: [34, 30, 34, 30, 999], duration: 1.1, ease: 'expo.inOut' });
+        if (bg !== s) gsap.fromTo(bg, { scale: 1.12 }, { scale: 1, duration: 1.4, ease: 'expo.out', overwrite: true });
+      } else {
+        if (bg !== s) gsap.set(s, { opacity: 1 });
+        gsap.fromTo(bg, { opacity: 0, scale: 1.04 }, { opacity: 1, scale: 1, duration: 0.9, ease: 'expo.out', overwrite: true });
+      }
       if (top) gsap.fromTo(top, { opacity: 0, y: -8 }, { opacity: 1, y: 0, duration: 0.7, delay: 0.1, ease: 'expo.out', overwrite: true });
       if (obj) gsap.fromTo(obj, { opacity: 0, y: 24 * rem() }, { opacity: 1, y: 0, duration: 1.0, delay: 0.12, ease: 'expo.out', overwrite: 'auto', onStart: () => tick(obj) });
     };
@@ -191,6 +244,20 @@
           gsap.fromTo(a, { height: a.offsetHeight }, { height: 0, duration: 0.5, ease: 'power3.out', onComplete: () => { a.style.height = ''; ST.refresh(); } });
         }
       });
+    });
+  }
+
+  /* ---------------------------------------------------------------- close doors: pill → square on entry, round on hover */
+  function morphDoors() {
+    if (!document.body.hasAttribute('data-morph-doors') || R.reduce) return;
+    $$('.close .cdoor').forEach((d, i) => {
+      let ready = false;
+      setClip(d, [10, 14, 10, 14, 999]);
+      ST.create({ trigger: d, start: 'top 88%', once: true, onEnter: () => clip(d, SQUARE, { duration: 1.4, delay: i * 0.1, ease: 'expo.inOut', onComplete: () => { ready = true; } }) });
+      if (!R.fine) return;
+      let hov = null;
+      d.addEventListener('pointerenter', () => { if (!ready) return; if (hov) hov.kill(); hov = clip(d, [0, 0, 0, 0, 40], { duration: 0.7, ease: 'expo.out' }); });
+      d.addEventListener('pointerleave', () => { if (!ready) return; if (hov) hov.kill(); hov = clip(d, SQUARE, { duration: 0.6, ease: 'expo.out' }); });
     });
   }
 
@@ -242,6 +309,7 @@
     });
     $$('.acc').forEach(accordion);
     homeSections();
+    morphDoors();
     $$('.faq__list').forEach(faq);
 
     if (R.reduce) { R.loaded(); return; }

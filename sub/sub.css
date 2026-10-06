@@ -34,6 +34,8 @@ body.sub { background: var(--P); color: var(--K); font-size: max(13px, 16rem); o
 .split-word { display: inline-block; will-change: transform; }
 
 /* ---------------------------------------------------------------- buttons: home's .pbtn (shared/site.css), plus a text link */
+.tlink svg { width: 16rem; height: 16rem; flex-shrink: 0; transition: transform .45s var(--ease); }
+@media (hover: hover) and (pointer: fine) { .tlink:hover svg { transform: translateX(2rem); } }
 .tlink { position: relative; display: inline-flex; align-items: center; gap: 8rem; font-family: var(--sans); font-weight: 500; font-size: max(13px, 15rem); line-height: calc(20 / 15); color: var(--ink); }
 .tlink::after { content: ""; position: absolute; left: 0; right: 0; bottom: -3rem; height: 1px; background: currentColor; transform: scaleX(0); transform-origin: 0 50%;
   transition: transform .5s var(--ease); }
@@ -183,11 +185,35 @@ body.sub { background: var(--P); color: var(--K); font-size: max(13px, 16rem); o
 .faq__item.is-open .faq__a { height: auto; }
 .faq__at { width: 520rem; padding-bottom: 28rem; font-family: var(--sans); font-size: max(13px, 16rem); line-height: 1.4; color: var(--ink-68); }
 
+/* ================================================================ variant B pieces (opt-in): gridlines, colour fields
+   Inspired by Petra Labs, in Rōvn's own terms: hairlines that line up under the nav's cells and draw
+   themselves in; one amber field and one spruce field per page, never more. */
+:root { --spruce: #22392F; --spruce-ink: #F9F4EA; --gl: #1B181412; }
+.gl { position: absolute; z-index: 1; pointer-events: none; background: var(--gl); }
+.gl--h { left: 0; right: 0; height: 1px; transform-origin: 0 50%; }
+.gl--v { top: 0; bottom: 0; width: 1px; transform-origin: 50% 0; }
+.opener__body, .faq__inner { position: relative; }
+
+/* the amber field: a scene in the accordion stage (amber as light, the white card on it) */
+.scene--amber { background-image: linear-gradient(in oklab 180deg, oklab(69.6% 0.088 0.141) 0%, oklab(64.4% 0.121 0.130) 100%); }
+.scene--amber .obj { box-shadow: 0 1px 2px #5A2A0A1F, 0 24px 56px #5A2A0A3D; }
+
+/* the spruce field: a full-width colour block (questions) */
+.faq--spruce { --gl: rgba(249, 244, 234, 0.14); background: var(--spruce); padding: 104rem 8rem 128rem; }
+.faq--spruce .faq__title, .faq--spruce .faq__qt { color: var(--spruce-ink); }
+.faq--spruce .faq__icon { color: rgba(249, 244, 234, 0.7); }
+.faq--spruce .faq__at { color: rgba(249, 244, 234, 0.74); }
+.faq--spruce .faq__item + .faq__item { border-top-color: rgba(249, 244, 234, 0.14); }
+@media (hover: hover) and (pointer: fine) { .faq--spruce .faq__item:not(.is-open) .faq__q:hover .faq__qt { color: var(--spruce-ink); opacity: .72; } }
+.faq--spruce :focus-visible { outline-color: #F0A04A; }
+
 /* ================================================================ page exit veil */
 .veil { position: fixed; inset: 0; z-index: 80; background: var(--P); pointer-events: none; opacity: 0; }
 
 /* ================================================================ phone (390 frames) */
 @media (max-width: 767px) {
+  .gl--v { display: none; }
+  .faq--spruce { padding: 64rem 8rem 80rem; }
   .sub main > section + section:not(.close) { margin-top: 88rem; }
 
   .opener { height: auto; }
