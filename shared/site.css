@@ -1,6 +1,10 @@
 /* Rōvn site chrome — shared by home and every subpage: scale vars, the paper pill, the nav and the door
    type used by both close sections. Moved verbatim from home/home.css (2026-10-05) so there is one source.
-   Containers that use these set font-size: var(--s); sizes are em of one storyboard px. */
+   Containers that use these set font-size: var(--s); sizes are em of one storyboard px.
+   The nav and the close never scale with the window (2026-10-05, Jerry: text should not scale): they pin
+   --s to 1px, so they're the same size on every page at every width. Only the giant wordmark fits itself. */
+.nav, .close { --s: 1px; font-size: 1px; }
+@media (min-width: 768px) { .band__mark { font-size: min(1px, calc((100vw - 68px) / 1372)); } }
 
 :root {
   --k: 1;

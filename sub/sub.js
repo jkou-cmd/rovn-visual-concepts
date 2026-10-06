@@ -71,6 +71,18 @@
   }
   $$('[data-object]').forEach(tilt);
 
+  /* ---------------------------------------------------------------- objects fit their stage
+     Page type never scales; an object (a picture of the product) shrinks to fit a narrow stage instead of
+     overflowing it. */
+  function fitObjects() {
+    $$('.scene__mid > .obj').forEach((o) => {
+      const mid = o.parentNode, room = mid.clientWidth - 48, w = o.offsetWidth;
+      o.style.setProperty('--fit', w && room > 0 ? Math.min(1, room / w).toFixed(3) : 1);
+    });
+  }
+  fitObjects();
+  addEventListener('resize', fitObjects);
+
   /* ---------------------------------------------------------------- statuses tick forward once, then rest */
   const played = new WeakSet();
   function tick(obj) {
@@ -216,6 +228,7 @@
         window.Flip.from(state, { duration: 0.75, ease: 'expo.out', simple: true });
         gsap.fromTo($$('.acc__body > *', items[i]), { autoAlpha: 0, y: 10 }, { autoAlpha: 1, y: 0, duration: 0.8, stagger: 0.06, delay: 0.12, ease: 'expo.out' });
       }
+      fitObjects();
       showScene(i, true);
       if (phone() && R.lenis) R.lenis.scrollTo(items[i], { offset: -60, duration: 1.1 });
       ST.refresh();

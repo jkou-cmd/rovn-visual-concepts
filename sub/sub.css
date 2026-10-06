@@ -1,9 +1,9 @@
 /* Rōvn subpage kit — the nine modules from Working Board 2 ("Subpage kit · index").
    The nav, the close (doors, ink footer, wordmark band) and the scale vars are home's own, shared from
    shared/site.css and home/sections/s9.css, so every page starts and ends exactly like home.
-   Units: 1rem = one storyboard px. The root font-size is set from --k in the page head
-   (desktop frames are 1440 wide, phone frames 390), so every module reads like its frame at any width.
-   Text keeps a 12px floor with max(). Home keeps its pinned scenes; subpages only enter, exit and hover. */
+   Units: 1rem = 1px, always (--k = 1): type and UI never scale with the window; columns reflow and the
+   page stops growing at a maximum width (--maxw). Values come from the 1440-wide frames.
+   Home keeps its pinned scenes; subpages only enter, exit and hover. */
 
 :root {
   --P2: #F8F4EC;
@@ -19,12 +19,17 @@
   --amber-dot: linear-gradient(in oklab 160deg, oklab(76% 0.085 0.135) 0%, oklab(66% 0.115 0.135) 100%);
   --lift: 0 1px 2px #28190A14, 0 18px 44px #28190A29;
   --ease: cubic-bezier(.22, 1, .36, 1);
+  --maxw: 1680px;
+  --bleed: max(0px, (100vw - var(--maxw)) / 2); /* the margin outside the max width, so lines can still reach the screen edge */
 }
 
 html { font-size: calc(var(--k) * 1px); background: var(--P); }
 body.sub { background: var(--P); color: var(--K); font-size: max(13px, 16rem); overflow-x: clip; }
 .sub img { user-select: none; -webkit-user-drag: none; }
-.sub main { padding-top: max(44px, 48rem); font-size: var(--s); } /* home's components size in em of --s */
+.sub main { padding-top: max(44px, 48rem); font-size: var(--s); }
+/* past --maxw the page stops growing: modules centre with equal margins (the close and colour fields still run edge to edge) */
+.sub main > section:not(.close) { padding-inline: max(0px, (100% - var(--maxw)) / 2); }
+.sub main > section.faq { padding-inline: max(8rem, (100% - var(--maxw)) / 2 + 8rem); } /* home's components size in em of --s */
 .sub [data-soon] { cursor: default; }
 
 /* ---------------------------------------------------------------- type atoms */
@@ -67,12 +72,12 @@ body.sub { background: var(--P); color: var(--K); font-size: max(13px, 16rem); o
 .opener__strip { flex: 1; min-height: 0; padding: 8rem 8rem 0; display: flex; }
 .opener__photo { position: relative; flex: 1; overflow: hidden; background: #2A2723; }
 .opener__img { position: absolute; inset: -6% 0; background-size: cover; background-position: var(--pos, 50%); will-change: transform; }
-.opener__body { flex-shrink: 0; height: 338rem; display: flex; padding: 24rem 16rem 32rem; }
+.opener__body { flex-shrink: 0; min-height: 338rem; display: flex; padding: 24rem 16rem 32rem; }
 .opener__label { flex: 1; font-family: var(--serif); font-size: max(14px, 20rem); line-height: 1; letter-spacing: -0.03em; color: var(--ink-68); }
-.opener__copy { width: 704rem; flex-shrink: 0; display: flex; flex-direction: column; gap: 24rem; }
+.opener__copy { width: min(704rem, 56%); flex-shrink: 0; display: flex; flex-direction: column; gap: 24rem; }
 .opener__title { font-family: var(--serif); font-weight: 300; font-size: 68rem; line-height: .92; letter-spacing: -0.05em; color: var(--K); }
 .opener__title > span { display: block; }
-.opener__sub { width: 480rem; font-family: var(--sans); font-size: max(13px, 15rem); line-height: 1.5; color: var(--body); }
+.opener__sub { width: min(480rem, 100%); font-family: var(--sans); font-size: max(13px, 15rem); line-height: 1.5; color: var(--body); }
 .opener__actions { display: flex; align-items: center; gap: 16rem; }
 
 /* ================================================================ module · accordion (Roster split) */
@@ -92,15 +97,16 @@ body.sub { background: var(--P); color: var(--K); font-size: max(13px, 16rem); o
 }
 .acc__body { display: none; flex-direction: column; gap: 32rem; padding: 0 24rem 24rem; }
 .acc__item.is-open .acc__body { display: flex; }
-.acc__title { width: 340rem; }
-.acc__text { width: 320rem; }
+.acc__title { width: min(340rem, 100%); }
+.acc__text { width: min(320rem, 100%); }
 .acc__stage { flex: 1 1 0; min-width: 0; position: relative; overflow: hidden; background: var(--tone); }
 .scene { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; padding-block: 32rem; visibility: hidden; }
 .scene.is-on, .scene.is-leaving { visibility: visible; }
 .scene__img { position: absolute; inset: 0; background-size: cover; background-position: var(--pos, 50%); }
 .scene--tone { background: var(--tone); }
 .scene__top { position: relative; display: flex; align-items: center; gap: 8rem; min-height: 28rem; }
-.scene__mid { position: relative; flex: 1; display: flex; align-items: center; justify-content: center; }
+.scene__mid { position: relative; flex: 1; align-self: stretch; display: flex; align-items: center; justify-content: center; min-width: 0; }
+.scene__mid > .obj { scale: var(--fit, 1); flex-shrink: 0; }
 
 /* ---------------------------------------------------------------- objects (white lifted sheets) */
 .obj { position: relative; background: #fff; border-radius: 20rem; box-shadow: var(--lift); transform-style: preserve-3d; will-change: transform; }
@@ -170,7 +176,7 @@ body.sub { background: var(--P); color: var(--K); font-size: max(13px, 16rem); o
 .faq { padding: 8rem 8rem 120rem; }
 .faq__inner { display: flex; padding: 24rem 16rem; }
 .faq__title { flex: 1; font-family: var(--serif); font-weight: 300; font-size: 54rem; line-height: 1; letter-spacing: -0.05em; color: var(--K); }
-.faq__list { width: 704rem; flex-shrink: 0; display: flex; flex-direction: column; }
+.faq__list { width: min(704rem, 56%); flex-shrink: 0; display: flex; flex-direction: column; }
 .faq__item + .faq__item { border-top: 1px solid var(--line); }
 .faq__q { display: flex; align-items: baseline; justify-content: space-between; gap: 24rem; width: 100%; padding: 28rem 0; text-align: left; transition: padding-bottom .6s var(--ease); }
 .faq__item.is-open .faq__q { padding-bottom: 14rem; }
@@ -183,7 +189,7 @@ body.sub { background: var(--P); color: var(--K); font-size: max(13px, 16rem); o
 @media (hover: hover) and (pointer: fine) { .faq__item:not(.is-open) .faq__q:hover .faq__qt { color: var(--ink); opacity: .72; } }
 .faq__a { overflow: hidden; height: 0; }
 .faq__item.is-open .faq__a { height: auto; }
-.faq__at { width: 520rem; padding-bottom: 28rem; font-family: var(--sans); font-size: max(13px, 16rem); line-height: 1.4; color: var(--ink-68); }
+.faq__at { width: min(520rem, 100%); padding-bottom: 28rem; font-family: var(--sans); font-size: max(13px, 16rem); line-height: 1.4; color: var(--ink-68); }
 
 /* ================================================================ variant B pieces (opt-in): gridlines, colour fields
    Inspired by Petra Labs, in Rōvn's own terms: hairlines that line up under the nav's cells and draw
@@ -192,15 +198,18 @@ body.sub { background: var(--P); color: var(--K); font-size: max(13px, 16rem); o
 .gl { position: absolute; z-index: 1; pointer-events: none; background: var(--gl); }
 .gl--h { left: 0; right: 0; height: 1px; transform-origin: 0 50%; }
 .gl--v { top: 0; bottom: 0; width: 1px; transform-origin: 50% 0; }
-.opener__body, .faq__inner { position: relative; }
+.opener__body, .faq__inner, .opener__copy, .faq__list { position: relative; }
+.gl--h.gl--bleed { left: calc(-1 * var(--bleed)); right: calc(-1 * var(--bleed)); }
+/* vertical lines ride on the column they mark, so they stay on its edge as the columns reflow */
+.gl--copy { left: -16rem; top: -24rem; bottom: -32rem; }        /* opener: photo bottom → bottom line */
+.gl--faq { left: -8rem; top: -128rem; bottom: -152rem; }        /* questions: spruce top → spruce bottom */
 
 /* lines always end on something: the screen edge, a container edge or another line */
 .faq--spruce { position: relative; }
-.faq--spruce > .gl--v { top: 0; bottom: 0; } /* runs the full height of the spruce block */
 .faq--spruce .faq__item + .faq__item { border-top: 0; position: relative; }
-.faq--spruce .faq__item + .faq__item::before { content: ""; position: absolute; top: 0; left: -8rem; right: -24rem; height: 1px; background: var(--gl); } /* from the vertical line to the screen edge */
+.faq--spruce .faq__item + .faq__item::before { content: ""; position: absolute; top: 0; left: -8rem; right: calc(-24rem - var(--bleed)); height: 1px; background: var(--gl); } /* from the vertical line to the screen edge */
 .acc--lines .acc__item + .acc__item { border-top: 0; position: relative; }
-.acc--lines .acc__item + .acc__item::before { content: ""; position: absolute; top: 0; left: -8rem; right: -8rem; height: 1px; background: var(--line); } /* from the screen edge to the photo panel */
+.acc--lines .acc__item + .acc__item::before { content: ""; position: absolute; top: 0; left: calc(-8rem - var(--bleed)); right: -8rem; height: 1px; background: var(--line); } /* from the screen edge to the photo panel */
 
 /* the amber field: a scene in the accordion stage (amber as light, the white card on it) */
 .scene--amber { background-image: linear-gradient(in oklab 180deg, oklab(69.6% 0.088 0.141) 0%, oklab(64.4% 0.121 0.130) 100%); }

@@ -10,19 +10,12 @@
   <script>
     document.documentElement.classList.add("is-loading");
     setTimeout(function () { document.documentElement.classList.remove("is-loading"); }, 4000);
-    // 1rem = one storyboard px, on the same scale as home: the frames are 1440×900 (desktop) and
-    // 390×844 (phone), and --k fits them to the window. Phones keep the first height so the URL bar
-    // sliding in and out never rescales the page.
+    // 1rem = 1px: type and UI stay a fixed size at every window size; the layout reflows instead.
+    // (--k stays 1; the class only switches the phone layout.)
     (function () {
-      var d = document.documentElement, w0 = 0, h0 = 0;
-      function k() {
-        var w = innerWidth, h = innerHeight, m = w < 768;
-        if (m && w === w0 && h0) h = h0; else { w0 = w; h0 = h; }
-        var v = m ? Math.min(w / 390, h / 844) : Math.min(w / 1440, h / 900);
-        d.style.setProperty("--k", v.toFixed(4));
-        d.classList.toggle("is-phone", m);
-      }
-      k(); addEventListener("resize", k);
+      var d = document.documentElement;
+      function k() { d.classList.toggle("is-phone", innerWidth < 768); }
+      d.style.setProperty("--k", "1"); k(); addEventListener("resize", k);
     })();
   </script>
   <link rel="icon" href="shared/favicon.svg" type="image/svg+xml">
@@ -50,9 +43,10 @@
         <div class="opener__photo" data-morph><div class="opener__img" style="background-image:url(sub/media/org-desk.jpg); --pos: 50% 45%"></div></div>
       </div>
       <div class="opener__body">
-        <span class="gl gl--h" style="bottom:0" aria-hidden="true"></span><span class="gl gl--v" style="left:704rem" aria-hidden="true"></span>
+        <span class="gl gl--h gl--bleed" style="bottom:0" aria-hidden="true"></span>
         <p class="opener__label" data-rise>For healthcare organizations</p>
         <div class="opener__copy">
+          <span class="gl gl--v gl--copy" aria-hidden="true"></span>
           <h1 class="opener__title" id="title" data-stand><span>Get people working.</span><span>Keep every team moving.</span></h1>
           <p class="opener__sub" data-rise>From open role to first shift. Recruiting, HR, credentialing and onboarding, coordinated. Each department keeps its own call.</p>
           <div class="opener__actions" data-rise>
@@ -174,10 +168,10 @@
 
     <!-- ============================== questions ============================== -->
     <section class="faq faq--spruce" aria-labelledby="faq-title" data-exit-section>
-      <span class="gl gl--v" style="left:704rem" aria-hidden="true"></span>
       <div class="faq__inner" data-exit>
         <h2 class="faq__title" id="faq-title" data-stand>Questions</h2>
         <div class="faq__list" data-rise>
+          <span class="gl gl--v gl--faq" aria-hidden="true"></span>
           <div class="faq__item is-open">
             <button class="faq__q" type="button"><span class="faq__qt">Is this only for nursing facilities?</span><span class="faq__icon" aria-hidden="true"></span></button>
             <div class="faq__a"><p class="faq__at">No. Rōvn works across healthcare workforce operations. Each deployment starts with a defined set of professions, locations and settings.</p></div>

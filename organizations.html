@@ -10,19 +10,12 @@
   <script>
     document.documentElement.classList.add("is-loading");
     setTimeout(function () { document.documentElement.classList.remove("is-loading"); }, 4000);
-    // 1rem = one storyboard px, on the same scale as home: the frames are 1440×900 (desktop) and
-    // 390×844 (phone), and --k fits them to the window. Phones keep the first height so the URL bar
-    // sliding in and out never rescales the page.
+    // 1rem = 1px: type and UI stay a fixed size at every window size; the layout reflows instead.
+    // (--k stays 1; the class only switches the phone layout.)
     (function () {
-      var d = document.documentElement, w0 = 0, h0 = 0;
-      function k() {
-        var w = innerWidth, h = innerHeight, m = w < 768;
-        if (m && w === w0 && h0) h = h0; else { w0 = w; h0 = h; }
-        var v = m ? Math.min(w / 390, h / 844) : Math.min(w / 1440, h / 900);
-        d.style.setProperty("--k", v.toFixed(4));
-        d.classList.toggle("is-phone", m);
-      }
-      k(); addEventListener("resize", k);
+      var d = document.documentElement;
+      function k() { d.classList.toggle("is-phone", innerWidth < 768); }
+      d.style.setProperty("--k", "1"); k(); addEventListener("resize", k);
     })();
   </script>
   <link rel="icon" href="shared/favicon.svg" type="image/svg+xml">
