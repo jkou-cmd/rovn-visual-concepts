@@ -34,9 +34,13 @@
 .formula__op { padding-bottom: 28rem; font-family: var(--serif); font-weight: 300; font-size: 39rem; line-height: 1; color: var(--a-op); }
 .formula--sm .formula__n { font-size: 44rem; }
 .formula--sm .formula__op { font-size: 31rem; }
+/* a narrow tile reads as a short ledger: each term on one line (number left, what it is right), the sign small between */
 @container (max-width: 599px) {
-  .formula__row { flex-direction: column; align-items: flex-start; gap: 10rem; }
-  .formula__op { padding-bottom: 0; }
+  .formula__row { flex-direction: column; align-items: stretch; gap: 0; }
+  .formula__term { flex-direction: row; align-items: baseline; justify-content: space-between; gap: 16rem; padding: 6rem 0; }
+  .formula__n, .formula--sm .formula__n { font-size: 34rem; line-height: 1.1; flex-shrink: 0; }
+  .formula__l { width: auto; max-width: 180rem; text-align: right; }
+  .formula__op, .formula--sm .formula__op { padding: 0; font-size: 22rem; line-height: 22rem; }
 }
 
 /* ---------------------------------------------------------------- metadata margin */
@@ -64,9 +68,12 @@
   @media (hover: hover) and (pointer: fine) { .article__toc summary:hover { background: #E8DFCD; } }
   /* the list drops over the page (absolute), so opening and closing never moves the text */
   .article__toc .article__list { position: absolute; left: 24rem; right: 24rem; top: calc(100% - 4rem); padding: 16rem; border-radius: 12rem; background: var(--tone); box-shadow: var(--lift); }
-  .article__meta { grid-row: 2; grid-column: 1; justify-self: center; width: min(720rem, 100%); padding: 16rem 24rem 0; flex-direction: row; flex-wrap: wrap; gap: 14rem 40rem; }
+  /* the title comes first; the details and the calculator button follow the article */
+  .article__col { grid-row: 2; grid-column: 1; padding-top: 32rem; }
+  .article__meta { grid-row: 3; grid-column: 1; justify-self: center; width: min(720rem, 100%); padding: 0 24rem 56rem; flex-direction: row; flex-wrap: wrap; gap: 14rem 40rem; }
   .meta__cta { width: 100%; padding-top: 6rem; }
-  .article__col { grid-row: 3; grid-column: 1; padding-top: 32rem; }
+  /* text slides under the contents bar through a soft fade, never cut by a hard edge */
+  .article__toc::after { content: ""; position: absolute; left: 0; right: 0; top: 100%; height: 20rem; background: linear-gradient(var(--P), color-mix(in srgb, var(--P) 0%, transparent)); pointer-events: none; }
 }
 @media (max-width: 767px) {
   .article__toc { padding: 8rem 8rem; }
@@ -76,7 +83,6 @@
   .article__title { font-size: 44rem; padding-top: 8rem; }
   .article__lede { font-size: max(14px, 18rem); padding-bottom: 8rem; }
   .article__h { font-size: 30rem; }
-  .formula { padding: 24rem 20rem; }
-  .formula__n { font-size: 44rem; }
-  .formula--sm .formula__n { font-size: 40rem; }
+  .formula { padding: 16rem 20rem; }
+  .article__col { padding-bottom: 32rem; }
 }

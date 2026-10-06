@@ -236,10 +236,22 @@
   function accordion(acc) {
     const items = $$('.acc__item', acc), scenes = $$('.scene', acc), stage = $('.acc__stage', acc), inner = $('.acc__inner', acc);
     let current = Math.max(0, items.findIndex((i) => i.classList.contains('is-open')));
-    const place = () => { // phones: the stage travels with the open item
-      if (phone()) items[current].append(stage);
-      else if (stage.parentNode !== inner) inner.append(stage);
-    };
+    // phones: each step carries its own panel (a copy of its scene) inside its body, and steps open and close
+    // like the questions — heights only, no travelling stage, no layout jump
+    items.forEach((it, i) => {
+      const body = $('.acc__body', it); if (!body || $('.acc__bodyin', body)) return;
+      const bin = document.createElement('div'); bin.className = 'acc__bodyin';
+      while (body.firstChild) bin.append(body.firstChild);
+      body.append(bin);
+      if (!scenes[i]) return;
+      const panel = document.createElement('div'); panel.className = 'acc__panel';
+      if (scenes[i].querySelector('.scene__img') == null && !/scene--/.test(scenes[i].className)) panel.classList.add('acc__panel--tone');
+      const sc = scenes[i].cloneNode(true); sc.classList.add('is-on'); sc.classList.remove('is-leaving'); sc.style.cssText = '';
+      sc.querySelectorAll('[data-morph-in],[data-photo]').forEach((e) => { e.removeAttribute('data-morph-in'); e.removeAttribute('data-photo'); });
+      sc.querySelectorAll('[data-object],[data-tick],.scene__top').forEach((e) => gsap.set(e, { clearProps: 'all' }));
+      panel.append(sc); bin.append(panel);
+    });
+    const place = () => {};
     let leaveCall = null;
     const showScene = (i, animate, from) => {
       const prev = scenes.find((s) => s.classList.contains('is-on'));
@@ -282,26 +294,39 @@
       if (top) gsap.fromTo(top, { opacity: 0, y: -8 }, { opacity: 1, y: 0, duration: 0.7, delay: 0.1, ease: 'expo.out', overwrite: true });
       if (obj) gsap.fromTo(obj, { opacity: 0, y: 24 * rem() }, { opacity: 1, y: 0, duration: 0.8, delay: 0.1, ease: 'expo.out', overwrite: 'auto', onStart: () => tick(obj) });
     };
+    const openPhone = (i) => {
+      const was = items[current], now = items[i];
+      was.classList.remove('is-open'); $('.acc__head', was).setAttribute('aria-expanded', 'false');
+      now.classList.add('is-open'); $('.acc__head', now).setAttribute('aria-expanded', 'true');
+      current = i;
+      if (R.reduce) { ST.refresh(); return; }
+      const wb = $('.acc__body', was), nb = $('.acc__body', now);
+      gsap.fromTo(wb, { height: wb.scrollHeight }, { height: 0, duration: 0.6, ease: 'power3.inOut', overwrite: true, onComplete: () => { wb.style.height = ''; } });
+      gsap.fromTo(nb, { height: 0 }, { height: 'auto', duration: 0.6, ease: 'power3.inOut', overwrite: true, onComplete: () => { nb.style.height = ''; ST.refresh(); } });
+      const kids = $$('.acc__bodyin > *', now);
+      gsap.fromTo(kids, { autoAlpha: 0, y: 8 }, { autoAlpha: 1, y: 0, duration: 0.6, stagger: 0.05, delay: 0.12, ease: 'expo.out', clearProps: 'transform,opacity,visibility' });
+      fitObjects();
+      tick($('.acc__panel [data-object]', now));
+    };
     const open = (i) => {
       if (i === current) return;
+      if (phone()) return openPhone(i);
       const state = window.Flip && !R.reduce ? window.Flip.getState(items.map((it) => $('.acc__head', it)).concat(items)) : null;
       items[current].classList.remove('is-open'); $('.acc__head', items[current]).setAttribute('aria-expanded', 'false');
       items[i].classList.add('is-open'); $('.acc__head', items[i]).setAttribute('aria-expanded', 'true');
       current = i; place();
       if (state) {
         window.Flip.from(state, { duration: 0.75, ease: 'expo.out', simple: true });
-        gsap.fromTo($$('.acc__body > *', items[i]), { autoAlpha: 0, y: 10 }, { autoAlpha: 1, y: 0, duration: 0.8, stagger: 0.06, delay: 0.12, ease: 'expo.out' });
+        gsap.fromTo($$('.acc__bodyin > :not(.acc__panel)', items[i]), { autoAlpha: 0, y: 10 }, { autoAlpha: 1, y: 0, duration: 0.8, stagger: 0.06, delay: 0.12, ease: 'expo.out' });
       }
       fitObjects();
       showScene(i, true, $('.acc__head', items[i]));
-      if (phone()) keepInPlace($('.acc__head', items[i]), 0.9);
     };
     items.forEach((it, i) => $('.acc__head', it).addEventListener('click', () => open(i)));
     place(); showScene(current, false);
-    let wasPhone = phone();
-    addEventListener('resize', () => { if (phone() !== wasPhone) { wasPhone = phone(); place(); } });
+    // on phones the open step's panel ticks in when the section is reached
     // the first object ticks when the module comes into view
-    ST.create({ trigger: acc, start: 'top 60%', once: true, onEnter: () => tick($('[data-object]', scenes[current])) });
+    ST.create({ trigger: acc, start: 'top 60%', once: true, onEnter: () => tick(phone() ? $('.acc__panel [data-object]', items[current]) : $('[data-object]', scenes[current])) });
   }
 
   /* ---------------------------------------------------------------- questions */

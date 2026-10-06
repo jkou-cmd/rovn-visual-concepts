@@ -31,6 +31,7 @@
 .lane__mono--photo { background-size: cover; background-position: 50%; }
 .lane__label { font-family: var(--serif); font-weight: 400; font-size: 19rem; line-height: 22rem; letter-spacing: -0.02em; color: var(--K); }
 .lane__plot { position: relative; margin-right: var(--pr); }
+.lane__note { display: none; } /* phones only: the status beside the lane name */
 
 /* bars: 36px pills. done = ink with check; live = white, elapsed part tinted; decide = amber glow; next = tonal */
 .bar { position: absolute; top: 16rem; left: calc(var(--x) / var(--plot) * 100%); width: calc(var(--w) / var(--plot) * 100%); min-width: max-content; height: 36rem;
@@ -65,12 +66,30 @@
 
 /* phone: the timeline keeps its shape and scrolls sideways inside its own box; lane names stay put on the left */
 @media (max-width: 767px) {
-  .lanes { --lab: 150rem; --pr: 24rem; }
+  /* phones: no sideways scrolling. Each lane is a row: its name and status on one line, and a slim track
+     under it on the shared date axis (bars keep their positions as percentages, so dates still line up) */
+  .lanes { --lab: 0rem; --pr: 0rem; }
   .lanes__head { flex-direction: column; align-items: flex-start; gap: 20rem; padding: 24rem 16rem 8rem; }
   .lanes__title { font-size: 40rem; width: auto; flex: none; }
   .lanes__side { flex: none; width: auto; }
-  .lanes__scroll { margin-top: 24rem; padding-bottom: 8rem; overflow-x: auto; overscroll-behavior-x: contain; -webkit-overflow-scrolling: touch; scroll-snap-type: none; scrollbar-width: thin; }
-  .lanes__chart { min-width: 954rem; }
-  .lane__name { position: sticky; left: 0; z-index: 3; background: var(--P); padding-left: 16rem; gap: 10rem; }
+  .lanes__scroll { margin-top: 24rem; padding: 0 16rem 8rem; }
+  .lanes__chart { min-width: 0; padding-top: 44rem; padding-bottom: 52rem; }
+  .laxl.is-covered { opacity: 0 !important; } /* a date the Today pill sits on */
+  .bar .lring { display: none; }
+  .lanes__axis { left: 0; right: 0; }
+  .lband, .today__line, .shift__line { top: 44rem; height: auto; bottom: 44rem; }
+  .lpill--shift { top: auto; bottom: 10rem; right: 0; }
+  .lane { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto auto 16rem; height: auto; padding: 12rem 0 10rem; row-gap: 6rem; }
+  .lane__name { padding-left: 0; gap: 10rem; }
   .lane__label { font-size: 17rem; line-height: 20rem; }
+  .lane__note { display: flex; flex-wrap: wrap; gap: 2rem 6rem; align-items: baseline; padding-left: 38rem; } /* under the name, aligned with it */
+  .lane__note .bar__t { font-size: max(12px, 12rem); line-height: 16rem; color: var(--K); }
+  .lane__note .bar__d { font-size: max(12px, 12rem); line-height: 16rem; }
+  .lane__note--decide .bar__d { color: #A55A17; }
+  .lane__plot { margin-right: 0; }
+  .bar { top: 4rem; height: 8rem; min-width: 8rem; border-radius: 4rem; }
+  .bar .bar__c { display: none; }
+  .bar--next { background: #785A2826; }
+  .lane__out { display: none; }
 }
+

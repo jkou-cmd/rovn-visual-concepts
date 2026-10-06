@@ -6,6 +6,23 @@
     const { gsap, ST, R, $, $$ } = K;
     const sec = $('.lanes'); if (!sec) return;
     const chart = $('[data-lanes]', sec), scroller = $('.lanes__scroll', sec);
+    // the status beside each name on phones: the lane's own bar label (or the label outside it), as text
+    $$('.lane', chart).forEach((lane) => {
+      if ($('.lane__note', lane)) return;
+      const src = $('.bar__c .bar__t', lane) ? $('.bar__c', lane) : $('.lane__out', lane);
+      if (!src) return;
+      const note = document.createElement('span'); note.className = 'lane__note';
+      if ($('.bar--decide', lane)) note.classList.add('lane__note--decide');
+      $$('.bar__t, .bar__d', src).forEach((t) => note.append(t.cloneNode(true)));
+      $('.lane__plot', lane).before(note);
+    });
+    // phones: hide an axis date the Today pill would sit on
+    const cover = () => {
+      const pill = $('.lpill--today', chart); if (!pill) return;
+      const pr = pill.getBoundingClientRect();
+      $$('.laxl', chart).forEach((l) => { l.classList.remove('is-covered'); const r = l.getBoundingClientRect(); if (r.right > pr.left - 6 && r.left < pr.right + 6) l.classList.add('is-covered'); });
+    };
+    cover(); addEventListener('resize', cover); if (document.fonts) document.fonts.ready.then(cover);
     if (R.reduce) return;
     const lanes = $$('.lane', chart);
     const bars = $$('.bar', chart);

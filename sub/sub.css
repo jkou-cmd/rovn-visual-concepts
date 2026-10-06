@@ -24,7 +24,7 @@
   --col: min(704rem, 0.56 * (100vw - 32rem - 2 * var(--bleed))); /* the right-hand column (opener copy, questions list): one width, so their edges line up */ /* the margin outside the max width, so lines can still reach the screen edge */
 }
 
-html { font-size: calc(var(--k) * 1px); background: var(--P); }
+html { font-size: calc(var(--k) * 1px); background: var(--P); overflow-x: clip; } /* scaled-up photos waiting to enter never widen the page (mobile counts transforms) */
 body.sub { background: var(--P); color: var(--K); font-size: max(13px, 16rem); overflow-x: clip; }
 .sub img { user-select: none; -webkit-user-drag: none; }
 .sub main { padding-top: max(44px, 48rem); font-size: var(--s); }
@@ -109,6 +109,8 @@ body.sub { background: var(--P); color: var(--K); font-size: max(13px, 16rem); o
 }
 .acc__body { display: none; flex-direction: column; gap: 32rem; padding: 0 24rem 24rem; }
 .acc__item.is-open .acc__body { display: flex; }
+.acc__bodyin { display: contents; } /* desktop: the body's children lay out as if unwrapped */
+.acc__panel { display: none; }      /* desktop: the shared stage shows the scene */
 .acc__title { width: min(340rem, 100%); }
 .acc__text { width: min(320rem, 100%); }
 .acc__stage { flex: 1 1 0; min-width: 0; position: relative; overflow: hidden; background: var(--tone); }
@@ -283,7 +285,12 @@ body.sub { background: var(--P); color: var(--K); font-size: max(13px, 16rem); o
   .acc__list { display: block; }
   .acc__item.is-open { flex: none; }
   .acc__head { padding: 22rem 16rem; }
-  .acc__body { padding: 0 16rem 24rem; gap: 20rem; }
+  .acc__body { display: block; height: 0; overflow: hidden; padding: 0; }
+  .acc__item.is-open .acc__body { display: block; height: auto; }
+  .acc__bodyin { display: flex; flex-direction: column; gap: 20rem; padding: 0 16rem 24rem; }
+  .acc__inner > .acc__stage { display: none; }   /* phones: each step carries its own panel */
+  .acc__panel { display: block; position: relative; height: 520rem; margin: 4rem -8rem 0; border-radius: 20rem; overflow: hidden; background: var(--tone); }
+  .acc__panel .scene { visibility: visible; }
   .acc__title, .acc__text { width: auto; }
   .acc__title { font-size: 30rem; }
   .acc__stage { position: relative; flex: none; height: 560rem; margin: 4rem 0 8rem; }
