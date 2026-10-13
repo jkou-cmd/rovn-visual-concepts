@@ -55,6 +55,19 @@ export function readRoleList(body) {
   };
 }
 
+function readPay(p, where) {
+  if (p === null || p === undefined) return null;
+  if (typeof p !== 'object') throw new ContractError(where, 'expected an object or null');
+  return { min: maybe(p, 'min', 'string', where), max: maybe(p, 'max', 'string', where), currency: maybe(p, 'currency', 'string', where),
+    period: maybe(p, 'period', 'string', where), display: need(p, 'display', 'string', where) };
+}
+
+function readShift(sh, where) {
+  if (sh === null || sh === undefined) return null;
+  if (typeof sh !== 'object') throw new ContractError(where, 'expected an object or null');
+  return { type: maybe(sh, 'type', 'string', where), notes: maybe(sh, 'schedule_notes', 'string', where), display: need(sh, 'display', 'string', where) };
+}
+
 // GET /job-postings/{id}
 export function readRoleDetail(body) {
   const where = 'role-detail';
@@ -82,11 +95,9 @@ export function readRoleDetail(body) {
       state: need(fresh, 'state', 'string', `${where}.freshness`),
       label: need(fresh, 'display_label', 'string', `${where}.freshness`),
     },
-    // Not in A-03 v1: requested so the page can show pay and shift at a glance. Optional until added.
-    payMin: maybe(body.compensation, 'min', 'string', `${where}.compensation`),
-    payMax: maybe(body.compensation, 'max', 'string', `${where}.compensation`),
-    payPeriod: maybe(body.compensation, 'period', 'string', `${where}.compensation`),
-    shift: maybe(body, 'shift_type', 'string', where),
+    // Optional (A-03 update, Oct 6). Absent or null → tiles stay hidden; never estimated.
+    pay: readPay(body.pay, `${where}.pay`),
+    shift: readShift(body.shift, `${where}.shift`),
     apply: {
       mode: need(apply, 'mode', 'string', `${where}.apply`),
       available: need(apply, 'available', 'boolean', `${where}.apply`),

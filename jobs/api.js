@@ -87,9 +87,13 @@ async function mockGet(path) {
     if (scenario.detail === 'not_found' || !row) return clone(a03.role_detail.never_public_or_unknown);
     if (scenario.detail === 'unavailable') return clone(a03.role_detail.recoverable_failure);
     const body = row.id === a03.role_detail.success.body.role_id ? clone(a03.role_detail.success.body) : synthDetail(a03, row);
-    // Requested addition (not in A-03 v1): pay and shift, taken from the current public projection.
-    if (row.compensation_min || row.compensation_max) body.compensation = { min: row.compensation_min, max: row.compensation_max, period: row.compensation_period };
-    body.shift_type = row.shift_type;
+    if (row.id !== a03.role_detail.success.body.role_id) {
+      const money = (v) => '$' + Number(v).toFixed(Number(v) % 1 ? 2 : 0);
+      body.pay = row.compensation_min || row.compensation_max
+        ? { min: row.compensation_min, max: row.compensation_max, currency: 'USD', period: row.compensation_period, display: `${[row.compensation_min, row.compensation_max].filter(Boolean).map(money).join('–')} per ${row.compensation_period}` }
+        : null;
+      body.shift = row.shift_type ? { type: row.shift_type, schedule_notes: null, display: `${row.shift_type[0].toUpperCase()}${row.shift_type.slice(1)} shift` } : null;
+    }
     if (scenario.detail === 'malformed') delete body.reviewed_date;
     return { status: 200, body };
   }

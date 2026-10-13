@@ -61,3 +61,15 @@ test('synthetic list (current /job-postings shape) parses', () => {
   assert.equal(l.roles.length, 5);
   assert.equal(l.roles[0].employer, 'Peachtree Skilled Nursing');
 });
+
+test('optional pay and shift (A-03 update) parse, and stay hidden when absent', () => {
+  const r = readRoleDetail(ex.role_detail.success.body);
+  assert.equal(r.pay.display, '$48–$56 per hour');
+  assert.equal(r.shift.type, 'night');
+  assert.equal(r.shift.notes, 'Three 12-hour shifts per week');
+  const body = structuredClone(ex.role_detail.success.body);
+  delete body.pay; body.shift = null;
+  const r2 = readRoleDetail(body);
+  assert.equal(r2.pay, null);
+  assert.equal(r2.shift, null);
+});

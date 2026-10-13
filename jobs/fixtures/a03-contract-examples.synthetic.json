@@ -23,6 +23,18 @@
           "display": "Atlanta, GA"
         },
         "employment_type": "full_time",
+        "pay": {
+          "min": "48.00",
+          "max": "56.00",
+          "currency": "USD",
+          "period": "hour",
+          "display": "$48\u2013$56 per hour"
+        },
+        "shift": {
+          "type": "night",
+          "schedule_notes": "Three 12-hour shifts per week",
+          "display": "Night shift \u00b7 three 12-hour shifts per week"
+        },
         "employer_approved_summary": "<p>Join the night-shift nursing team.</p>",
         "employer_approved_requirements": [
           {

@@ -224,9 +224,11 @@ const initials = (name) => name.split(' ').map((w) => w[0]).slice(0, 2).join('')
 
 function tiles(r) {
   const t = [];
-  const p = pay(r);
-  if (p) t.push(['pay', p.replace(' an hour', ''), PERIOD[r.payPeriod] === 'an hour' ? 'an hour' : PERIOD[r.payPeriod] ?? 'Pay']);
-  if (r.shift) t.push([shiftIcon(r.shift), human(SHIFT, r.shift), 'Shift']);
+  if (r.pay) {
+    const short = r.pay.min || r.pay.max ? [r.pay.min, r.pay.max].filter(Boolean).map(money).join('–') : r.pay.display;
+    t.push(['pay', short, r.pay.min || r.pay.max ? PERIOD[r.pay.period] ?? 'Pay' : 'Pay']);
+  }
+  if (r.shift) t.push([shiftIcon(r.shift.type), r.shift.type ? human(SHIFT, r.shift.type) : r.shift.display, r.shift.notes ?? 'Shift']);
   t.push(['type', human(EMPLOYMENT, r.employmentType), 'Employment']);
   t.push(['place', r.location, 'Location']);
   if (t.length < 4 && r.validThrough) t.push(['date', day(r.validThrough), 'Open until']);
