@@ -8,6 +8,7 @@ Designed in Paper: Rovn file, **Social Media** page. `export/` holds the files t
 | `ph-thumb-240.png` | Product Hunt thumbnail |
 | `x-header-1500x500.jpg` | X header |
 | `linkedin-cover-4200x700.jpg` | LinkedIn company cover |
+| `x-header-1500x500-neutral.jpg`, `linkedin-cover-4200x700-neutral.jpg` | Neutral variants with no photo (notification on the amber field) |
 | `og-1200x630.png` | Open Graph / Twitter card (site uses a quantized copy) |
 | `ph-gallery-1…5-*.png` | Product Hunt gallery, 1270×760, in order (UI elements from the Rovn Decks file, no phones) |
 | `icon.svg`, `favicon.ico`, `icon-*.png`, `apple-touch-icon.png`, `logo-512.png` | Website icons (copied into rovn-j01 `apps/www/public`) |
