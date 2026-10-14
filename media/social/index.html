@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Rōvn social assets</title>
+<link rel="icon" href="export/icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../../shared/tokens.css">
+<style>
+  * { box-sizing: border-box; margin: 0; }
+  body { background: var(--paper); color: var(--ink); font: 15px/1.45 var(--font-text); -webkit-font-smoothing: antialiased; }
+  main { max-width: 1240px; margin: 0 auto; padding: 64px 24px 96px; }
+  header { display: flex; justify-content: space-between; align-items: end; gap: 24px; flex-wrap: wrap; margin-bottom: 56px; }
+  h1 { font: 300 48px/1 var(--font-display); letter-spacing: var(--tracking-display); }
+  h2 { font: 400 28px/1.1 var(--font-display); letter-spacing: -0.02em; margin: 56px 0 20px; }
+  .lede { color: var(--ink-68); margin-top: 12px; max-width: 560px; }
+  .btn { display: inline-flex; align-items: center; gap: 8px; height: 40px; padding: 0 18px; border-radius: var(--radius-pill); background: var(--ink); color: var(--paper); text-decoration: none; font-weight: 500; font-size: 14px; white-space: nowrap; transition: background var(--dur-quick) var(--ease-out); }
+  .btn:hover { background: #000; }
+  .btn.light { background: var(--ink-12); color: var(--ink); }
+  .btn.light:hover { background: var(--ink-40); }
+  .grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 380px), 1fr)); }
+  .grid.wide { grid-template-columns: 1fr; }
+  .grid.half { grid-template-columns: minmax(0, 640px); }
+  .grid.small { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+  .asset { background: #fff; border-radius: var(--radius-lg); padding: 8px; display: flex; flex-direction: column; }
+  .preview { background: #EFE9DE; border-radius: 10px; display: grid; place-items: center; overflow: hidden; }
+  .preview img { display: block; width: 100%; height: auto; }
+  .small .preview { aspect-ratio: 1; padding: 24px; }
+  .small .preview img { width: auto; max-width: 100%; max-height: 140px; }
+  .meta { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 14px 8px 6px; }
+  .name { font-weight: 600; }
+  .use { color: var(--ink-68); font-size: 13px; }
+  .dims { color: var(--ink-40); font-size: 13px; font-variant-numeric: tabular-nums; }
+  footer { margin-top: 72px; color: var(--ink-68); font-size: 13px; }
+  footer a { color: inherit; }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <div>
+      <h1>Rōvn social assets</h1>
+      <p class="lede">Ready-to-upload files for LinkedIn, X and Product Hunt, plus the website icons. Click a preview to open it full size.</p>
+    </div>
+    <a class="btn" href="rovn-social-assets.zip" download>Download all (.zip)</a>
+  </header>
+
+  <h2>Profile pictures</h2>
+  <div class="grid small" data-group="profile"></div>
+
+  <h2>Banners</h2>
+  <div class="grid wide" data-group="banners"></div>
+
+  <h2>Share card</h2>
+  <div class="grid half" data-group="share"></div>
+
+  <h2>Product Hunt gallery</h2>
+  <div class="grid" data-group="ph"></div>
+
+  <h2>Website icons</h2>
+  <div class="grid small" data-group="icons"></div>
+
+  <footer>
+    Photo on the share card, X header, LinkedIn cover and Product Hunt image 1: Thirdman, <a href="https://www.pexels.com/photo/medical-professionals-looking-at-the-screen-of-the-cellphone-5327867/">Pexels License</a>.
+    Images are sRGB. Designed in Paper (Rovn file, Social Media page).
+  </footer>
+</main>
+<script>
+  const assets = [
+    ['profile', 'mark-400.png', 'LinkedIn logo · X avatar'],
+    ['profile', 'ph-thumb-240.png', 'Product Hunt thumbnail'],
+    ['banners', 'x-header-1500x500.jpg', 'X header'],
+    ['banners', 'linkedin-cover-4200x700.jpg', 'LinkedIn company cover'],
+    ['share', 'og-1200x630.png', 'Link previews (already live in the website PR)'],
+    ['ph', 'ph-gallery-1-hero.png', 'Gallery image 1'],
+    ['ph', 'ph-gallery-2-record.png', 'Gallery image 2'],
+    ['ph', 'ph-gallery-3-agents.png', 'Gallery image 3'],
+    ['ph', 'ph-gallery-4-next-job.png', 'Gallery image 4'],
+    ['ph', 'ph-gallery-5-decide.png', 'Gallery image 5'],
+    ['icons', 'icon.svg', 'Favicon (vector)'],
+    ['icons', 'favicon.ico', 'Favicon (legacy)'],
+    ['icons', 'apple-touch-icon.png', 'iOS home screen'],
+    ['icons', 'icon-192.png', 'Web app icon'],
+    ['icons', 'icon-512.png', 'Web app icon'],
+    ['icons', 'icon-maskable-512.png', 'Android maskable icon'],
+    ['icons', 'logo-512.png', 'Logo, square'],
+  ];
+  for (const [group, file, use] of assets) {
+    const src = `export/${file}`;
+    const el = document.createElement('div');
+    el.className = 'asset';
+    el.innerHTML = `
+      <a class="preview" href="${src}" target="_blank" rel="noopener"><img src="${src}" alt="${use}" loading="lazy"></a>
+      <div class="meta">
+        <div><div class="name">${use}</div><div class="use">${file} <span class="dims"></span></div></div>
+        <a class="btn light" href="${src}" download>Download</a>
+      </div>`;
+    const img = el.querySelector('img');
+    const dims = el.querySelector('.dims');
+    const label = () => { if (!file.endsWith('.svg')) dims.textContent = `· ${img.naturalWidth}×${img.naturalHeight}`; };
+    img.complete ? label() : img.addEventListener('load', label);
+    document.querySelector(`[data-group="${group}"]`).append(el);
+  }
+</script>
+</body>
+</html>
